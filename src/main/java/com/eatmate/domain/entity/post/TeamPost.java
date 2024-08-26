@@ -7,18 +7,19 @@ import jakarta.persistence.*;
 @Entity
 public class TeamPost {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "team_post_id")
     private Long id;
 
-    /*
-    작성자
-    */
+    // 작성자
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToOne(mappedBy = "team_id")
+    // 팀
+    @ManyToOne
+    @JoinColumn(name = "team_id")
     private Team team;
 
     @Column(name = "title")
@@ -27,9 +28,7 @@ public class TeamPost {
     @Column(name = "content")
     private String content;
 
-    /*
-        조회수
-    */
+    // 조회수
     private int cnt;
 
 }

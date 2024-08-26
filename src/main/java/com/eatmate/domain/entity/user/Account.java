@@ -1,6 +1,7 @@
 package com.eatmate.domain.entity.user;
 
 import com.eatmate.domain.entity.post.Post;
+import com.eatmate.domain.entity.post.TeamPost;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,12 +19,13 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
 public class Account {
 
-    @Id @GeneratedValue(strategy = IDENTITY)
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "account_id")
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
-    private String email;    // 로그인은 email로
+    private String email;
 
     @Column(name = "nick_name")
     private String nickname;
@@ -39,6 +41,11 @@ public class Account {
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<AccountRole> accountRoles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+    // 사용자가 작성한 일반 게시글
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
+
+    // 사용자가 작성한 팀 게시글
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private List<TeamPost> teamPosts = new ArrayList<>();
 }

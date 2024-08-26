@@ -1,6 +1,7 @@
 package com.eatmate.domain.entity.user;
 
 import com.eatmate.domain.entity.post.Post;
+import com.eatmate.domain.entity.post.TeamPost;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -26,5 +27,6 @@ public class Team {
     private List<AccountTeam> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "team")
-    private List<Post> posts = new ArrayList<>();
+    private List<TeamPost> teamPosts = new ArrayList<>();  // 팀과 팀 게시글 간의 관계
+
 }
