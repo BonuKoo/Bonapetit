@@ -2,6 +2,11 @@ package com.eatmate.domain.entity.user;
 
 import jakarta.persistence.*;
 
+
+/*
+    모임에 대한 권한
+ */
+
 @Entity
 @Table(name = "account_role")
 public class AccountRole {

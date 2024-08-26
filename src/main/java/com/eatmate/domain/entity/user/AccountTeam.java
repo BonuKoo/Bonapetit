@@ -24,7 +24,9 @@ public class AccountTeam {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    //LEADER, PARTICIPANT
     @Column(name = "role")
-    private String role; // 예: 방장, 멤버 등
+    private String role;
+
 
 }

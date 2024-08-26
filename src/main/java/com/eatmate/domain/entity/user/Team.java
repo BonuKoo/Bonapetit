@@ -1,6 +1,6 @@
 package com.eatmate.domain.entity.user;
 
-import com.eatmate.domain.entity.Post;
+import com.eatmate.domain.entity.post.Post;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -14,11 +14,13 @@ public class Team {
     @Column(name = "team_id")
     private Long id;
 
+    @Column(name = "team_name")
     private String teamName;
 
+    //방장
     @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private Account owner; //방장
+    @JoinColumn(name = "account_id")
+    private Account account_id;
 
     @OneToMany(mappedBy = "team")
     private List<AccountTeam> members = new ArrayList<>();

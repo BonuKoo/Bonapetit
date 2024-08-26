@@ -1,6 +1,6 @@
 package com.eatmate.domain.entity.user;
 
-import com.eatmate.domain.entity.Post;
+import com.eatmate.domain.entity.post.Post;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
