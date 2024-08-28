@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>사용자 프로필</title>
+</head>
+<body>
+<h1>카카오 로그인 사용자 정보</h1>
+<p>닉네임: <span th:text="${userProfile['properties']['nickname']}"></span></p>
+<p>이메일: <span th:text="${userProfile['kakao_account']['email']}"></span></p>
+</body>
+</html>

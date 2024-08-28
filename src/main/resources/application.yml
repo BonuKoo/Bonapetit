@@ -24,8 +24,8 @@ file:
 #OPEN API 설정
 kakao:
   client:
-    id: 8a8d1936aa61819a2672c17f1d6e3762
-    secret: H2j4hdlF3Skywdp7ZEVCv3siwSTMkfdN
+    id: 4d77a5adb4a0ec1e3c0b6b28c5f48284
+    secret: cn8DCCeldGOtP4xsKpmLskR4pPTD7zwO
 
 naver:
   api:
