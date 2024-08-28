@@ -8,9 +8,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("post")
 public class PostController {
 
+    @GetMapping("create")
+    String createPost(){
+        return "post/createPostForm";
+    }
+
     @GetMapping("list")
     String getPostList(){
         return "post/listPostForm";
     }
+
 
 }
