@@ -14,8 +14,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http
 
+        http
                 .authorizeHttpRequests(auth-> auth
                         //정적 자원 설정
                         .requestMatchers("/css/**","/images/**","/js/**", "/favicon.*", "/*/icon-*").permitAll()

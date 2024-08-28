@@ -1,88 +1,65 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<!--  <meta name="_csrf" th:content="${_csrf.token}"/>-->
-<!--  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>-->
-    <meta charset="UTF-8"
-          name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eatMate</title>
-    <!--CSS-->
-    <link rel="stylesheet" href="/css/layout/layout.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eatMate</title>
+  <link rel="stylesheet" th:href="@{/css/layout/layout.css}">
 </head>
+
 <body>
-  <!-- header 시작-->
-  <header>
-    <!-- 유저 로그인,로그아웃,회원가입 Nav -->
-    <nav class="user-nav">
-      <ul>
-        <!-- 로그인 상태가 아니면 로그인 링크를 보여줍니다 -->
-        <!-- TODO
-        <li sec:authorize="isAnonymous()">
-          <a th:href="@{/login}">로그인</a>
-        </li>
-        -->
+<!-- Header -->
+<header>
 
-        <!-- 로그인 상태가 아니면 회원가입 링크를 보여줍니다 -->
-        <!--  TODO
-        <li sec:authorize="isAnonymous()">
-          <a th:href="@{/signup}">회원가입</a>
-        </li>
-        -->
+  <div class="logo">
+    <img th:src="@{/img/logo.png}" alt="eatMate Logo">
+  </div>
 
-        <!-- 로그인 상태이면 로그아웃 링크를 보여줍니다 -->
-        <!--  TODO
-        <li sec:authorize="isAuthenticated()">
-          <a th:href="@{/logout}">로그아웃</a>
-        </li>
-        -->
+  <div class="title">
+    <img th:src="@{/img/title.png}" alt="eatMate title">
+  </div>
 
-        <!-- 프로필 링크 - 유저 이름 or 닉네임이 뜬다. href로 누르면 프로필 조회-->
-        <!--   TODO
-        <li sec:authorize="isAuthenticated()">
-          <a th:href="@{/profile}" class="profile-link">
-            <img src="/img/profile.png" alt="프로필 링크" class="profile-img"/>
-          </a>
-        </li>
-        -->
-      </ul> <!-- ul -->
-    </nav> <!-- 로그인 nav 끝 -->
-    <hr>
-    <!-- 헤더 콘텐츠 -->
-    <div class="header-content">
-      <!--사이트 로고-->
-      <div class="logo-container">
-        <img src="" alt="사이트 로고" class="site-logo">
-      </div>
-      <!--사이트 이름-->
-      <div class="siteName-container">
-        <img src="" alt="사이트 이름" class="site-name">
-      </div>
-    </div><!-- 헤더 콘텐츠 끝-->
+  <nav class="main-action">
+    <ul>
+      <li><a th:href="@{/}">Home</a></li>
+      <li><a th:href="@{/}">About</a></li>
+      <li><a th:href="@{/post/list}">Find a Mate</a></li>
+      <li><a th:href="@{/}">Create a Mate</a></li>
+    </ul>
+  </nav>
 
-      <!-- 모임 개설, 모임 참가 등등의 핵심 메뉴 nav-->
-      <div class="user-actions">
-        <ul>
+  <hr>
 
-          <!-- 모임 개설 -->
-          <!-- TODO
-          <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/profile}" class="profile-link">
-              <img src="/img/profile.png" alt="프로필 링크" class="profile-img"/>
-            </a>
-          </li>
-          -->
+  <nav class="user-tab">
+    <ul>
+      <li><a th:href="@{/login}">Login</a></li>
+      <li><a th:href="@{/logout}">Logout</a></li>
+      <li><a th:href="@{/signup}">Sign Up</a></li>
+    </ul>
+  </nav>
 
-          <!-- 모임 참가 -->
-          <!-- TODO
-          <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/profile}" class="profile-link">
-              <img src="/img/profile.png" alt="프로필 링크" class="profile-img"/>
-            </a>
-          </li>
-          -->
-        </ul><!-- ul -->
-      </div>
-  </header>
+</header>
+
+<!-- Content Section -->
+<div layout:fragment="content">
+  <!-- This is where page-specific content will be included -->
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-logo">
+    <img th:src="@{/img/logo.png}" alt="eatMate Logo">
+  </div>
+  <div class="footer-links">
+    <a th:href="@{/privacy}">Privacy Policy</a>
+    <a th:href="@{/terms}">Terms of Service</a>
+    <a th:href="@{/contact}">Contact Us</a>
+  </div>
+  <div class="social-media">
+    <a th:href="@{/social/x}"><img th:src="@{/img/x.png}" alt="x"></a>
+    <a th:href="@{/social/instagram}"><img th:src="@{/img/insta.png}" alt="Instagram"></a>
+  </div>
+</footer>
 </body>
 </html>
