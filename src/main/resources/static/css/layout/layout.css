@@ -1,0 +1,221 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+a {
+    text-decoration: none;
+    color: #333;
+}
+
+/* Header */
+header {
+    background-color: #ffa726;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo img {
+    width: 150px;
+}
+
+/* 기본 nav 스타일 (공통) */
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* main-action 스타일 */
+.main-action ul {
+    justify-content: flex-start; /* 왼쪽 정렬 */
+}
+
+.main-action ul li {
+    margin-right: 20px; /* 간격 설정 */
+}
+
+/* user-tab 스타일 */
+.user-tab ul {
+    justify-content: flex-end; /* 오른쪽 정렬 */
+}
+
+.user-tab ul li {
+    margin-left: 20px; /* 간격 설정 */
+}
+
+/* Main Banner */
+.main-banner {
+    background-color: #ffb74d;
+    color: white;
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.main-banner h1 {
+    font-size: 3em;
+    margin: 0;
+}
+
+.cta-button {
+    margin-top: 20px;
+    padding: 15px 30px;
+    background-color: #ef6c00;
+    border: none;
+    color: white;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+/* Introduction Section */
+.introduction {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.introduction h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+}
+
+.feature-item {
+    text-align: center;
+}
+
+.feature-item img {
+    width: 100px;
+}
+
+/* Matching Section */
+.matching {
+    padding: 50px 20px;
+    background-color: #ffcc80;
+    text-align: center;
+}
+
+.matching h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.profile-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.profile-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 150px;
+    text-align: center;
+}
+
+.profile-card img {
+    width: 100px;
+    border-radius: 50%;
+}
+
+/* Testimonials Section */
+.testimonials {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.testimonial-item {
+    background-color: #ffe0b2;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+/* Newsletter Section */
+.newsletter {
+    padding: 50px 20px;
+    background-color: #ffb74d;
+    text-align: center;
+}
+
+.newsletter h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.newsletter form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.newsletter input[type="text"],
+.newsletter input[type="email"] {
+    padding: 10px;
+    width: 300px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.newsletter button {
+    padding: 15px 30px;
+    background-color: #ef6c00;
+    border: none;
+    color: white;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+/* Footer */
+footer {
+    background-color: #ffa726;
+    padding: 20px;
+    text-align: center;
+    color: white;
+}
+
+.footer-logo img {
+    width: 150px;
+}
+
+.footer-links {
+    margin-top: 20px;
+}
+
+.footer-links a {
+    color: white;
+    margin: 0 10px;
+}
+
+.social-media {
+    margin-top: 20px;
+}
+
+.social-media img {
+    width: 30px;
+    margin: 0 10px;
+}

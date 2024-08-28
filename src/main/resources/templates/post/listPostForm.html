@@ -1,10 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html layout:decorate="~{layout/layout.html}">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <th:block layout:fragment="head">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Corrected th:href -->
+        <link rel="stylesheet" th:href="@{/css/post/listPostForm.css}">
+    </th:block>
 </head>
 <body>
+<div layout:fragment="content" id="content">
 
+<!-- Main Section -->
+<div class="main-section">
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <select>
+            <option value="location" selected>Location</option>
+            <option value="title">Title</option>
+            <option value="date">Recent Date</option>
+        </select>
+        <input type="text" placeholder="Search by title...">
+    </div>
+
+    <!-- List Grid -->
+    <div class="list-grid">
+        <div class="list-item">
+            <img src="image1.jpg" alt="Image 1">
+            <h3>Title 1</h3>
+            <p>Author 1</p>
+        </div>
+        <div class="list-item">
+            <img src="image2.jpg" alt="Image 2">
+            <h3>Title 2</h3>
+            <p>Author 2</p>
+        </div>
+        <div class="list-item">
+            <img src="image3.jpg" alt="Image 3">
+            <h3>Title 3</h3>
+            <p>Author 3</p>
+        </div>
+        <div class="list-item">
+            <img src="image4.jpg" alt="Image 4">
+            <h3>Title 4</h3>
+            <p>Author 4</p>
+        </div>
+        <div class="list-item">
+            <img src="image5.jpg" alt="Image 5">
+            <h3>Title 5</h3>
+            <p>Author 5</p>
+        </div>
+        <div class="list-item">
+            <img src="image6.jpg" alt="Image 6">
+            <h3>Title 6</h3>
+            <p>Author 6</p>
+        </div>
+        <div class="list-item">
+            <img src="image7.jpg" alt="Image 7">
+            <h3>Title 7</h3>
+            <p>Author 7</p>
+        </div>
+        <div class="list-item">
+            <img src="image8.jpg" alt="Image 8">
+            <h3>Title 8</h3>
+            <p>Author 8</p>
+        </div>
+        <div class="list-item">
+            <img src="image9.jpg" alt="Image 9">
+            <h3>Title 9</h3>
+            <p>Author 9</p>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <a href="#">&laquo; Previous</a>
+        <a href="#">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">Next &raquo;</a>
+    </div>
+
+</div>
+
+</div>
 </body>
 </html>
