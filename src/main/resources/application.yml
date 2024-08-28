@@ -11,6 +11,9 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.H2Dialect
+  redis:
+    host: localhost
+    port: 6379
 
 #파일 업로드 경로
 file:
