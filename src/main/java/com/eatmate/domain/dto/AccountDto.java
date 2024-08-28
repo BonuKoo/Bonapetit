@@ -13,10 +13,8 @@ public class AccountDto {
 
     private Long account_id;
     private String email;    //로그인은 email로
-    private String nickName;
+    private String nick_Name;
     private String password;
-
     //TODO : 추후 상세
-    //private String city;
 
 }
