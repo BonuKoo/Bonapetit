@@ -2,8 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
-  <meta name="_csrf" th:content="${_csrf.token}"/>
-  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<!--  <meta name="_csrf" th:content="${_csrf.token}"/>-->
+<!--  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>-->
     <meta charset="UTF-8"
           name="viewport" content="width=device-width, initial-scale=1.0">
     <title>eatMate</title>
@@ -22,18 +22,21 @@
           <a th:href="@{/login}">로그인</a>
         </li>
         -->
+
         <!-- 로그인 상태가 아니면 회원가입 링크를 보여줍니다 -->
         <!--  TODO
         <li sec:authorize="isAnonymous()">
           <a th:href="@{/signup}">회원가입</a>
         </li>
         -->
+
         <!-- 로그인 상태이면 로그아웃 링크를 보여줍니다 -->
         <!--  TODO
         <li sec:authorize="isAuthenticated()">
           <a th:href="@{/logout}">로그아웃</a>
         </li>
         -->
+
         <!-- 프로필 링크 - 유저 이름 or 닉네임이 뜬다. href로 누르면 프로필 조회-->
         <!--   TODO
         <li sec:authorize="isAuthenticated()">
@@ -60,6 +63,7 @@
       <!-- 모임 개설, 모임 참가 등등의 핵심 메뉴 nav-->
       <div class="user-actions">
         <ul>
+
           <!-- 모임 개설 -->
           <!-- TODO
           <li sec:authorize="isAuthenticated()">
@@ -68,6 +72,7 @@
             </a>
           </li>
           -->
+
           <!-- 모임 참가 -->
           <!-- TODO
           <li sec:authorize="isAuthenticated()">
