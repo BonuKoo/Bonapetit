@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+</head>
+<body>
+<div class="content">
+    <h2>회원가입</h2>
+    <form name="join" action="join" method="post" id="joinForm">
+        <table id="userTable">
+            <tr>
+                <td>이메일</td>
+                <td><input type="text" name="email" id="email"></td>
+            </tr>
+            <tr>
+                <td colspan="2" id="id-area"></td>
+            </tr>
+            <tr>
+                <td>비밀번호</td>
+                <td>
+                    <input type="password" name="password" id="password" placeholder="4~20자 사이로 입력">
+                </td>
+            </tr>
+            <tr>
+                <td>닉네임</td>
+                <td><input type="text" name="nick_name" id="nick_name"></td>
+            </tr>
+        </table>
+    </form>
+    <br>
+    <input type="button" value="회원가입" onclick="checkFormjoin()">
+    <input type="reset" value="다시입력" onclick="resetInout()">
+    <a href="/"><input type="button" value="홈으로"></a>
+</div>
+<script>
+function checkFormjoin() {
+// 유효성 검사
+    const from = document.join;
+    window.alert("회원가입이 완료되었습니다.");
+    from.submit(); // 서버 연동
+};
+
+function resetInout(){
+    const from = document.join;
+    window.alert("정보를 지우고 처음부터 다시 입력합니다!");
+    from.user_id.focus();
+    from.reset();
+};
+</script>
+</body>
+</html>
