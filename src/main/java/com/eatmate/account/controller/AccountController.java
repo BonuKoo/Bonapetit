@@ -20,13 +20,13 @@ public class AccountController {
     // 로그인 페이지
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "account/login";
     }
 
     // 회원가입 페이지
     @GetMapping("/join")
     public String JoinPage(){
-        return "join";
+        return "account/join";
     }
 
     // 회원가입 정보 DB로 넘기기
@@ -36,5 +36,4 @@ public class AccountController {
         dao.insertjoin(dto);
         return "redirect:/login";
     }
-
 }
