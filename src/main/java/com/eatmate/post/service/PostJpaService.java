@@ -1,4 +1,4 @@
-package com.eatmate.post.controller.service;
+package com.eatmate.post.service;
 
 import org.springframework.stereotype.Service;
 

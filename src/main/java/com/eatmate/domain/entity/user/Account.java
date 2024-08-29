@@ -32,6 +32,12 @@ public class Account {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(unique = true)
+    private String oauth2_id;
+
+    @Column
+    private String access_token;
+
     /*==Team==*/
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<AccountTeam> accountTeams = new ArrayList<>();

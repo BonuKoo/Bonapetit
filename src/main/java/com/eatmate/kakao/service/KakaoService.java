@@ -2,6 +2,7 @@ package com.eatmate.kakao.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -15,8 +16,15 @@ import java.util.Map;
 @Service
 public class KakaoService {
 
+    @Value("${kakao.client.id}")
+    private String kakaoClientId;
+
+    @Value("${kakao.client.secret}")
+    private String kakaoClientSecret;
+
     private static final Logger logger = LoggerFactory.getLogger(KakaoService.class);
 
+    // 인증 코드로 액세스 토근 요청
     public String getAccessToken(String code) {
         String url = "https://kauth.kakao.com/oauth/token";
 
@@ -28,10 +36,10 @@ public class KakaoService {
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
-        params.add("client_id","4d77a5adb4a0ec1e3c0b6b28c5f48284");     // REST API 키
+        params.add("client_id", kakaoClientId);     // REST API 키
         params.add("redirect_uri","http://localhost:8080/oauth/kakao/callback");    // 리다이렉트 URI
         params.add("code", code);
-        params.add("client_secret", "cn8DCCeldGOtP4xsKpmLskR4pPTD7zwO"); // 필요시 추가
+        params.add("client_secret", kakaoClientSecret); // 필요시 추가
 
         // HttpEntity 생성
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
@@ -46,19 +54,14 @@ public class KakaoService {
                 Map<String, Object> responseBody = response.getBody();
                 return (String) responseBody.get("access_token");
             } else {
-                logger.error("Failed to get access token, status code: {}", response.getStatusCode());
                 throw new RuntimeException("Failed to get access token");
             }
-        } catch (HttpClientErrorException e) {
-            logger.error("HttpClientErrorException: {}", e.getMessage());
-            logger.error("Response body: {}", e.getResponseBodyAsString());
-            throw new RuntimeException("Failed to get access token due to client error", e);
         } catch (Exception e) {
-            logger.error("Exception: {}", e.getMessage());
             throw new RuntimeException("Failed to get access token", e);
         }
     }
 
+    // 액세스 토큰으로 사용자 정보 요청
     public Map<String, Object> getUserProfile(String accessToken) {
         String url = "https://kapi.kakao.com/v2/user/me";
 
@@ -95,6 +98,7 @@ public class KakaoService {
         }
     }
 
+    // 카카오 연결
     public void unlink(String accessToken) {
         String url = "https://kapi.kakao.com/v1/user/unlink";
 
