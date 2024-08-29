@@ -1,7 +1,6 @@
 package com.eatmate.account.service;
 
 import com.eatmate.dao.mybatis.AccountDao;
-import com.eatmate.dao.repository.AccountRepository;
 import com.eatmate.domain.dto.AccountDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountService {
 
     private AccountDao accountDao;
-    private AccountRepository accountRepository;
 
     /*
     @Transactional

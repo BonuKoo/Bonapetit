@@ -16,13 +16,18 @@ import java.util.List;
 public class AccountDto {
 
     private Long account_id;
+
     private String email;    //로그인은 email로
     private String nick_name;
     private String password;
+    private String roles;       //security Role에 해당 -> Enum 타입
     private String oauth2_id;
     private String access_token;
 
-    //TODO : 추후 상세
-    //private String city;
+    /*
+    public void defaultRoles(String roles) {
+        this.roles = roles;
+    }
+    */
 
 }

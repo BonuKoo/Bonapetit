@@ -35,9 +35,13 @@
 
   <nav class="user-tab">
     <ul>
+      <!--sec:authorize="isAuthenticated()"-->
       <li sec:authorize="isAuthenticated()"><a th:href="@{/profile}">프로필</a></li>
+      <!--sec:authorize="isAnonymous()"-->
       <li sec:authorize="isAnonymous()"><a th:href="@{/login}">로그인</a></li>
+      <!--sec:authorize="isAuthenticated()"-->
       <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">로그아웃</a></li>
+      <!--sec:authorize="isAnonymous()"-->
       <li sec:authorize="isAnonymous()"><a th:href="@{/join}">회원가입</a></li>
     </ul>
   </nav>

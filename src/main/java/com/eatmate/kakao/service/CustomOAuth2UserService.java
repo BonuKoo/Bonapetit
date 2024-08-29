@@ -1,6 +1,5 @@
 package com.eatmate.kakao.service;
 
-import com.eatmate.dao.repository.AccountRepository;
 import com.eatmate.domain.dto.AccountDto;
 import com.eatmate.domain.entity.user.Account;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,13 +13,14 @@ import java.util.Collections;
 import java.util.Map;
 
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
-
+    /*
     private final AccountRepository accountRepository;
 
     public CustomOAuth2UserService(AccountRepository accountRepository){
         this.accountRepository = accountRepository;
     }
-
+    */
+    /*
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -41,12 +41,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 attributes,
                 userNameAttributeName);
     }
-
     private Account registerNewAccount(AccountDto accountDto){
         Account account = Account.fromDto(accountDto);
         return accountRepository.save(account);
     }
-
+    */
 }
 
 

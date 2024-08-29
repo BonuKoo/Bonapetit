@@ -35,6 +35,9 @@ public class Account {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "roles")
+    private String roles;
+
     @Column(name = "oauth2_id", unique = true)
     private String oauth2id;
 
