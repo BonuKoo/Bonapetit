@@ -19,6 +19,8 @@ public class AccountDto {
     private String email;    //로그인은 email로
     private String nick_name;
     private String password;
+    private String oauth2_id;
+    private String access_token;
 
     //TODO : 추후 상세
     //private String city;

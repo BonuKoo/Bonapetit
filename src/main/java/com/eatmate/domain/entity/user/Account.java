@@ -32,11 +32,11 @@ public class Account {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(unique = true)
-    private String oauth2_id;
+    @Column(name = "oauth2_id", unique = true)
+    private String oauth2id;
 
-    @Column
-    private String access_token;
+    @Column(name = "access_token")
+    private String accesstoken;
 
     /*==Team==*/
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
