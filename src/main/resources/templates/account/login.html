@@ -14,32 +14,38 @@
     </th:block>
 </head>
 <body>
-    <div layout:fragment="content">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <h1 class="text-center mt-5">로그인</h1>
-                    <form id="login" name="login" class="mt-4" action="login" method="post">
-                        <div class="mb-3">
-                            <label class="form-label" for="email">이메일</label>
-                            <input type="text" id="email" name="email" class="form-control userid" placeholder="이메일을 입력해 주세요" autocomplete="email">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="password">비밀번호</label>
-                            <input type="password" id="password" name="password" class="form-control userpwd" placeholder="4~20자 사이로 입력" autocomplete="current-password">
-                        </div>
-                        <input value="로그인" type="submit" class="btn btn-primary w-50">
-                        <input value="회원가입" type="button" class="btn btn-primary w-50" onclick="location.href='join'">
-                    </form>
+<div layout:fragment="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h1 class="text-center mt-5">로그인</h1>
 
-                    <!-- REST API로 로그인 처리 -->
-                    <a href="https://kauth.kakao.com/oauth/authorize?client_id=4d77a5adb4a0ec1e3c0b6b28c5f48284&redirect_uri=http://localhost:8080/oauth/kakao/callback&response_type=code">
-                        <img height="38px" src="/img/kakao_login_medium_narrow.png">
-                    </a>
-                    <a href="/kakao/logout" class="btn btn-primary">카카오 로그아웃</a>
+                <!-- Error message display -->
+                <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                    <p th:text="${param.exception}">Invalid login credentials</p>
                 </div>
+
+                <form id="login" name="login" class="mt-4" th:action="@{/login}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label" for="username">이메일</label>
+                        <input type="text" id="username" name="username" class="form-control userid" placeholder="이메일을 입력해 주세요" autocomplete="email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password">비밀번호</label>
+                        <input type="password" id="password" name="password" class="form-control userpwd" placeholder="4~20자 사이로 입력" autocomplete="current-password">
+                    </div>
+                    <input value="로그인" type="submit" class="btn btn-primary w-50">
+                    <input value="회원가입" type="button" class="btn btn-primary w-50" onclick="location.href='join'">
+                </form>
+
+                <!-- REST API로 로그인 처리 -->
+                <a href="https://kauth.kakao.com/oauth/authorize?client_id=4d77a5adb4a0ec1e3c0b6b28c5f48284&redirect_uri=http://localhost:8080/oauth/kakao/callback&response_type=code">
+                    <img height="38px" src="/img/kakao_login_medium_narrow.png">
+                </a>
+                <a href="/kakao/logout" class="btn btn-primary">카카오 로그아웃</a>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

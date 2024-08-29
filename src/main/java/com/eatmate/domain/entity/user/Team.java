@@ -1,6 +1,5 @@
 package com.eatmate.domain.entity.user;
 
-import com.eatmate.domain.entity.post.Post;
 import com.eatmate.domain.entity.post.TeamPost;
 import com.eatmate.global.domain.UploadFileOfTeam;
 import com.eatmate.global.domain.UploadFileOfTeamPost;

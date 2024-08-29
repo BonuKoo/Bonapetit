@@ -28,7 +28,8 @@ public class FormUserDetailsService implements UserDetailsService {
         if (account == null) {
             throw new UsernameNotFoundException("No user found with email: " + email);
         }
-
+        
+        //Security 권한
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(account.getRoles()));
 
         AuthenticateAccountDto accountDto = AuthenticateAccountDto.builder()
@@ -36,10 +37,6 @@ public class FormUserDetailsService implements UserDetailsService {
                 .email(account.getEmail())
                 .nickname(account.getNickname())
                 .password(account.getPassword())
-                .accountTeams(account.getAccountTeams())
-                .accountRoles(account.getAccountRoles())
-                .posts(account.getPosts())
-                .teamPosts(account.getTeamPosts())
                 .files(account.getFiles())
                 .build();
 
