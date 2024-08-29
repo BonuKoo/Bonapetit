@@ -47,7 +47,10 @@ public class DBConfig {
         LocalContainerEntityManagerFactoryBean managefactoryBean = new LocalContainerEntityManagerFactoryBean();
         managefactoryBean.setDataSource(dataSource());
         managefactoryBean.setPersistenceUnitName("persistence");
-        managefactoryBean.setPackagesToScan("com.eatmate.domain.entity");
+        managefactoryBean.setPackagesToScan(
+                "com.eatmate.domain.entity",
+                "com.eatmate.global.domain"
+        );
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 

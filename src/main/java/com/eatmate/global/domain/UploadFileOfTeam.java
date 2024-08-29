@@ -1,25 +1,18 @@
 package com.eatmate.global.domain;
 
+import com.eatmate.domain.entity.user.Team;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/*
+
 @Data
 @NoArgsConstructor
-@Table(name = "UploadFile")
+@Table(name = "UploadFile_Team")
 @Entity
-*/
+public class UploadFileOfTeam {
 
-public class UploadFileOfEntity {
-
-
-    /**
-     * TODO :: 싹 다 Common 속성으로 빼둬야 한다
-     */
-
-
-    /*
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String uploadFileName; // 고객이 업로드한 파일명
@@ -35,11 +28,11 @@ public class UploadFileOfEntity {
     private long fileSize;        // 파일 크기 (바이트 단위)
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "entity_id")
-    private Entity entity;          // 해당 파일이 속한 엔티티
+    @JoinColumn(name = "team_id")
+    private Team team;          // 해당 파일이 속한 엔티티
 
     // 파일 이름과 저장된 파일 이름을 사용하는 생성자
-    public UploadFileOfEntity(String uploadFileName, String storeFileName, String filePath, String fileType, long fileSize) {
+    public UploadFileOfTeam(String uploadFileName, String storeFileName, String filePath, String fileType, long fileSize) {
         this.uploadFileName = uploadFileName;
         this.storeFileName = storeFileName;
         this.filePath = filePath;
@@ -48,9 +41,7 @@ public class UploadFileOfEntity {
     }
 
     // 게시물과의 연관 관계 설정 메서드
-    public void attachEntity(Entity entity){
-        this.entity = entity;
+    public void attachTeam(Team team){
+        this.team = team;
     }
-    */
-
 }

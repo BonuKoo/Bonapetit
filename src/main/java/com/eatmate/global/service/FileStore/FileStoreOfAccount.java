@@ -1,6 +1,6 @@
-package com.eatmate.global.service;
+package com.eatmate.global.service.FileStore;
 
-import com.eatmate.global.domain.UploadFileOfEntity;
+import com.eatmate.global.domain.UploadFileOfPost;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,21 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-//@Component
-public class FileStore {
+@Component
+public class FileStoreOfAccount {
 
-    //파일 저장 경로 - 예시는 account
+    //파일 저장 경로 - 예시는
     @Value("${file.dir.account}")
-    private String fileDir;
+    private String fileAccountDir;
 
     public String getFullPath(String filename){ //파일 저장 경로 + 파일이름
-        return fileDir + filename;
+        return fileAccountDir + filename;
     }
 
-    /*
     //이미지 하나만 저장
-    public UploadFileOfEntity storeFile(MultipartFile multipartFile) throws IOException {
-
+    public UploadFileOfPost storeFile(MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty()){
             return null;
         }
@@ -44,13 +42,12 @@ public class FileStore {
         //저장
         multipartFile.transferTo(file);
 
-        return new UploadFileOfEntity(originalFilename,storeFileName,filePath,fileType,fileSize);
+        return new UploadFileOfPost(originalFilename,storeFileName,filePath,fileType,fileSize);
     }
-    */
-    /*
+
     //이미지 여러 개 저장
-    public List<UploadFileOfEntity> storeFiles(List<MultipartFile> multipartFiles) throws IOException {
-        List<UploadFileOfEntity> storeFileResult = new ArrayList<>();
+    public List<UploadFileOfPost> storeFiles(List<MultipartFile> multipartFiles) throws IOException {
+        List<UploadFileOfPost> storeFileResult = new ArrayList<>();
 
         for (MultipartFile multipartFile : multipartFiles){
             if (!multipartFile.isEmpty()){
@@ -59,13 +56,10 @@ public class FileStore {
         }
         return storeFileResult;
     }
-    */
 
     /*
         extractMethod
      */
-
-
     // 확장자 명
     private String extractExt(String originalFilename) {
         int pos = originalFilename.lastIndexOf(".");
@@ -79,5 +73,4 @@ public class FileStore {
         String ext = extractExt(originalFilename);
         return uuid + "." + ext;
     }
-
 }
