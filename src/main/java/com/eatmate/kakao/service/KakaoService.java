@@ -77,6 +77,7 @@ public class KakaoService {
         }
     }
 
+    // 카카오 로그아웃
     public void logout(String accessToken) {
         String url = "https://kapi.kakao.com/v1/user/logout";
 
@@ -85,8 +86,13 @@ public class KakaoService {
         headers.set("Authorization", "Bearer " + accessToken);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
-        restTemplate.postForEntity(url, entity, String.class);
+        if(response.getStatusCode().is2xxSuccessful()){
+            logger.info("Successfully logged out from Kakao");
+        }else {
+            logger.error("Failed to logout from Kakao, status code : {}", response.getStatusCode());
+        }
     }
 
     public void unlink(String accessToken) {
