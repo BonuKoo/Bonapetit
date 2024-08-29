@@ -8,19 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AccountJpaService {
-    private AccountDao accountDao;
-    private AccountRepository accountRepository;
 
-    /*
-    @Transactional
-    void createAccountMyBatis(){
-        accountDao.join();
-    }
+    private final AccountRepository accountRepository;
 
-    @Transactional
-    void createAccountRepository(){
-        accountRepository.save();
-    }
-    */
 
 }

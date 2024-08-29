@@ -1,10 +1,12 @@
 package com.eatmate.account.controller;
 
+import com.eatmate.account.service.AccountMyBatisService;
 import com.eatmate.dao.mybatis.AccountDao;
 import com.eatmate.domain.dto.AccountDto;
 import com.eatmate.domain.entity.user.Account;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,7 +19,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 public class AccountController {
+
+    private final AccountMyBatisService myBatisService;
 
     @Autowired
     private AccountDao dao;
@@ -37,8 +42,8 @@ public class AccountController {
     // 회원가입 정보 DB로 넘기기
     @PostMapping("/join") //DB에 저장
     public String joinAply(AccountDto dto) {
-        //log.info("dto email parameter : {}", dto.);
-        dao.insertjoin(dto);
+        myBatisService.join(dto);
+
         return "redirect:/login";
     }
 
@@ -50,4 +55,5 @@ public class AccountController {
         }
         return "redirect:/login";
     }
+
 }
