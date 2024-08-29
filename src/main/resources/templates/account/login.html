@@ -28,7 +28,7 @@
                             <label class="form-label" for="password">비밀번호</label>
                             <input type="password" id="password" name="password" class="form-control userpwd" placeholder="4~20자 사이로 입력" autocomplete="current-password">
                         </div>
-                        <input value="로그인" type="submit" class="btn btn-primary w-50">
+                        <input value="로그인" type="submit" class="btn btn-primary w-50"  onclick="checkFormLogin()">
                         <input value="회원가입" type="button" class="btn btn-primary w-50" onclick="location.href='join'">
                     </form>
 
@@ -41,5 +41,15 @@
             </div>
         </div>
     </div>
+<script>
+function checkFormLogin() {
+    const form = document.login;
+    const username = document.getElementById('email');
+    const user_pw = document.getElementById('password');
+
+    window.alert("로그인이 완료되었습니다.");
+    form.submit();
+}
+</script>
 </body>
 </html>

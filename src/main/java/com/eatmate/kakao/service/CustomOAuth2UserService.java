@@ -41,7 +41,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 // 기존 회원이 존재하는 경우 OAuth2 ID와 Access Token 업데이트
                 accountDto.setOauth2_id(attributes.get("id").toString());
                 accountDto.setAccess_token(userRequest.getAccessToken().getTokenValue());
-                accountService.updateAccount(accountDto);
+
+                System.out.println("업데이트 전 AccountDto: " + accountDto);
+
+                boolean updated = accountService.updateAccount(accountDto);
+
+                if (updated) {
+                    System.out.println("카카오 정보 업데이트 성공");
+                } else {
+                    System.out.println("카카오 정보 업데이트 실패");
+                }
+            } else {
+                System.out.println("계정 정보를 찾을 수 없습니다.");
             }
         } else {
             // 인증되지 않은 상태에서의 처리
