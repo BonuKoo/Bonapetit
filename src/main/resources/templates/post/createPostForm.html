@@ -1,10 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html layout:decorate="~{layout/layout.html}">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <th:block layout:fragment="head">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Corrected th:href -->
+        <link rel="stylesheet" th:href="@{/css/post/createPostForm.css}">
+    </th:block>
 </head>
 <body>
+<div layout:fragment="content" id="content">
+    <!-- Main Section -->
+    <div class="main-section">
+        <h1>Create a Team Recruitment Post</h1>
+        <form th:action="@{/createPost}" method="post">
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" placeholder="Enter the title of the post" required>
+            </div>
 
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" placeholder="Enter the description of the team and what you're looking for" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="members">Number of Members Needed:</label>
+                <input type="number" id="members" name="members" min="1" max="100" placeholder="Enter number of members" required>
+            </div>
+
+            <div class="form-group">
+                <label for="maxMembers">Maximum Team Size:</label>
+                <input type="number" id="maxMembers" name="maxMembers" min="1" max="100" placeholder="Enter maximum team size" required>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" placeholder="Enter the location" required>
+            </div>
+
+            <div class="form-group">
+                <label for="deadline">Application Deadline:</label>
+                <input type="date" id="deadline" name="deadline" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Contact Information:</label>
+                <input type="text" id="contact" name="contact" placeholder="Enter your contact information" required>
+            </div>
+
+            <div class="form-group">
+                <button type="submit">Create Post</button>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>
