@@ -47,7 +47,7 @@ public class Account {
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<TeamPost> teamPosts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.MERGE,orphanRemoval = true,
+    @OneToMany(mappedBy = "account", cascade = CascadeType.MERGE,orphanRemoval = true,
             fetch = FetchType.EAGER)
     private List<UploadFileOfAccount> files = new ArrayList<>();
 

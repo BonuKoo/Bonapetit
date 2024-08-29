@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 
 
 @Slf4j
-@Service
+@Service("fileServiceOfPostImpl")
 @RequiredArgsConstructor
 public class FileServiceOfPostImpl implements FileService {
 

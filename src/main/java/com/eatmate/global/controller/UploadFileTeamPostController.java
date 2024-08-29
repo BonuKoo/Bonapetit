@@ -2,8 +2,10 @@ package com.eatmate.global.controller;
 
 import com.eatmate.global.service.FileService.FileService;
 import com.eatmate.global.service.FileStore.FileStoreOfAccount;
+import com.eatmate.global.service.FileStore.FileStoreOfTeamPost;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +19,16 @@ import java.net.MalformedURLException;
 
 @RequestMapping("/file/teamPost")
 @Controller
-@RequiredArgsConstructor
 @Slf4j
 public class UploadFileTeamPostController {
 
     private final FileService fileService;
-    private final FileStoreOfAccount fileStore;
+    private final FileStoreOfTeamPost fileStore;
+
+    public UploadFileTeamPostController(@Qualifier("fileServiceOfTeamPostImpl") FileService fileService,FileStoreOfTeamPost fileStore) {
+        this.fileStore = fileStore;
+        this.fileService = fileService;
+    }
 
     @ResponseBody
     @GetMapping("/images/{filename}")

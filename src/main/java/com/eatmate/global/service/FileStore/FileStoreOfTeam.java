@@ -15,7 +15,7 @@ import java.util.UUID;
 public class FileStoreOfTeam {
 
     //파일 저장 경로 - 예시는
-    @Value("${file.dir.Team}")
+    @Value("${file.dir.team}")
     private String fileTeamDir;
 
     public String getFullPath(String filename){ //파일 저장 경로 + 파일이름
