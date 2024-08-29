@@ -2,6 +2,7 @@ package com.eatmate.domain.entity.user;
 
 import com.eatmate.domain.entity.post.Post;
 import com.eatmate.domain.entity.post.TeamPost;
+import com.eatmate.domain.userEnum.UserRole;
 import com.eatmate.global.domain.UploadFileOfAccount;
 import com.eatmate.global.domain.UploadFileOfPost;
 import jakarta.persistence.*;
@@ -36,6 +37,10 @@ public class Account {
 
     @Column
     private String access_token;
+    
+    // TODO : Enum UserRole로 변환
+    @Column
+    private String roles;
 
     /*==Team==*/
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)

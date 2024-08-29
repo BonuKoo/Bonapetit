@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+>
 
 <head>
   <meta charset="UTF-8">
@@ -33,10 +35,10 @@
 
   <nav class="user-tab">
     <ul>
-      <li><a th:href="@{/profile}">profile</a></li>
-      <li><a th:href="@{/login}">Login</a></li>
-      <li><a th:href="@{/logout}">Logout</a></li>
-      <li><a th:href="@{/signup}">Sign Up</a></li>
+      <li sec:authorize="isAuthenticated()"><a th:href="@{/profile}">프로필</a></li>
+      <li sec:authorize="isAnonymous()"><a th:href="@{/login}">로그인</a></li>
+      <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">로그아웃</a></li>
+      <li sec:authorize="isAnonymous()"><a th:href="@{/join}">회원가입</a></li>
     </ul>
   </nav>
 
