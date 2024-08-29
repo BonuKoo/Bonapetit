@@ -18,10 +18,10 @@ spring:
 #파일 업로드 경로
 file:
   dir:
-    account: C:/TeamProject/eatmate/eatmate/img/accountimg
-    team: C:/TeamProject/eatmate/eatmate/img/teamimg
-    teamPost: C:/TeamProject/eatmate/eatmate/img/teamPostimg
-    post: C:/TeamProject/eatmate/eatmate/img/postimg
+    account: C:/TeamProject/eatmate/img/profileimg
+    post: C:/TeamProject/eatmate/img/postimg
+    team: C:/TeamProject/eatmate/img/teamimg
+    teamPost: C:/TeamProject/eatmate/img/teampostimg
 
 #OPEN API 설정
 kakao:
