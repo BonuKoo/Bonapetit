@@ -23,7 +23,7 @@ public class FormUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        Account account = accountRepository.findByEmail();
+        Account account = accountRepository.findByEmail(email);
 
         if (account == null) {
             throw new UsernameNotFoundException("No user found with email: " + email);

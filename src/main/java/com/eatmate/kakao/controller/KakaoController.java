@@ -38,7 +38,7 @@ public class KakaoController {
     }
 
     // 카카오 로그아웃
-    @GetMapping("/logout")
+    @GetMapping("/kakao/logout")
     public void logout(HttpServletResponse response, HttpSession session) throws IOException {
         String accessToken = (String) session.getAttribute("kakaoAccessToken");
 
