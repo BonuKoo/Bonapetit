@@ -4,9 +4,7 @@ import com.eatmate.dao.mybatis.AccountDao;
 import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.domain.dto.AccountDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +24,14 @@ public class AccountService {
     }
 
     // 로그인 한 회원에 oauth2Id, access_token 업데이트
-    public void updateAccount(AccountDto accountDto) {
-        accountDao.updateAccount(accountDto);
+    public boolean updateAccount(AccountDto accountDto) {
+        boolean isUpdated = accountDao.updateAccount(accountDto);
+        if (isUpdated) {
+            System.out.println("카카오 정보가 성공적으로 업데이트되었습니다.");
+        } else {
+            System.out.println("카카오 정보 업데이트에 실패했습니다.");
+        }
+        return isUpdated;
     }
 
     /*

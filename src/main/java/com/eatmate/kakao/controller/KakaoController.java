@@ -42,6 +42,9 @@ public class KakaoController {
     public void logout(HttpServletResponse response, HttpSession session) throws IOException {
         String accessToken = (String) session.getAttribute("kakaoAccessToken");
 
+        // 액세스 토큰 확인을 위해 로그 출력
+        System.out.println("액세스 토큰: " + accessToken);
+
         if (accessToken != null){
             // 액세스 토큰 무효화
             kakaoService.logout(accessToken);
@@ -50,7 +53,7 @@ public class KakaoController {
         }
         // 카카오 로그아웃 URL로 리다이렉트
         String requestUrl = "https://kauth.kakao.com/oauth/logout"
-                + "?client_id=4d77a5adb4a0ec1e3c0b6b28c5f48284"
+                + "?client_id=e14cb05b33510d6d6fb59bc77f202156"
                 + "&logout_redirect_uri=http://localhost:8080";     // 카카오 로그아웃에 저장한 url
 
         response.sendRedirect(requestUrl);
