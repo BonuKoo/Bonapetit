@@ -13,9 +13,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Controller
@@ -29,7 +31,10 @@ public class AccountController {
 
     // 로그인 페이지
     @GetMapping("/login")
-    public String login() {
+    public String login(@RequestParam(value = "error", required = false) String error,
+                        @RequestParam(value = "exception", required = false) String exception, Model model) {
+        model.addAttribute("error",error);
+        model.addAttribute("exception",exception);
         return "account/login";
     }
 
@@ -43,6 +48,8 @@ public class AccountController {
     @PostMapping("/join") //DB에 저장
     public String joinAply(AccountDto dto) {
         myBatisService.join(dto);
+
+        log.info("dto:: {}", dto.getEmail());
 
         return "redirect:/login";
     }

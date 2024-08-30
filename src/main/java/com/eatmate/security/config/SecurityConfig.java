@@ -20,7 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @RequiredArgsConstructor
-//@EnableWebSecurity
+@EnableWebSecurity
 public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
@@ -45,8 +45,8 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .usernameParameter("email") //username->email
-                        .successHandler(successHandler)
-                        .failureHandler(failureHandler)
+                        //.successHandler(successHandler)
+                        //.failureHandler(failureHandler)
                         .permitAll())
                 .authenticationProvider(authenticationProvider)
         ;

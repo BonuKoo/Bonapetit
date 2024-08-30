@@ -27,14 +27,15 @@ public class AccountContext implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return "";
+    public String getUsername() {
+        return authenticateAccountDto.getEmail();
     }
 
     @Override
-    public String getUsername() {
-        return "";
+    public String getPassword() {
+        return authenticateAccountDto.getPassword();
     }
+
 
     @Override
     public boolean isAccountNonExpired() {
