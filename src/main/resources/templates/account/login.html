@@ -12,6 +12,12 @@
 </head>
 <body>
 <div layout:fragment="content">
+
+    <div th:if="${param.error}" class="form-group">
+        <span th:text="${exception}?: '잘못된 아이디나 암호입니다'" class="alert alert-danger"></span>
+    </div>
+
+    <section>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -37,6 +43,8 @@
             </div>
         </div>
     </div>
+</section>
+
 </div>
 </body>
 </html>

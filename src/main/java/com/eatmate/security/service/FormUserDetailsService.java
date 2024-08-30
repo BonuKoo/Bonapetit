@@ -5,6 +5,7 @@ import com.eatmate.domain.entity.user.Account;
 import com.eatmate.security.dto.AccountContext;
 import com.eatmate.security.dto.AuthenticateAccountDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Service("userDetailsService")
 @RequiredArgsConstructor
+@Slf4j
 public class FormUserDetailsService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
@@ -28,7 +30,9 @@ public class FormUserDetailsService implements UserDetailsService {
         if (account == null) {
             throw new UsernameNotFoundException("No user found with email: " + email);
         }
-        
+
+        log.info("account:{}",account.getRoles());
+
         //Security 권한
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(account.getRoles()));
 
