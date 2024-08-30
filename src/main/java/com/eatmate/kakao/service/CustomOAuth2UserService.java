@@ -3,6 +3,7 @@ package com.eatmate.kakao.service;
 import com.eatmate.account.service.AccountService;
 import com.eatmate.domain.dto.AccountDto;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -11,6 +12,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -42,11 +44,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             if (accountDto != null) {
                 // 기존 회원이 존재하는 경우 OAuth2 ID와 Access Token 업데이트
-                accountDto.setOauth2_id(attributes.get("id").toString());
-                accountDto.setAccess_token(userRequest.getAccessToken().getTokenValue());
+                String oauth2_id = attributes.get("id").toString();
+                String access_token = userRequest.getAccessToken().getTokenValue();
+
+                accountDto.setOauth2_id(oauth2_id);
+                accountDto.setAccess_token(access_token);
 
                 System.out.println("업데이트 전 AccountDto: " + accountDto);
 
+                // DB에 저장
                 boolean updated = accountService.updateAccount(accountDto);
 
                 if (updated) {
@@ -57,15 +63,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             } else {
                 System.out.println("계정 정보를 찾을 수 없습니다.");
             }
+            // 사용자의 권한을 SecurityContext에서 가져오기
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+            // 권한을 설정하여 OAuth2User 객체를 반환
+            return new DefaultOAuth2User(
+                    authorities,
+                    attributes,
+                    "id"
+            );
+
         } else {
             // 인증되지 않은 상태에서의 처리
             throw new OAuth2AuthenticationException("User is not authenticated");
         }
-
-        return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                attributes,
-                "id");
     }
-
 }
