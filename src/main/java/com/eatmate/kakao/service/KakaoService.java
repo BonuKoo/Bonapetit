@@ -37,29 +37,46 @@ public class KakaoService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", "e14cb05b33510d6d6fb59bc77f202156");     // REST API 키
-        params.add("redirect_uri","http://localhost:8080/oauth/kakao/callback");    // 리다이렉트 URI
+        params.add("redirect_uri", "http://localhost:8080/oauth/kakao/callback");    // 리다이렉트 URI
         params.add("code", code);
-        params.add("client_secret", "jBgKKQxp5icYdE8NdbWWP7wbJjTFMhcJ"); // 필요시 추가
+        params.add("client_secret", "jBgKKQxp5icYdE8NdbWWP7wbJjTFMhcJ"); // 클라이언트 시크릿
+
+        // 디버깅 로그 추가
+        logger.info("Sending request to Kakao for access token with code: {}", code);
+        logger.info("Request URL: {}", url);
+        logger.info("Request parameters: {}", params);
 
         // HttpEntity 생성
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-
-        logger.info("Authorization code received: {}", code);
 
         try {
             // POST 요청 보내기
             ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
 
+            // 응답 로그 추가
+            logger.info("Received response from Kakao: {}", response);
+
             if (response.getStatusCode().is2xxSuccessful()) {
                 Map<String, Object> responseBody = response.getBody();
-                return (String) responseBody.get("access_token");
+
+                // 응답 본문 로그 추가
+                logger.info("Response body: {}", responseBody);
+
+                // 액세스 토큰이 null인지 확인
+                if (responseBody != null && responseBody.containsKey("access_token")) {
+                    return (String) responseBody.get("access_token");
+                } else {
+                    logger.error("응답에 액세스 토큰이 포함되어 있지 않습니다.");
+                    throw new RuntimeException("Failed to retrieve access token: response does not contain access_token");
+                }
             } else {
-                throw new RuntimeException("Failed to get access token");
+                throw new RuntimeException("Failed to get access token: " + response.getStatusCode());
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to get access token", e);
         }
     }
+
 
     // 액세스 토큰으로 사용자 정보 요청
     public Map<String, Object> getUserProfile(String accessToken) {

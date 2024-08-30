@@ -16,8 +16,8 @@ public interface AccountDao {
         @Select("SELECT * FROM account WHERE oauth2_id = #{oauth2_id}")
         AccountDto findByOauth2Id(@Param("oauth2_id") String oauth2Id);
 
-        @Update("UPDATE account SET access_token = #{access_token} WHERE oauth2_id = #{oauth2_id}")
-        boolean updateAccount(AccountDto dto);
+        @Update("UPDATE account SET oauth2_id = #{oauth2_id}, access_token = #{access_token} WHERE email = #{email}")
+        int updateAccount(AccountDto dto);
 
         @Select("SELECT * FROM account WHERE email = #{email}")
         AccountDto findByEmail(@Param("email") String email);

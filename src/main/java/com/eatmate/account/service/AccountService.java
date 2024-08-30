@@ -4,14 +4,15 @@ import com.eatmate.dao.mybatis.AccountDao;
 import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.domain.dto.AccountDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
 
-    private AccountDao accountDao;
-    private AccountRepository accountRepository;
+    private final AccountDao accountDao;
+    private final AccountRepository accountRepository;
 
     // 이메일로 사용자 조회
     public AccountDto findByEmail(String email){
@@ -25,14 +26,22 @@ public class AccountService {
 
     // 로그인 한 회원에 oauth2Id, access_token 업데이트
     public boolean updateAccount(AccountDto accountDto) {
-        boolean isUpdated = accountDao.updateAccount(accountDto);
-        if (isUpdated) {
-            System.out.println("카카오 정보가 성공적으로 업데이트되었습니다.");
-        } else {
-            System.out.println("카카오 정보 업데이트에 실패했습니다.");
+        try {
+            int updatedRows = accountDao.updateAccount(accountDto);
+            if (updatedRows > 0) {
+                System.out.println("카카오 정보가 성공적으로 업데이트되었습니다.");
+                return true;
+            } else {
+                System.out.println("카카오 정보 업데이트에 실패했습니다.");
+                return false;
+            }
+        } catch (DataAccessException e) {
+            System.err.println("데이터베이스 오류 발생: " + e.getMessage());
+            return false;
         }
-        return isUpdated;
     }
+
+
 
     /*
     @Transactional

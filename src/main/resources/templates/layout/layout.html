@@ -37,6 +37,12 @@
     <ul>
       <!--sec:authorize="isAuthenticated()"-->
       <li sec:authorize="isAuthenticated()"><a th:href="@{/profile}">프로필</a></li>
+      <!--sec:authorize="isAuthenticated()"-->
+      <li sec:authorize="isAuthenticated()">
+        <a href="https://kauth.kakao.com/oauth/authorize?client_id=e14cb05b33510d6d6fb59bc77f202156&redirect_uri=http://localhost:8080/oauth/kakao/callback&response_type=code">
+          <img height="38px" src="/img/kakao_login_medium_narrow.png" alt="카카오 로그인">
+        </a>
+      </li>
       <!--sec:authorize="isAnonymous()"-->
       <li sec:authorize="isAnonymous()"><a th:href="@{/login}">로그인</a></li>
       <!--sec:authorize="isAuthenticated()"-->
