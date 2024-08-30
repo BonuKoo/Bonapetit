@@ -20,7 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @RequiredArgsConstructor
-//@EnableWebSecurity
+@EnableWebSecurity
 public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
@@ -33,7 +33,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth-> auth
                         //정적 자원 설정
-                        .requestMatchers("/css/**","/images/**","/js/**", "/favicon.*", "/*/icon-*").permitAll()
+                        .requestMatchers("/css/**","/img/**","/js/**", "/favicon.*", "/*/icon-*").permitAll()
                         .requestMatchers("/", "/join").permitAll()
                         // 카카오 인증 콜백 경로 허용
                         .requestMatchers("/oauth/kakao/callback").permitAll()
@@ -45,8 +45,8 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .usernameParameter("email") //username->email
-                        .successHandler(successHandler)
-                        .failureHandler(failureHandler)
+                        //.successHandler(successHandler)
+                        //.failureHandler(failureHandler)
                         .permitAll())
                 .authenticationProvider(authenticationProvider)
         ;

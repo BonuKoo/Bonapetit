@@ -4,10 +4,7 @@ import com.eatmate.domain.entity.post.Post;
 import com.eatmate.domain.entity.post.TeamPost;
 import com.eatmate.global.domain.UploadFileOfAccount;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +16,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @Getter
 @Entity
+@ToString
 public class Account {
 
     @Id
