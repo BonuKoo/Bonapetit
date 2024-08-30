@@ -34,6 +34,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (authentication != null && authentication.isAuthenticated()) {
             String loggedInUserEmail = authentication.getName(); // 현재 로그인된 사용자의 이메일
 
+            // 인증된 사용자 로그 출력
+            System.out.println("현재 인증된 사용자: " + loggedInUserEmail);
+
             // 로그인된 사용자의 정보를 이메일로 조회
             AccountDto accountDto = accountService.findByEmail(loggedInUserEmail);
 
@@ -60,7 +63,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority("USER_ROLE")),
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                 attributes,
                 "id");
     }

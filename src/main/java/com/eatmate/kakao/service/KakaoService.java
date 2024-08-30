@@ -16,11 +16,11 @@ import java.util.Map;
 @Service
 public class KakaoService {
 
-    @Value("${kakao.client.id}")
-    private String kakaoClientId;
-
-    @Value("${kakao.client.secret}")
-    private String kakaoClientSecret;
+//    @Value("${kakao.client.id}")
+//    private String kakaoClientId;
+//
+//    @Value("${kakao.client.secret}")
+//    private String kakaoClientSecret;
 
     private static final Logger logger = LoggerFactory.getLogger(KakaoService.class);
 
@@ -36,10 +36,10 @@ public class KakaoService {
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
-        params.add("client_id", kakaoClientId);     // REST API 키
+        params.add("client_id", "e14cb05b33510d6d6fb59bc77f202156");     // REST API 키
         params.add("redirect_uri","http://localhost:8080/oauth/kakao/callback");    // 리다이렉트 URI
         params.add("code", code);
-        params.add("client_secret", kakaoClientSecret); // 필요시 추가
+        params.add("client_secret", "jBgKKQxp5icYdE8NdbWWP7wbJjTFMhcJ"); // 필요시 추가
 
         // HttpEntity 생성
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
@@ -91,9 +91,13 @@ public class KakaoService {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
+        // 로그아웃 요청 상태 코드 및 응답 로그 출력
+        logger.info("로그아웃 요청 상태 코드: {}", response.getStatusCode());
+        logger.info("로그아웃 응답 본문: {}", response.getBody());
+
         if(response.getStatusCode().is2xxSuccessful()){
             logger.info("Successfully logged out from Kakao");
-        }else {
+        } else {
             logger.error("Failed to logout from Kakao, status code : {}", response.getStatusCode());
         }
     }
