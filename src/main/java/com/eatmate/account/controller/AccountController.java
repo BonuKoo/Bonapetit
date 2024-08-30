@@ -44,6 +44,8 @@ public class AccountController {
     public String joinAply(AccountDto dto) {
         myBatisService.join(dto);
 
+        log.info("dto:: {}", dto.getEmail());
+
         return "redirect:/login";
     }
 
