@@ -35,6 +35,7 @@ public class SecurityConfig {
                         //정적 자원 설정
                         .requestMatchers("/css/**","/img/**","/js/**", "/favicon.*", "/*/icon-*").permitAll()
                         .requestMatchers("/", "/join").permitAll()
+
                         // 카카오 인증 콜백 경로 허용
                         .requestMatchers("/oauth/kakao/callback").permitAll()
                         // 카카오 로그아웃 경로 허용
