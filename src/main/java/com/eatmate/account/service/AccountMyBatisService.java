@@ -27,7 +27,7 @@ public class AccountMyBatisService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public void join(AccountDto dto){
+    public void join(AccountDto dto) {
 
         // 회원가입
         String password = dto.getPassword();
@@ -36,6 +36,7 @@ public class AccountMyBatisService {
 
         int insertedId = accountDao.insertJoin(dto);
 
+        /*
         if (insertedId > 0) {
             // DB에 등록 후 바로 ContextHolder에 등록
             AccountContext userDetails = (AccountContext) userDetailsService.loadUserByUsername(dto.getEmail());
@@ -46,7 +47,9 @@ public class AccountMyBatisService {
 
             // SecurityContextHolder에 인증 객체 설정
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
         }
+    */
     }
 }
 

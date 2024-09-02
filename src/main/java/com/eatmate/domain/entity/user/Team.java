@@ -24,10 +24,7 @@ public class Team {
     @Column(name = "team_name")
     private String teamName;
 
-    //방장
-    @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account_id;
+
 
     @OneToMany(mappedBy = "team")
     private List<AccountTeam> members = new ArrayList<>();
@@ -40,10 +37,9 @@ public class Team {
     private List<UploadFileOfTeam> files = new ArrayList<>();
 
     @Builder
-    public Team(Long id, String teamName, Account account_id, List<AccountTeam> members, List<TeamPost> teamPosts, List<UploadFileOfTeam> files) {
+    public Team(Long id, String teamName,  List<AccountTeam> members, List<TeamPost> teamPosts, List<UploadFileOfTeam> files) {
         this.id = id;
         this.teamName = teamName;
-        this.account_id = account_id;
         this.members = members;
         this.teamPosts = teamPosts;
         this.files = (files != null) ? files : new ArrayList<>();
