@@ -16,12 +16,6 @@ import java.util.Map;
 @Service
 public class KakaoService {
 
-//    @Value("${kakao.client.id}")
-//    private String kakaoClientId;
-//
-//    @Value("${kakao.client.secret}")
-//    private String kakaoClientSecret;
-
     private static final Logger logger = LoggerFactory.getLogger(KakaoService.class);
 
     // 인증 코드로 액세스 토근 요청
@@ -49,34 +43,19 @@ public class KakaoService {
         // HttpEntity 생성
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        try {
-            // POST 요청 보내기
-            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
+        ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
 
-            // 응답 로그 추가
-            logger.info("Received response from Kakao: {}", response);
-
-            if (response.getStatusCode().is2xxSuccessful()) {
-                Map<String, Object> responseBody = response.getBody();
-
-                // 응답 본문 로그 추가
-                logger.info("Response body: {}", responseBody);
-
-                // 액세스 토큰이 null인지 확인
-                if (responseBody != null && responseBody.containsKey("access_token")) {
-                    return (String) responseBody.get("access_token");
-                } else {
-                    logger.error("응답에 액세스 토큰이 포함되어 있지 않습니다.");
-                    throw new RuntimeException("Failed to retrieve access token: response does not contain access_token");
-                }
+        if (response.getStatusCode().is2xxSuccessful()) {
+            Map<String, Object> responseBody = response.getBody();
+            if (responseBody != null && responseBody.containsKey("access_token")) {
+                return (String) responseBody.get("access_token");
             } else {
-                throw new RuntimeException("Failed to get access token: " + response.getStatusCode());
+                throw new RuntimeException("Failed to retrieve access token: response does not contain access_token");
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get access token", e);
+        } else {
+            throw new RuntimeException("Failed to get access token: " + response.getStatusCode());
         }
     }
-
 
     // 액세스 토큰으로 사용자 정보 요청
     public Map<String, Object> getUserProfile(String accessToken) {
@@ -89,6 +68,10 @@ public class KakaoService {
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+
+        logger.info("Request URL: {}", url);
+        logger.info("Response Status Code: {}", response.getStatusCode());
+        logger.info("Response Body: {}", response.getBody());
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return response.getBody();
@@ -109,8 +92,9 @@ public class KakaoService {
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
         // 로그아웃 요청 상태 코드 및 응답 로그 출력
-        logger.info("로그아웃 요청 상태 코드: {}", response.getStatusCode());
-        logger.info("로그아웃 응답 본문: {}", response.getBody());
+        logger.info("Logout request URL: {}", url);
+        logger.info("Logout Response Status Code: {}", response.getStatusCode());
+        logger.info("Logout Response Body: {}", response.getBody());
 
         if(response.getStatusCode().is2xxSuccessful()){
             logger.info("Successfully logged out from Kakao");
@@ -119,16 +103,4 @@ public class KakaoService {
         }
     }
 
-    // 카카오 연결
-    public void unlink(String accessToken) {
-        String url = "https://kapi.kakao.com/v1/user/unlink";
-
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        restTemplate.postForEntity(url, entity, String.class);
-    }
 }

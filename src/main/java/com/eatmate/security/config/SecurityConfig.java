@@ -1,5 +1,6 @@
 package com.eatmate.security.config;
 
+import com.eatmate.kakao.service.CustomOAuth2UserService;
 import com.eatmate.security.handler.FormAuthenticationFailureHandler;
 import com.eatmate.security.handler.FormAuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final FormAuthenticationSuccessHandler successHandler;
     private final FormAuthenticationFailureHandler failureHandler;
+    private final CustomOAuth2UserService customOAuth2UserService; // CustomOAuth2UserService 주입
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
@@ -36,7 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/css/**","/img/**","/js/**", "/favicon.*", "/*/icon-*").permitAll()
                         .requestMatchers("/", "/join").permitAll()
                         // 카카오 인증 콜백 경로 허용
-                        .requestMatchers("/oauth/kakao/callback").permitAll()
+                        .requestMatchers("/login/oauth2/code/kakao").permitAll()
                         // 카카오 로그아웃 경로 허용
                         .requestMatchers("/kakao/logout").permitAll()
                         .anyRequest().authenticated())
@@ -45,9 +48,13 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .usernameParameter("email") //username->email
-                        //.successHandler(successHandler)
-                        //.failureHandler(failureHandler)
+//                        .successHandler(successHandler)
+//                        .failureHandler(failureHandler)
                         .permitAll())
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService))) // OAuth2 로그인 설정
                 .authenticationProvider(authenticationProvider)
         ;
         return http.build();

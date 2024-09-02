@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout.html}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로그인</title>
+    <th:block layout:fragment="head">
+        <title>회원가입</title>
+        <meta charset="UTF-8">
+<!--        <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+        <!--        <link rel="stylesheet" th:href="@{/css/path/yourStyle.css}">-->
+    </th:block>
 </head>
 <body>
+<div layout:fragment="content">
 <div class="content">
     <h2>회원가입</h2>
     <form name="join" action="join" method="post" id="joinForm">
@@ -49,5 +55,6 @@ function resetInout(){
     from.reset();
 };
 </script>
+</div>
 </body>
 </html>

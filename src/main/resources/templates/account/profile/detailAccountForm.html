@@ -1,10 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout.html}">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <th:block layout:fragment="head">
+        <title>회원정보</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </th:block>
 </head>
 <body>
-
+<div layout:fragment="content">
+    <div class="content">
+        <h2>회원정보</h2>
+<!--        <form name="profile" action="profile" method="profile" id="profileForm">-->
+        <form name="profile" th:action="@{/profile/detail}" method="post" id="profileForm">
+            <table id="userTable">
+                <input type="hidden" th:field="${dto.oauth2_id}" />
+                <tr>
+                    <td>이메일</td>
+                    <td><input type="text" th:field="${dto.email}"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" id="id-area"></td>
+                </tr>
+                <tr>
+                    <td>비밀번호</td>
+                    <td>
+                        <input type="password"  th:field="${dto.password}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>닉네임</td>
+                    <td><input type="text" th:field="${dto.nick_name}"></td>
+                </tr>
+            </table>
+            <input type="submit" value="수정완료">
+            <input type="reset" value="다시입력" onclick="resetInout()">
+        </form>
+        <br>
+        <a href="/"><input type="button" value="홈으로"></a>
+    </div>
+    <script>
+        function resetInout(){
+            const from = document.join;
+            window.alert("정보를 지우고 처음부터 다시 입력합니다!");
+            from.user_id.focus();
+            from.reset();
+        };
+    </script>
+</div>
 </body>
 </html>

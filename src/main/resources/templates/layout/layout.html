@@ -5,7 +5,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--  <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
   <title>eatMate</title>
   <link rel="stylesheet" th:href="@{/css/layout/layout.css}">
 </head>
@@ -36,7 +36,7 @@
   <nav class="user-tab">
     <ul>
       <!--sec:authorize="isAuthenticated()"-->
-      <li sec:authorize="isAuthenticated()"><a th:href="@{/profile}">프로필</a></li>
+      <li sec:authorize="isAuthenticated()"><a th:href="@{/profile/detail}">프로필</a></li>
       <!--sec:authorize="isAuthenticated()"-->
       <li sec:authorize="isAuthenticated()">
         <a href="https://kauth.kakao.com/oauth/authorize?client_id=e14cb05b33510d6d6fb59bc77f202156&redirect_uri=http://localhost:8080/oauth/kakao/callback&response_type=code">
