@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface CustomPostRepository4QueryDsl {
 
-    Page<PostPageDto> searchWithPage(TeamSearchCondition condition, Pageable pageable);
+    //Page<PostPageDto> searchWithPage(TeamSearchCondition condition, Pageable pageable);
 
 }

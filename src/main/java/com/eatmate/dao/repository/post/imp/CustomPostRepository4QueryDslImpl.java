@@ -20,7 +20,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class CustomPostRepository4QueryDslImpl implements CustomPostRepository4QueryDsl {
+public class CustomPostRepository4QueryDslImpl
+        //implements CustomPostRepository4QueryDsl
+{
 
     private final JPAQueryFactory queryFactory;
 
@@ -29,7 +31,7 @@ public class CustomPostRepository4QueryDslImpl implements CustomPostRepository4Q
     QTeam team = new QTeam(QTeam.team);
 
 
-
+    /*
     @Override
     public Page<PostPageDto> searchWithPage(TeamSearchCondition condition, Pageable pageable) {
 
@@ -45,7 +47,7 @@ public class CustomPostRepository4QueryDslImpl implements CustomPostRepository4Q
                 .fetch();
         return null;
     }
-
+*/
     /*
     //검색 조건 : 닉네임
     private BooleanExpression authorEq(String author) {

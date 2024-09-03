@@ -6,6 +6,7 @@ import com.eatmate.post.vo.PostPageDto;
 import com.eatmate.post.vo.TeamSearchCondition;
 import com.eatmate.security.dto.AuthenticateAccountDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -40,13 +41,13 @@ public class PostController {
         return "post/createPostForm";
     }
 
-    @PostMapping("/create")
+    @PostMapping("/createPost")
     public String createPost(RedirectAttributes redirectAttributes,
                              @AuthenticationPrincipal AuthenticateAccountDto accountDto,
                              @ModelAttribute("createPost") PostForm postForm
     ) throws IOException{
 
-        // 로그인 정보 가져옴
+
         postForm.addAuthor(accountDto.getEmail());
         //게시글 작성 로직
         postJpaService.createChatRoomAndTeamWhenWriteThePost(postForm);
@@ -55,7 +56,6 @@ public class PostController {
         redirectAttributes.addFlashAttribute("message", "게시글이 성공적으로 생성되었습니다.");
         return "redirect:/post/list";
     }
-
 
     /**
      *Read

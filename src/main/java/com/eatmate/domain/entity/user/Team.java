@@ -26,14 +26,12 @@ public class Team {
     @Column(name = "team_name")
     private String teamName;
     
-    @OneToMany(mappedBy = "team",cascade = CascadeType.MERGE,orphanRemoval = true)
+    @OneToMany(mappedBy = "team",cascade = CascadeType.PERSIST,orphanRemoval = true)
     private List<AccountTeam> members = new ArrayList<>();
 
     //추후 ChatRoom으로 변경해야함
     @OneToOne
     private Post post;
-
-
 
     //리뷰 속성
     @OneToMany(mappedBy = "team")
