@@ -16,12 +16,6 @@ import java.util.Map;
 @Service
 public class KakaoService {
 
-//    @Value("${kakao.client.id}")
-//    private String kakaoClientId;
-//
-//    @Value("${kakao.client.secret}")
-//    private String kakaoClientSecret;
-
     private static final Logger logger = LoggerFactory.getLogger(KakaoService.class);
 
     // 인증 코드로 액세스 토근 요청
@@ -37,27 +31,29 @@ public class KakaoService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", "e14cb05b33510d6d6fb59bc77f202156");     // REST API 키
-        params.add("redirect_uri","http://localhost:8080/oauth/kakao/callback");    // 리다이렉트 URI
+        params.add("redirect_uri", "http://localhost:8080/oauth/kakao/callback");    // 리다이렉트 URI
         params.add("code", code);
-        params.add("client_secret", "jBgKKQxp5icYdE8NdbWWP7wbJjTFMhcJ"); // 필요시 추가
+        params.add("client_secret", "jBgKKQxp5icYdE8NdbWWP7wbJjTFMhcJ"); // 클라이언트 시크릿
+
+        // 디버깅 로그 추가
+        logger.info("Sending request to Kakao for access token with code: {}", code);
+        logger.info("Request URL: {}", url);
+        logger.info("Request parameters: {}", params);
 
         // HttpEntity 생성
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        logger.info("Authorization code received: {}", code);
+        ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
 
-        try {
-            // POST 요청 보내기
-            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
-
-            if (response.getStatusCode().is2xxSuccessful()) {
-                Map<String, Object> responseBody = response.getBody();
+        if (response.getStatusCode().is2xxSuccessful()) {
+            Map<String, Object> responseBody = response.getBody();
+            if (responseBody != null && responseBody.containsKey("access_token")) {
                 return (String) responseBody.get("access_token");
             } else {
-                throw new RuntimeException("Failed to get access token");
+                throw new RuntimeException("Failed to retrieve access token: response does not contain access_token");
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get access token", e);
+        } else {
+            throw new RuntimeException("Failed to get access token: " + response.getStatusCode());
         }
     }
 
@@ -72,6 +68,10 @@ public class KakaoService {
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+
+        logger.info("Request URL: {}", url);
+        logger.info("Response Status Code: {}", response.getStatusCode());
+        logger.info("Response Body: {}", response.getBody());
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return response.getBody();
@@ -92,8 +92,9 @@ public class KakaoService {
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
         // 로그아웃 요청 상태 코드 및 응답 로그 출력
-        logger.info("로그아웃 요청 상태 코드: {}", response.getStatusCode());
-        logger.info("로그아웃 응답 본문: {}", response.getBody());
+        logger.info("Logout request URL: {}", url);
+        logger.info("Logout Response Status Code: {}", response.getStatusCode());
+        logger.info("Logout Response Body: {}", response.getBody());
 
         if(response.getStatusCode().is2xxSuccessful()){
             logger.info("Successfully logged out from Kakao");
@@ -102,16 +103,4 @@ public class KakaoService {
         }
     }
 
-    // 카카오 연결
-    public void unlink(String accessToken) {
-        String url = "https://kapi.kakao.com/v1/user/unlink";
-
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        restTemplate.postForEntity(url, entity, String.class);
-    }
 }
