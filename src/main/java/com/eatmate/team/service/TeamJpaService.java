@@ -20,6 +20,7 @@ public class TeamJpaService {
     @Transactional
     public Team createTeamWhenUserCreatePostAndChatRoom(String teamName, Account account){
         // Team 생성
+
         Team team = Team.builder()
                 .teamName(teamName)
                 .build();

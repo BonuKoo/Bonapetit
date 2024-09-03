@@ -1,5 +1,6 @@
 package com.eatmate.domain.entity.user;
 
+import com.eatmate.domain.entity.Tag;
 import com.eatmate.domain.entity.post.Post;
 import com.eatmate.domain.entity.post.TeamPost;
 import com.eatmate.global.domain.UploadFileOfTeam;
@@ -33,6 +34,11 @@ public class Team {
     @OneToOne
     private Post post;
 
+
+    //태그
+    //@OneToMany(mappedBy = "team")
+    //private List<Tag> tags = new ArrayList<>(); //해시태그
+
     //리뷰 속성
     @OneToMany(mappedBy = "team")
     private List<TeamPost> teamPosts = new ArrayList<>();  // 팀과 팀 게시글 간의 관계
@@ -40,6 +46,8 @@ public class Team {
     @OneToMany(mappedBy = "team", cascade = CascadeType.MERGE,orphanRemoval = true,
             fetch = FetchType.EAGER)
     private List<UploadFileOfTeam> files = new ArrayList<>();
+
+
 
     @Builder
     public Team(Long id, String teamName,  List<AccountTeam> members, List<TeamPost> teamPosts, List<UploadFileOfTeam> files) {

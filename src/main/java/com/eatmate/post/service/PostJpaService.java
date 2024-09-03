@@ -6,10 +6,15 @@ import com.eatmate.domain.entity.post.Post;
 import com.eatmate.domain.entity.user.Account;
 import com.eatmate.domain.entity.user.Team;
 import com.eatmate.post.vo.PostForm;
+import com.eatmate.post.vo.PostPageDto;
+import com.eatmate.post.vo.TeamSearchCondition;
 import com.eatmate.team.service.TeamJpaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +44,7 @@ public class PostJpaService {
         Post post = Post.builder()
                 .title(form.getTitle())
                 .content(form.getDescription())
+                .location(form.getLocation())
                 .account(account)
                 .team(team)
                 .build();
@@ -49,6 +55,24 @@ public class PostJpaService {
 
      }
 
+    /**
+     * 페이징 조회
+     */
+
+    public Page<PostPageDto> searchByCondition(TeamSearchCondition condition, Pageable pageable) {
+
+        if (StringUtils.hasText(condition.getLocation())) {
+            return postRepository.searchWithPageConditionIsLocation(condition, pageable);
+        } else if (StringUtils.hasText(condition.getAuthor())) {
+            return postRepository.searchWithPageConditionIsNickname(condition, pageable);
+        } else if (StringUtils.hasText(condition.getTeamName())) {
+            return postRepository.searchWithPageConditionIsTeamName(condition, pageable);
+        } else if (StringUtils.hasText(condition.getTag())) {
+            return postRepository.searchWithPageConditionIsTag(condition, pageable);
+        } else {
+            throw new IllegalArgumentException("적절한 검색 조건이 없습니다.");
+        }
+    }
 
 
 }

@@ -31,24 +31,28 @@ public class Post extends BaseTimeEntity {
     @Column(name = "content")
     private String content;
 
+    @Column(name = "location")
+    private String location;
+
     @OneToOne
     private Team team;
 
     // Tag와의 일대다 관계 설정
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Tag> tags = new ArrayList<>();
 
     // File과의 일대다 관계 설정
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<UploadFileOfPost> files = new ArrayList<>();
 
     @Builder
-    public Post(Long id, Account account, Team team, String title, String content, List<Tag> tags, List<UploadFileOfPost> files) {
+    public Post(Long id, Account account, Team team, String title, String content,String location ,List<Tag> tags, List<UploadFileOfPost> files) {
         this.id = id;
         this.account = account;
         this.team = team;
         this.title = title;
         this.content = content;
+        this.location = location;
         this.tags = tags != null ? tags : new ArrayList<>();
         this.files = files != null ? files : new ArrayList<>();
     }
