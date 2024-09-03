@@ -73,6 +73,11 @@ public class AccountService {
         accountDao.updateDetailAccount(dto);
     }
 
+    // OAuth2 ID를 기반으로 회원 탈퇴 처리
+    public void deleteUserByOauth2Id(String oauth2Id) {
+        accountDao.deleteByOauth2Id(oauth2Id);
+    }
+
 
     /*
     @Transactional

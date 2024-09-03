@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -40,6 +41,14 @@ public class AccountProfileController {
     @PostMapping("/detail")
     public String updateEmployee(@ModelAttribute AccountDto dto) {
         accountService.updateDetailAccount(dto);
+        return "redirect:/";
+    }
+
+    // 회원 탈퇴
+    @PostMapping("/delete")
+    public String deleteAccount(@RequestParam("oauth2_id") String oauth2Id, RedirectAttributes redirectAttributes) {
+        accountService.deleteUserByOauth2Id(oauth2Id);
+        redirectAttributes.addFlashAttribute("message", "회원 탈퇴가 완료되었습니다.");
         return "redirect:/";
     }
 

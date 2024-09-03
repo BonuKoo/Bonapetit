@@ -32,4 +32,8 @@ public interface AccountDao {
 
         @Update("UPDATE account SET email = #{email}, nick_name = #{nick_name}, password = #{password} WHERE oauth2_id = #{oauth2_id}")
         void updateDetailAccount(AccountDto dto);
+
+        // 회원 탈퇴를 위한 쿼리 추가
+        @Delete("DELETE FROM account WHERE oauth2_id = #{oauth2_id}")
+        void deleteByOauth2Id(@Param("oauth2_id") String oauth2Id);
 }
