@@ -31,6 +31,64 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+
+        System.out.println("Attributes: " + attributes);  // 전체 attributes 로그 출력
+
+        String oauth2Id = null;
+        String email = null;
+        String nickname = null;
+
+        if ("kakao".equals(registrationId)) {
+            oauth2Id = String.valueOf(attributes.get("id"));
+            email = (String) attributes.get("email");
+            nickname = (String) attributes.get("nickname");
+        } else if ("naver".equals(registrationId)) {
+            Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+            if (response != null) {
+                System.out.println("Naver Response: " + response);  // 네이버 response 로그 출력
+                // JSON 구조 확인 후 이 부분을 조정하세요.
+                oauth2Id = (String) response.get("id");
+                email = (String) response.get("email");
+                nickname = (String) response.get("nickname");
+            }
+        }
+
+        if (oauth2Id == null) {
+            throw new OAuth2AuthenticationException("OAuth2 ID not found in attributes.");
+        }
+
+        // 사용자 정보 저장 또는 업데이트
+        AccountDto accountDto = accountService.findByOauth2Id(oauth2Id);
+        if (accountDto != null) {
+            accountDto.setOauth2_id(oauth2Id);
+            accountDto.setAccess_token(userRequest.getAccessToken().getTokenValue());
+            accountService.updateAccount(accountDto);
+        } else {
+            accountDto = new AccountDto();
+            accountDto.setEmail(email);
+            accountDto.setNick_name(nickname);
+            accountDto.setPassword(oauth2Id); // 비밀번호는 OAuth2 ID로 설정 (실제로는 별도 처리 필요)
+            accountDto.setOauth2_id(oauth2Id);
+            accountDto.setAccess_token(userRequest.getAccessToken().getTokenValue());
+            accountDto.setRoles("ROLE_USER");
+            accountService.createAccount(accountDto);
+        }
+
+        Collection<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+
+        return new DefaultOAuth2User(authorities, attributes, userNameAttributeName);
+    }
+
+
+
+    // 카카오 구현 했던 기존 코드(9/3)
+    /*@Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        OAuth2User oAuth2User = super.loadUser(userRequest);
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+
         // 카카오 사용자 ID 가져오기
         Long OAuth2Id = (Long) attributes.get("id");
         String kakaoId = String.valueOf(OAuth2Id);
@@ -85,5 +143,5 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 attributes,
                 "id"
         );
-    }
+    }*/
 }
