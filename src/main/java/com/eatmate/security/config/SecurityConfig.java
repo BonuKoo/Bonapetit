@@ -38,9 +38,10 @@ public class SecurityConfig {
                         //정적 자원 설정
                         .requestMatchers("/css/**","/img/**","/js/**", "/favicon.*", "/*/icon-*").permitAll()
                         .requestMatchers("/", "/join").permitAll()
-                        // 카카오 인증 콜백 경로 허용
+                        // 카카오 인증 콜백 및 로그아웃
                         .requestMatchers("/login/oauth2/code/kakao").permitAll()
-                        // 카카오 로그아웃 경로 허용
+                        .requestMatchers("/login/oauth2/code/naver").permitAll()
+                        .requestMatchers("/login/oauth2/code/google").permitAll()
                         .requestMatchers("/kakao/logout").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -53,6 +54,7 @@ public class SecurityConfig {
                         .permitAll())
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
+                        .defaultSuccessUrl("/", true) // 성공 후 리디렉션될 URL 설정
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService))) // OAuth2 로그인 설정
                 .authenticationProvider(authenticationProvider)

@@ -58,7 +58,7 @@ public class KakaoController {
         }
 
         model.addAttribute("userProfile", userProfile);
-        return "account/userProfile";
+        return "redirect:/";
     }
 
 
