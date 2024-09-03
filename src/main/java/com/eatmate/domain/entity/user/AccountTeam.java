@@ -17,16 +17,15 @@ public class AccountTeam {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id",nullable = false)
     private Account account;
 
     @ManyToOne
-    @JoinColumn(name = "team_id")
+    @JoinColumn(name = "team_id",nullable = false)
     private Team team;
 
     //LEADER, PARTICIPANT
-    @Column(name = "role")
-    private String role;
-
+    @Column(name = "is_leader",nullable = false)
+    private boolean isLeader;
 
 }
