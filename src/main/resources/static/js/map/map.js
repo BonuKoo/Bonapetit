@@ -1,11 +1,3 @@
-//var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
-//var options = { //지도를 생성할 때 필요한 기본 옵션
-//	center: new kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
-//	level: 3 //지도의 레벨(확대, 축소 정도)
-//};
-//
-//var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
-
 // 마커를 담을 배열입니다
 var markers = [];
 
@@ -23,9 +15,6 @@ var ps = new kakao.maps.services.Places();
 
 // 검색 결과 목록이나 마커를 클릭했을 때 장소명을 표출할 인포윈도우를 생성합니다
 var infowindow = new kakao.maps.InfoWindow({zIndex:1});
-
-// 키워드로 장소를 검색합니다
-//searchPlaces();
 
 // 키워드 검색을 요청하는 함수입니다
 function searchPlaces() {
@@ -81,7 +70,6 @@ function displayPlaces(places) {
     removeMarker();
 
     for ( var i=0; i<places.length; i++ ) {
-
         // 마커를 생성하고 지도에 표시합니다
         var placePosition = new kakao.maps.LatLng(places[i].y, places[i].x),
             marker = addMarker(placePosition, i),
@@ -111,6 +99,13 @@ function displayPlaces(places) {
                 infowindow.close();
             };
         })(marker, places[i].place_name);
+
+        // 마커 클릭시 데이터 전송 by유석
+        (function(marker, data) {
+            kakao.maps.event.addListener(marker, 'click', function() {
+                sendData(data);
+            });
+        })(marker, places[i]);
 
         fragment.appendChild(itemEl);
     }
@@ -143,6 +138,13 @@ function getListItem(index, places) {
 
     el.innerHTML = itemStr;
     el.className = 'item';
+
+    // 리스트 요소 클릭시 데이터 전송 by유석
+    (function(li, data) {
+        li.addEventListener('click', function() {
+            sendData(data);
+        });
+    })(el, places);
 
     return el;
 }
@@ -223,3 +225,30 @@ function removeAllChildNods(el) {
     }
 }
 
+// 맵 데이터 전송 by유석
+function sendData(data) {
+    var input = {
+        address_name : data.address_name,
+        id : data.id,
+        phone : data.phone,
+        place_name : data.place_name,
+        place_url : data.place_url,
+        road_address_name : data.road_address_name,
+        x : data.x,
+        y : data.y
+    };
+
+    $.ajax({
+        type : 'post',
+        url : '/map', // 추후 수정
+        dataType : 'json',
+        contentType : 'application/json; charset=utf-8',
+        data : JSON.stringify(input),
+        success : function(result) {
+            console.log(result);
+        },
+        error : function(error) {
+            console.log(error);
+        }
+    });
+}
