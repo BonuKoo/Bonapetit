@@ -18,13 +18,26 @@ spring:
     oauth2:
       client:
         registration:
+          #카카오
           kakao:
-            client-id: ${kakao.client.id}  # 기존 설정을 그대로 활용합니다.
+            client-id: ${kakao.client.id}
             client-secret: ${kakao.client.secret}
             client-name: Kakao
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+
+          #네이버
+          naver:
+            client-id: ${naver.client.id}
+            client-secret: ${naver.client.secret}
+            client-name: Naver
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/naver"
+            scope:
+              - name
+              - email
 
         provider:
           kakao:
@@ -32,6 +45,13 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
+
+          #네이버
+          naver:
+            authorization-uri: https://nid.naver.com/oauth2.0/authorize
+            token-uri: https://nid.naver.com/oauth2.0/token
+            user-info-uri: https://openapi.naver.com/v1/nid/me
+            user-name-attribute: response.id
 
 
 #파일 업로드 경로
@@ -49,7 +69,6 @@ kakao:
     secret: jBgKKQxp5icYdE8NdbWWP7wbJjTFMhcJ
 
 naver:
-  api:
-    client_id:
-    client_secret:
-    url:
+  client:
+    id: vxzSX7hpBWdUiZGim9aX
+    secret: STysDb2fkw
