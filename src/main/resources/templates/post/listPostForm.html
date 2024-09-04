@@ -11,75 +11,51 @@
 <body>
 <div layout:fragment="content" id="content">
 
-<!-- Main Section -->
-<div class="main-section">
-    <!-- Search Bar -->
-    <div class="search-bar">
-        <select>
-            <option value="location" selected>Location</option>
-            <option value="title">Title</option>
-            <option value="date">Recent Date</option>
-        </select>
-        <input type="text" placeholder="Search by title...">
-    </div>
+    <!-- Main Section -->
+    <div class="main-section">
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <form th:action="@{/search}" method="get">
+                <select id="searchType" name="searchType" onchange="updatePlaceholder()">
+                    <option value="location" selected>지역</option>
+                    <option value="title">제목</option>
+                    <option value="author">닉네임</option>
+                    <option value="teamName">모임 이름</option>
+<!--                <option value="tag">태그</option>          -->
+                </select>
+                <input type="text" id="searchKeyword" name="searchKeyword" placeholder="Search by location...">
+                <button type="submit">Search</button>
+            </form>
+        </div> <!--search-bar-->
 
-    <!-- List Grid -->
-    <div class="list-grid">
-        <div class="list-item">
-            <img src="image1.jpg" alt="Image 1">
-            <h3>Title 1</h3>
-            <p>Author 1</p>
+        <!-- List Grid -->
+        <div class="list-grid">
+            <div th:each="post : ${posts.content}" class="list-item">
+<!--                <img th:src="@{/images/default.jpg}" alt="Default Image"> &lt;!&ndash; 이미지 경로는 필요에 따라 수정 &ndash;&gt;-->
+
+                <h3 th:text="${post.title}">Title</h3>
+
+                <p th:text="${post.leaderName}">팀장</p>
+
+            </div>
         </div>
-        <div class="list-item">
-            <img src="image2.jpg" alt="Image 2">
-            <h3>Title 2</h3>
-            <p>Author 2</p>
-        </div>
-        <div class="list-item">
-            <img src="image3.jpg" alt="Image 3">
-            <h3>Title 3</h3>
-            <p>Author 3</p>
-        </div>
-        <div class="list-item">
-            <img src="image4.jpg" alt="Image 4">
-            <h3>Title 4</h3>
-            <p>Author 4</p>
-        </div>
-        <div class="list-item">
-            <img src="image5.jpg" alt="Image 5">
-            <h3>Title 5</h3>
-            <p>Author 5</p>
-        </div>
-        <div class="list-item">
-            <img src="image6.jpg" alt="Image 6">
-            <h3>Title 6</h3>
-            <p>Author 6</p>
-        </div>
-        <div class="list-item">
-            <img src="image7.jpg" alt="Image 7">
-            <h3>Title 7</h3>
-            <p>Author 7</p>
-        </div>
-        <div class="list-item">
-            <img src="image8.jpg" alt="Image 8">
-            <h3>Title 8</h3>
-            <p>Author 8</p>
-        </div>
-        <div class="list-item">
-            <img src="image9.jpg" alt="Image 9">
-            <h3>Title 9</h3>
-            <p>Author 9</p>
-        </div>
-    </div>
-    <!-- Pagination -->
-    <div class="pagination">
-        <a href="#">&laquo; Previous</a>
-        <a href="#">1</a>
-        <a href="#">2</a>
-        <a href="#">3</a>
-        <a href="#">Next &raquo;</a>
-    </div>
-</div>
+
+
+        <!-- Pagination -->
+        <div class="pagination" th:if="${posts.totalPages > 1}">
+            <a th:href="@{__${posts.previousPageable().pageNumber}}"
+               th:classappend="${posts.hasPrevious()} ? '' : 'disabled'">&laquo; Previous</a>
+            <span th:each="pageNum : ${#numbers.sequence(1, posts.totalPages)}">
+                <a th:href="@{__${pageNum}}"
+                   th:classappend="${pageNum == posts.number + 1} ? 'active' : ''"
+                   th:text="${pageNum}">1</a>
+            </span>
+            <a th:href="@{__${posts.nextPageable().pageNumber}}"
+               th:classappend="${posts.hasNext()} ? '' : 'disabled'">Next &raquo;</a>
+        </div> <!-- 페이지네이션   -->
+
+
+</div> <!--main Section-->
 </div>
 </body>
 </html>

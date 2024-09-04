@@ -38,10 +38,16 @@ public class SecurityConfig {
                         //정적 자원 설정
                         .requestMatchers("/css/**","/img/**","/js/**", "/favicon.*", "/*/icon-*").permitAll()
                         .requestMatchers("/", "/join").permitAll()
+
+                        .requestMatchers("/post/search").permitAll()
+                        // 카카오 인증 콜백 경로 허용
+                        .requestMatchers("/oauth/kakao/callback").permitAll()
+                        // 카카오 로그아웃 경로 허용
                         // 카카오 인증 콜백 및 로그아웃
                         .requestMatchers("/login/oauth2/code/kakao").permitAll()
                         .requestMatchers("/login/oauth2/code/naver").permitAll()
                         .requestMatchers("/login/oauth2/code/google").permitAll()
+
                         .requestMatchers("/kakao/logout").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)

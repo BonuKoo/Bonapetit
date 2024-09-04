@@ -1,6 +1,9 @@
 package com.eatmate.domain.entity.post;
 
+import com.eatmate.domain.entity.Tag;
 import com.eatmate.domain.entity.user.Account;
+import com.eatmate.domain.entity.user.Team;
+import com.eatmate.domain.global.BaseTimeEntity;
 import com.eatmate.global.domain.UploadFileOfPost;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +14,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Post {
+public class Post extends BaseTimeEntity {
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
     private Long id;
@@ -26,24 +30,44 @@ public class Post {
 
     @Column(name = "content")
     private String content;
-    
-    //조회수
 
-    @Column(name="cnt")
-    private int cnt;
+    @Column(name = "location")
+    private String location;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.MERGE,orphanRemoval = true,
-            fetch = FetchType.EAGER)
+    @OneToOne
+    private Team team;
+
+    // Tag와의 일대다 관계 설정
+    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<Tag> tags = new ArrayList<>();
+
+    // File과의 일대다 관계 설정
+    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<UploadFileOfPost> files = new ArrayList<>();
 
     @Builder
-    public Post(Long id, Account account, String title, String content, int cnt, List<UploadFileOfPost> files) {
+    public Post(Long id, Account account, Team team, String title, String content,String location ,List<Tag> tags, List<UploadFileOfPost> files) {
         this.id = id;
         this.account = account;
+        this.team = team;
         this.title = title;
         this.content = content;
-        this.cnt = cnt;
-        this.files = (files != null) ? files : new ArrayList<>();
+        this.location = location;
+        this.tags = tags != null ? tags : new ArrayList<>();
+        this.files = files != null ? files : new ArrayList<>();
+    }
+
+    /*
+        Tag 연관 관리 메서드
+     */
+    public void addTag(Tag tag) {
+        tags.add(tag);
+        tag.attachPost(this);
+    }
+
+    public void removeTag(Tag tag) {
+        tags.remove(tag);
+        tag.attachPost(null);
     }
 
     /*
