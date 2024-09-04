@@ -40,6 +40,9 @@ public class SecurityConfig {
                         .requestMatchers("/", "/join").permitAll()
 
                         .requestMatchers("/post/search").permitAll()
+                        .requestMatchers("/post/list").permitAll()
+                        .requestMatchers("/post/detail").permitAll()
+
                         // 카카오 인증 콜백 경로 허용
                         .requestMatchers("/oauth/kakao/callback").permitAll()
                         // 카카오 로그아웃 경로 허용

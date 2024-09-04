@@ -6,6 +6,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" th:href="@{/css/post/postForm.css}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script th:src="@{/js/createPostForm.js}"></script>
     </th:block>
 </head>
 <body>
@@ -14,7 +16,7 @@
     <div class="main-section">
         <h1>팀 모집 게시글 작성하기</h1>
 
-        <form th:action="@{/post/createPost}" method="post" th:object="${createPost}">
+        <form th:action="@{/post/createPost}" method="post" th:object="${createPost}" enctype="multipart/form-data">
 
             <div class="form-group">
                 <label for="location">지역 선택:</label>
@@ -300,11 +302,9 @@
             </div>
 
 
-
-
             <div class="form-group">
-                <label for="title">제목:</label>
-                <input type="text" id="title" name="title" th:field="*{title}" placeholder="게시글 제목을 입력하세요" required>
+                <label for="teamName">팀 이름:</label>
+                <input type="text" id="teamName" name="teamName" th:field="*{teamName}" placeholder="팀 이름을 입력하세요" required>
             </div>
 
             <div class="form-group">
@@ -312,11 +312,7 @@
                 <textarea id="description" name="description" th:field="*{description}" placeholder="팀 설명과 원하는 사항을 입력하세요" required></textarea>
             </div>
 
-            <div class="form-group">
-                <label for="teamName">팀 이름:</label>
-                <input type="text" id="teamName" name="teamName" th:field="*{teamName}" placeholder="팀 이름을 입력하세요" required>
-            </div>
-
+            <!-- 게시글 작성 -->
             <div class="form-group">
                 <button type="submit">게시글 작성</button>
             </div>
@@ -326,3 +322,4 @@
 </div>
 </body>
 </html>
+

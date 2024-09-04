@@ -1,11 +1,9 @@
 package com.eatmate.domain.entity.user;
 
 import com.eatmate.domain.entity.Tag;
-import com.eatmate.domain.entity.post.Post;
 import com.eatmate.domain.entity.post.TeamPost;
+import com.eatmate.domain.global.BaseTimeEntity;
 import com.eatmate.global.domain.UploadFileOfTeam;
-import com.eatmate.global.domain.UploadFileOfTeamPost;
-import com.eatmate.post.vo.PostForm;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,7 +16,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Team {
+public class Team extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "team_id")
@@ -26,36 +24,47 @@ public class Team {
 
     @Column(name = "team_name")
     private String teamName;
-    
+
+    //리더 컬럼
+
+    // 리더를 위한 OneToOne 관계 설정
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "leader_id")  // 외래 키를 'leader_id'로 명시
+    private Account leader;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "location")
+    private String location;
+
     @OneToMany(mappedBy = "team",cascade = CascadeType.PERSIST,orphanRemoval = true)
     private List<AccountTeam> members = new ArrayList<>();
 
-    //추후 ChatRoom으로 변경해야함
-    @OneToOne
-    private Post post;
-
-
-    //태그
-    //@OneToMany(mappedBy = "team")
-    //private List<Tag> tags = new ArrayList<>(); //해시태그
 
     //리뷰 속성
     @OneToMany(mappedBy = "team")
     private List<TeamPost> teamPosts = new ArrayList<>();  // 팀과 팀 게시글 간의 관계
+    
+    //태그
+    @OneToMany(mappedBy = "team", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<Tag> tags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.MERGE,orphanRemoval = true,
-            fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "team", cascade = CascadeType.PERSIST,orphanRemoval = true,
+            fetch = FetchType.LAZY)
     private List<UploadFileOfTeam> files = new ArrayList<>();
 
-
-
     @Builder
-    public Team(Long id, String teamName,  List<AccountTeam> members, List<TeamPost> teamPosts, List<UploadFileOfTeam> files) {
+    public Team(Long id, String teamName, Account leader, String description, String location, List<AccountTeam> members, List<TeamPost> teamPosts, List<UploadFileOfTeam> files) {
         this.id = id;
         this.teamName = teamName;
+        this.leader = leader;
+        this.description = description;
+        this.location = location;
         this.members = members != null ? members : new ArrayList<>();
-        this.teamPosts = teamPosts;
         this.files = (files != null) ? files : new ArrayList<>();
+        this.teamPosts = teamPosts;
+
     }
 
     /**
@@ -79,9 +88,25 @@ public class Team {
         file.attachTeam(null);
     }
 
+    /*
+    Tag 연관 관리 메서드
+    */
+
+
+    public void addTag(Tag tag) {
+        tags.add(tag);
+        tag.attachPost(this);
+    }
+
+    public void removeTag(Tag tag) {
+        tags.remove(tag);
+        tag.attachPost(null);
+    }
+
     /**
      * 멤버 수 반환
      */
+
     @Transient
     public int getMembersCount() {
         return this.members.size();

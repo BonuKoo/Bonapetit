@@ -36,20 +36,6 @@ public class AccountMyBatisService {
 
         int insertedId = accountDao.insertJoin(dto);
 
-        /*
-        if (insertedId > 0) {
-            // DB에 등록 후 바로 ContextHolder에 등록
-            AccountContext userDetails = (AccountContext) userDetailsService.loadUserByUsername(dto.getEmail());
-
-            // 인증 객체 생성
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-
-            // SecurityContextHolder에 인증 객체 설정
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        }
-    */
     }
 }
 
