@@ -1,6 +1,6 @@
 package com.eatmate.global.service.FileStore;
 
-import com.eatmate.global.domain.UploadFileOfPost;
+import com.eatmate.global.domain.UploadFileOfTeamPost;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +23,7 @@ public class FileStoreOfTeamPost {
     }
 
     //이미지 하나만 저장
-    public UploadFileOfPost storeFile(MultipartFile multipartFile) throws IOException {
+    public UploadFileOfTeamPost storeFile(MultipartFile multipartFile) throws IOException {
 
         if (multipartFile.isEmpty()){
             return null;
@@ -43,12 +43,12 @@ public class FileStoreOfTeamPost {
         //저장
         multipartFile.transferTo(file);
 
-        return new UploadFileOfPost(originalFilename,storeFileName,filePath,fileType,fileSize);
+        return new UploadFileOfTeamPost(originalFilename,storeFileName,filePath,fileType,fileSize);
     }
 
     //이미지 여러 개 저장
-    public List<UploadFileOfPost> storeFiles(List<MultipartFile> multipartFiles) throws IOException {
-        List<UploadFileOfPost> storeFileResult = new ArrayList<>();
+    public List<UploadFileOfTeamPost> storeFiles(List<MultipartFile> multipartFiles) throws IOException {
+        List<UploadFileOfTeamPost> storeFileResult = new ArrayList<>();
 
         for (MultipartFile multipartFile : multipartFiles){
             if (!multipartFile.isEmpty()){

@@ -1,80 +1,55 @@
 package com.eatmate.post.service;
 
+import com.eatmate.dao.mybatis.AccountDao;
 import com.eatmate.dao.repository.account.AccountRepository;
-import com.eatmate.dao.repository.post.PostRepository;
-import com.eatmate.domain.entity.post.Post;
+import com.eatmate.dao.repository.team.TeamRepository;
+import com.eatmate.domain.dto.AccountDto;
 import com.eatmate.domain.entity.user.Account;
+import com.eatmate.domain.entity.user.AccountTeam;
 import com.eatmate.domain.entity.user.Team;
 import com.eatmate.post.vo.PostForm;
-import com.eatmate.post.vo.PostPageDto;
-import com.eatmate.post.vo.TeamSearchCondition;
-import com.eatmate.team.service.TeamJpaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class PostJpaService {
 
-    private final PostRepository postRepository;
-    private final TeamJpaService teamJpaService;
     private final AccountRepository accountRepository;
+    private final TeamRepository teamRepository;
+    private final AccountDao accountDao;
 
     /**
      * 게시글 생성
      */
 
+    @Transactional
      public void createChatRoomAndTeamWhenWriteThePost(PostForm form){
 
-        Account account = accountRepository.findByEmail(form.getAuthor());
+        AccountDto accountDto = accountDao.findByOauth2Id(form.getAuthor());
 
-         if (account == null){
-             throw new IllegalArgumentException("해당 이메일을 가진 계정이 없습니다.");
-         }
+        Account account = accountRepository.findById(accountDto.getAccount_id()).get();
 
-         //팀 만들기
-        Team team = teamJpaService.createTeamWhenUserCreatePostAndChatRoom(form.getTeamName(), account);
+        //팀 만들기
+         Team team = Team.builder()
+                 .teamName(form.getTeamName())
+                 .description(form.getDescription())
+                 .location(form.getLocation())
+                 .leader(account)
+                 .build();
 
-        //게시글 생성
-        Post post = Post.builder()
-                .title(form.getTitle())
-                .content(form.getDescription())
-                .location(form.getLocation())
-                .account(account)
-                .team(team)
-                .build();
+         AccountTeam accountTeam = AccountTeam.builder()
+                 .account(account)
+                 .team(team)
+                 .isLeader(true)
+                 .build();
 
-         Post savedPost = postRepository.save(post);
-
-        //TODO 나중에 채팅방으로 바꿀 생각
-
+         teamRepository.save(team);
      }
 
-    /**
-     * 페이징 조회
-     */
-
-    public Page<PostPageDto> searchByCondition(TeamSearchCondition condition, Pageable pageable) {
-
-        if (StringUtils.hasText(condition.getLocation())) {
-            return postRepository.searchWithPageConditionIsLocation(condition, pageable);
-        } else if (StringUtils.hasText(condition.getAuthor())) {
-            return postRepository.searchWithPageConditionIsNickname(condition, pageable);
-        } else if (StringUtils.hasText(condition.getTeamName())) {
-            return postRepository.searchWithPageConditionIsTeamName(condition, pageable);
-        } else if (StringUtils.hasText(condition.getTag())) {
-            return postRepository.searchWithPageConditionIsTag(condition, pageable);
-        } else {
-            throw new IllegalArgumentException("적절한 검색 조건이 없습니다.");
-        }
-    }
-
-
 }
-
-//createTeam 말고 ChatRoom에서 account를 조회해서 가져와야 함

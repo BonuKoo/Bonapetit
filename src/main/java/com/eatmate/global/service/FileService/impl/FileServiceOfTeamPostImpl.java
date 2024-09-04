@@ -1,6 +1,6 @@
 package com.eatmate.global.service.FileService.impl;
 
-import com.eatmate.dao.repository.teampost.TeamPostRepository;
+import com.eatmate.dao.repository.postteam.TeamPostRepository;
 import com.eatmate.domain.entity.post.TeamPost;
 import com.eatmate.global.domain.UploadFileOfTeamPost;
 import com.eatmate.global.service.FileService.FileService;

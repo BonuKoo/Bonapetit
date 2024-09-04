@@ -1,6 +1,5 @@
 package com.eatmate.domain.entity.user;
 
-import com.eatmate.domain.entity.post.Post;
 import com.eatmate.domain.entity.post.TeamPost;
 import com.eatmate.global.domain.UploadFileOfAccount;
 import jakarta.persistence.*;
@@ -50,10 +49,6 @@ public class Account {
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<AccountRole> accountRoles = new ArrayList<>();
 
-    // 사용자가 작성한 일반 게시글
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
-    private List<Post> posts = new ArrayList<>();
-
     // 사용자가 작성한 팀 게시글
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<TeamPost> teamPosts = new ArrayList<>();
@@ -63,14 +58,13 @@ public class Account {
     private List<UploadFileOfAccount> files = new ArrayList<>();
 
     @Builder
-    public Account(Long id, String email, String nickname, String password, List<AccountTeam> accountTeams, List<AccountRole> accountRoles, List<Post> posts, List<TeamPost> teamPosts, List<UploadFileOfAccount> files) {
+    public Account(Long id, String email, String nickname, String password, List<AccountTeam> accountTeams, List<AccountRole> accountRoles, List<TeamPost> teamPosts, List<UploadFileOfAccount> files) {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
         this.password = password;
         this.accountTeams = accountTeams;
         this.accountRoles = accountRoles;
-        this.posts = posts;
         this.teamPosts = teamPosts;
         this.files = (files != null) ? files : new ArrayList<>();
     }
