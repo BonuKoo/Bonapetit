@@ -1,5 +1,7 @@
 package com.eatmate.kakao.controller;
 
+import com.eatmate.account.service.AccountService;
+import com.eatmate.domain.dto.AccountDto;
 import com.eatmate.kakao.service.KakaoService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -20,22 +22,45 @@ public class KakaoController {
     @Autowired
     private KakaoService kakaoService;
 
-    // 카카오 로그인
+    @Autowired
+    private AccountService accountService;  // AccountService 추가
+
     @GetMapping("/oauth/kakao/callback")
-    public String kakaoCallback(@RequestParam String code, Model model, HttpSession session){
-        // 인증 코드로 액세스 토근 요청
+    public String kakaoCallback(@RequestParam String code, Model model, HttpSession session) {
+        // 인증 코드로 액세스 토큰 요청
         String accessToken = kakaoService.getAccessToken(code);
-        System.out.println(accessToken);
-        // 액세스 토큰을 세션에 저장
         session.setAttribute("kakaoAccessToken", accessToken);
-        // 액세스 토큰으로 사용자 정보 요청
+
+        // 세션에서 이메일 가져오기
+        String userEmail = (String) session.getAttribute("userEmail");
+        if (userEmail == null) {
+            System.out.println("No email found in session. User must be logged in first.");
+            return "redirect:/login";  // 로그인 페이지로 리다이렉트
+        }
+
+        // 사용자 프로필 정보에서 카카오 ID 및 토큰 추출
         Map<String, Object> userProfile = kakaoService.getUserProfile(accessToken);
-        System.out.println("lgoin Controller : "+userProfile);
-        // 사용자 정보 모델에 추가
-        model.addAttribute("userProfile",userProfile);
-        // 뷰 이동
-        return "account/userProfile";
+        String kakaoId = userProfile.get("id").toString();
+
+        // DB에서 사용자 조회 및 업데이트
+        AccountDto accountDto = accountService.findByEmail(userEmail);
+        if (accountDto != null) {
+            accountDto.setOauth2_id(kakaoId);
+            accountDto.setAccess_token(accessToken);
+            boolean updated = accountService.updateAccount(accountDto);
+            if (updated) {
+                System.out.println("User information successfully updated with Kakao ID and Access Token.");
+            } else {
+                System.out.println("Failed to update user information.");
+            }
+        } else {
+            System.out.println("User not found with email: " + userEmail);
+        }
+
+        model.addAttribute("userProfile", userProfile);
+        return "redirect:/";
     }
+
 
     // 카카오 로그아웃
     @GetMapping("/kakao/logout")
