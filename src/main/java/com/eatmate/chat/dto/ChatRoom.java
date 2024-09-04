@@ -1,6 +1,5 @@
 package com.eatmate.chat.dto;
 
-import com.eatmate.chat.service.ChatService;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.web.socket.WebSocketSession;
