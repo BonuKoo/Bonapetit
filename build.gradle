@@ -53,10 +53,13 @@ dependencies {
 
 	//Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	//View Template
+
+	//View Template 타임리프
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+
 	//Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	//Web
@@ -65,9 +68,22 @@ dependencies {
 
 	//Chat
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	//View Template 프리메이커
+	implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+
+	implementation 'org.webjars.bower:bootstrap:4.3.1'
+	implementation 'org.webjars.bower:vue:2.5.16'
+	implementation 'org.webjars.bower:axios:0.17.1'
+	implementation 'org.webjars:sockjs-client:1.1.2'
+ 	implementation 'org.webjars:stomp-websocket:2.3.3-1'
+	implementation 'com.google.code.gson:gson:2.8.0'
+
+	implementation 'org.springframework.boot:spring-boot-devtools'
+
 
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 
 	//로그 확인용
 	// P6Spy 의존성 추가
@@ -81,7 +97,6 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
-	//stomp 방식으로 통신
 
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
