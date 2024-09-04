@@ -2,6 +2,10 @@ package com.eatmate.kakao.service;
 
 import com.eatmate.account.service.AccountService;
 import com.eatmate.domain.dto.AccountDto;
+import com.eatmate.kakao.KakaoUserInfo;
+import com.eatmate.kakao.NaverUserInfo;
+import com.eatmate.kakao.OAuth2UserInfo;
+import com.eatmate.kakao.OAuthAttributes;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,47 +33,44 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+//        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+        OAuth2UserInfo oAuth2UserInfo;
 
-        System.out.println("Attributes: " + attributes);  // 전체 attributes 로그 출력
-
-        String oauth2Id = null;
-        String email = null;
-        String nickname = null;
-
-        if ("kakao".equals(registrationId)) {
-            oauth2Id = String.valueOf(attributes.get("id"));
-            email = (String) attributes.get("email");
-            nickname = (String) attributes.get("nickname");
-        } else if ("naver".equals(registrationId)) {
-            Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-            if (response != null) {
-                System.out.println("Naver Response: " + response);  // 네이버 response 로그 출력
-                // JSON 구조 확인 후 이 부분을 조정하세요.
-                oauth2Id = (String) response.get("id");
-                email = (String) response.get("email");
-                nickname = (String) response.get("nickname");
-            }
+        if ("naver".equals(registrationId)) {
+            oAuth2UserInfo = new NaverUserInfo(attributes);  // 네이버 사용자 정보 추출
+        } else if ("kakao".equals(registrationId)) {
+            oAuth2UserInfo = new KakaoUserInfo(attributes);  // 카카오 사용자 정보 추출
+        } else {
+            // 구글이나 다른 OAuth2 제공자 로직 추가
+            throw new OAuth2AuthenticationException("Unsupported OAuth provider: " + registrationId);
         }
+
+        String oauth2Id = oAuth2UserInfo.getProviderId();
+        String email = oAuth2UserInfo.getEmail();
+        String nickname = oAuth2UserInfo.getName();
+
+        /*// OAuthAttributes 클래스를 통해 사용자 정보 가져오기
+        OAuthAttributes oauthAttributes = OAuthAttributes.of(registrationId, userNameAttributeName, attributes);
+
+        String oauth2Id = oauthAttributes.getProviderId();
+        String nickname = oauthAttributes.getName();
 
         if (oauth2Id == null) {
             throw new OAuth2AuthenticationException("OAuth2 ID not found in attributes.");
-        }
+        }*/
 
-        // 사용자 정보 저장 또는 업데이트
+        // 기존 사용자 정보 확인 또는 새로운 계정 생성
         AccountDto accountDto = accountService.findByOauth2Id(oauth2Id);
         if (accountDto != null) {
-            accountDto.setOauth2_id(oauth2Id);
             accountDto.setAccess_token(userRequest.getAccessToken().getTokenValue());
             accountService.updateAccount(accountDto);
         } else {
             accountDto = new AccountDto();
             accountDto.setEmail(email);
             accountDto.setNick_name(nickname);
-            accountDto.setPassword(oauth2Id); // 비밀번호는 OAuth2 ID로 설정 (실제로는 별도 처리 필요)
             accountDto.setOauth2_id(oauth2Id);
             accountDto.setAccess_token(userRequest.getAccessToken().getTokenValue());
             accountDto.setRoles("ROLE_USER");
@@ -78,8 +79,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         Collection<GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
-        return new DefaultOAuth2User(authorities, attributes, userNameAttributeName);
+        return new DefaultOAuth2User(authorities, attributes, "id");
     }
+}
 
 
 
@@ -144,4 +146,4 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 "id"
         );
     }*/
-}
+

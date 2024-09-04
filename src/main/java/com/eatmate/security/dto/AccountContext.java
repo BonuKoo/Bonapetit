@@ -36,7 +36,6 @@ public class AccountContext implements UserDetails {
         return authenticateAccountDto.getPassword();
     }
 
-
     @Override
     public boolean isAccountNonExpired() {
         return true;

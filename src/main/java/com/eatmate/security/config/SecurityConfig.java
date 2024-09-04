@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/login/oauth2/code/google").permitAll()
 
                         .requestMatchers("/kakao/logout").permitAll()
+                        .requestMatchers("/naver/logout").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(form -> form
