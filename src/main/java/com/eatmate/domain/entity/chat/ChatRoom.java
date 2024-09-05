@@ -56,6 +56,7 @@ public class ChatRoom {
     public ChatRoomDTO toRedisDTO() {
         // AccountTeam 정보를 담을 HashMap 생성
         HashMap<Long, Map<String, Object>> accountTeamInfo = new HashMap<>();
+
         for (AccountTeam accountTeam : this.getTeam().getMembers()) {
             Map<String, Object> memberInfo = new HashMap<>();
             memberInfo.put("accountId", accountTeam.getAccount().getId());

@@ -53,50 +53,19 @@ public class ChatRoomRedisRepository {
      * 채팅방 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
      */
 
-    public ChatRoomDTO createChatRoom(ChatRoomDTO chatRoomDTO, AccountTeam creator) {
+    public ChatRoomDTO createChatRoom(ChatRoomDTO chatRoomDTO) {
 
-        // ChatRoomDTO에 생성자의 정보를 추가
-        HashMap<Long, Map<String, Object>> membersInfo = new HashMap<>();
-
-        // 생성자의 정보를 첫 번째 멤버로 추가
-        Map<String, Object> creatorInfo = new HashMap<>();
-        creatorInfo.put("accountId", creator.getAccount().getId());
-        creatorInfo.put("email", creator.getAccount().getEmail());
-        creatorInfo.put("oauth2id", creator.getAccount().getOauth2id());
-        creatorInfo.put("isLeader", creator.isLeader());
-
-        membersInfo.put(creator.getId(), creatorInfo);
-
-        // chatRoomDTO에 멤버 정보를 설정
-        chatRoomDTO.setMembersInfo(membersInfo);
-
-        // ChatRoomDTO를 Redis에 저장
-        opsHashChatRoom.put(CHAT_ROOMS, chatRoomDTO.getRoomId(), chatRoomDTO);
-
-        // 자동으로 채팅방에 입장
+        // 1. ChatRoomDTO를 Redis에 저장
+        opsHashChatRoom.put("CHAT_ROOMS", chatRoomDTO.getRoomId(), chatRoomDTO);
+        // 2. 채팅방 입장
         enterChatRoom(chatRoomDTO.getRoomId());
 
         return chatRoomDTO;
     }
 
-    /*
-    // Register members to the chat room
-    public void registerMembersToChatRoom(String roomId, List<AccountTeam> members) {
-        for (AccountTeam member : members) {
-            String memberId = member.getAccount().getId().toString();
-            HashMap<String, Object> memberInfo = new HashMap<>();
-            memberInfo.put("nickname", member.getAccount().getNickname());
-            memberInfo.put("isLeader", member.isLeader());
-            // Store member info in Redis under the chat room
-            opsHashMembers.put(roomId + ":members", memberId, memberInfo);
-        }
-    }
-    */
 
-    // Enter chat room (set up Redis topic)
     public void enterChatRoom(String roomId) {
         ChannelTopic topic = topics.get(roomId);
-
         if (topic == null) {
             topic = new ChannelTopic(roomId);
             redisMessageListener.addMessageListener(redisSubscriber, topic);

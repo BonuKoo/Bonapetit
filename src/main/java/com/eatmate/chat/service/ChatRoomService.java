@@ -19,6 +19,8 @@ public class ChatRoomService {
     //채팅방을 생성
     @Transactional
     public void connectAndCreateChatRoom(ChatRoomDTO chatRoomDTO){
+
         chatRoomRedisRepository.createChatRoom(chatRoomDTO);
+
     }
 }

@@ -22,7 +22,6 @@ public class ChatRoomDTO implements Serializable {
     private String roomId;
     private String roomName;
     private Long teamId;
-
     private HashMap<Long, Map<String, Object>> membersInfo;
 
     @Builder
@@ -33,7 +32,9 @@ public class ChatRoomDTO implements Serializable {
         this.membersInfo = membersInfo;
     }
 
-
+    public void setMembersInfo(HashMap<Long, Map<String, Object>> membersInfo) {
+        this.membersInfo = membersInfo;
+    }
 
 
 }
