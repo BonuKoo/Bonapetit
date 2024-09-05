@@ -34,14 +34,17 @@ public class SecurityConfig {
                         .requestMatchers("/", "/join").permitAll()
 
                         .requestMatchers("/post/search").permitAll()
+                        .requestMatchers("/post/list").permitAll()
+                        .requestMatchers("/post/detail").permitAll()
 
                         // 카카오 인증 콜백 경로 허용
-                        //.requestMatchers("/oauth/kakao/callback").permitAll()
+//                        .requestMatchers("/oauth/kakao/callback").permitAll()
 
                         // 카카오 인증 콜백 및 로그아웃
                         .requestMatchers("/login/oauth2/code/kakao").permitAll()
                         .requestMatchers("/login/oauth2/code/naver").permitAll()
                         .requestMatchers("/login/oauth2/code/google").permitAll()
+
                         .requestMatchers("/kakao/logout").permitAll()
                         .requestMatchers("/naver/logout").permitAll()
                         .requestMatchers("/google/logout").permitAll()

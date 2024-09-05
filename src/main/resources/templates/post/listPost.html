@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+<head>
+    <th:block layout:fragment="head">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Corrected th:href -->
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content" id="content">
+
+    <h1>Teams</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>TeamName</th>
+        </tr>
+
+        </thead>
+
+        <tbody>
+        <!-- teams 변수는 컨트롤러에서 모델에 추가된 Team 객체의 리스트를 참조 -->
+        <tr th:each="team : ${teams}">
+
+            <td th:text="${team.id}"></td>
+
+            <td th:text="${team.teamName}"></td>
+
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

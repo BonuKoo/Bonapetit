@@ -2,7 +2,6 @@ package com.eatmate.domain.entity.post;
 
 import com.eatmate.domain.entity.user.Account;
 import com.eatmate.domain.entity.user.Team;
-import com.eatmate.global.domain.UploadFileOfPost;
 import com.eatmate.global.domain.UploadFileOfTeamPost;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

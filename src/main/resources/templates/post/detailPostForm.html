@@ -15,6 +15,10 @@
 
 <body>
 <div layout:fragment="content">
+    <div class="team-details">
+        <h1 th:text="${team.teamName}">Team Name</h1>
+        <p><strong>Description:</strong> <span th:text="${team.description}">Description Text</span></p>
+    </div>
 
 </div>
 </body>

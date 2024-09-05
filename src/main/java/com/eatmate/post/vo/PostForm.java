@@ -7,14 +7,12 @@ import lombok.*;
 @NoArgsConstructor
 public class PostForm {
     
-    // 방제
-    private String title;
+    //팀 이름
+    private String teamName;
     //간단한 설명
     private String description;
     //방장 닉네임
     private String author;
-    //팀 이름
-    private String teamName;
     // 지역
     private String location;
 
@@ -22,10 +20,9 @@ public class PostForm {
     //private String tag;
 
     @Builder
-    public PostForm(String title, String description, String author, String teamName, String location
+    public PostForm(String description, String author, String teamName, String location
             //,String tag
     ) {
-        this.title = title;
         this.description = description;
         this.author = author;
         this.teamName = teamName;

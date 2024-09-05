@@ -22,6 +22,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
         String email = authentication.getName();
+
         String password = (String) authentication.getCredentials();
 
         AccountContext accountContext = (AccountContext) userDetailsService.loadUserByUsername(email);
