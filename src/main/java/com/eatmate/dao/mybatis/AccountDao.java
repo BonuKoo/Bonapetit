@@ -14,8 +14,8 @@ public interface AccountDao {
         int insertJoin(AccountDto dto) throws DataAccessException;
 
         // 카카오 새 계정 삽입
-        @Insert("INSERT INTO account (email, nick_name, password, roles, oauth2_id, access_token) " +
-                "VALUES (#{email}, #{nick_name}, #{password}, #{roles}, #{oauth2_id}, #{access_token})")
+        @Insert("INSERT INTO account (email, nick_name, password, roles, oauth2_id, access_token, provider) " +
+                "VALUES (#{email}, #{nick_name}, #{password}, #{roles}, #{oauth2_id}, #{access_token}, #{provider})")
         int insertAccount(AccountDto dto);
 
         @Select("SELECT * FROM account WHERE email = #{email}")

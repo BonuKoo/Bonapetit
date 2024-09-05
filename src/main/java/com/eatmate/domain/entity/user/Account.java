@@ -41,6 +41,9 @@ public class Account {
     @Column(name = "access_token")
     private String accesstoken;
 
+    @Column(name = "provider")
+    private String provider;
+
     /*==Team==*/
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<AccountTeam> accountTeams = new ArrayList<>();
