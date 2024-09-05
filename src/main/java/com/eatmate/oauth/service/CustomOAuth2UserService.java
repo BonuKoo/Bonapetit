@@ -40,7 +40,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             Map<String, Object> reaponse = (Map<String, Object>) attributes.get("response");
 
-            /*  TODO :: 소중한 굴러가는 코드임 나중에 주석 풀어야함  */
             userNameAttributeKey = "id";        // 네이버에서는 'id'를 사용자 식별자로 사용
             oauth2Id = (String) reaponse.get("id");
             nickname = (String) reaponse.get("name");
