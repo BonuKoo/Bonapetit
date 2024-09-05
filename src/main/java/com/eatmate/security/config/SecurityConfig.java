@@ -1,6 +1,6 @@
 package com.eatmate.security.config;
 
-import com.eatmate.kakao.service.CustomOAuth2UserService;
+import com.eatmate.oauth.service.CustomOAuth2UserService;
 import com.eatmate.security.handler.FormAuthenticationFailureHandler;
 import com.eatmate.security.handler.FormAuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -10,12 +10,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 
@@ -44,14 +38,16 @@ public class SecurityConfig {
                         .requestMatchers("/post/detail").permitAll()
 
                         // 카카오 인증 콜백 경로 허용
-                        .requestMatchers("/oauth/kakao/callback").permitAll()
-                        // 카카오 로그아웃 경로 허용
+//                        .requestMatchers("/oauth/kakao/callback").permitAll()
+
                         // 카카오 인증 콜백 및 로그아웃
                         .requestMatchers("/login/oauth2/code/kakao").permitAll()
                         .requestMatchers("/login/oauth2/code/naver").permitAll()
                         .requestMatchers("/login/oauth2/code/google").permitAll()
 
                         .requestMatchers("/kakao/logout").permitAll()
+                        .requestMatchers("/naver/logout").permitAll()
+                        .requestMatchers("/google/logout").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(form -> form

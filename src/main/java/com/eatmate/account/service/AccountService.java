@@ -52,10 +52,10 @@ public class AccountService {
         try {
             int updatedRows = accountDao.updateAccount(accountDto);
             if (updatedRows > 0) {
-                System.out.println("카카오 정보가 성공적으로 업데이트되었습니다.");
+                System.out.println("성공적으로 업데이트되었습니다.");
                 return true;
             } else {
-                System.out.println("카카오 정보 업데이트에 실패했습니다.");
+                System.out.println("업데이트에 실패했습니다.");
                 return false;
             }
         } catch (DataAccessException e) {

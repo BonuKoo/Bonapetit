@@ -22,8 +22,8 @@ public class AccountDto {
     private String roles;
     private String oauth2_id;
     private String access_token;
+    private String provider;  // 로그인 제공자 (카카오, 네이버, 구글 등)
 
     //TODO : 추후 상세
     //private String city;
-
 }

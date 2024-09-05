@@ -27,6 +27,7 @@ public class FormUserDetailsService implements UserDetailsService {
 
         Account account = accountRepository.findByEmail(email);
 
+
         if (account == null) {
             throw new UsernameNotFoundException("No user found with email: " + email);
         }
