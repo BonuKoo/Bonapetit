@@ -3,11 +3,13 @@ package com.eatmate.chat.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+@Setter
 @Getter
 @NoArgsConstructor
 public class ChatRoomDTO implements Serializable {
@@ -30,6 +32,8 @@ public class ChatRoomDTO implements Serializable {
         this.teamId = teamId;
         this.membersInfo = membersInfo;
     }
+
+
 
 
 }

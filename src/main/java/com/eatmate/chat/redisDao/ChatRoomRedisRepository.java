@@ -3,6 +3,7 @@ package com.eatmate.chat.redisDao;
 import com.eatmate.chat.dto.ChatRoomDTO;
 import com.eatmate.chat.pubsub.RedisSubscriber;
 import com.eatmate.domain.entity.chat.ChatRoom;
+import com.eatmate.domain.entity.user.AccountTeam;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
@@ -34,8 +35,10 @@ public class ChatRoomRedisRepository {
 
     @PostConstruct
     private void init() {
+
         opsHashChatRoom = redisTemplate.opsForHash();
         topics = new HashMap<>();
+
     }
 
     public List<ChatRoomDTO> findAllRoom() {
@@ -49,14 +52,48 @@ public class ChatRoomRedisRepository {
     /**
      * 채팅방 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
      */
-    public ChatRoomDTO createChatRoom(ChatRoomDTO chatRoomDTO) {
+
+    public ChatRoomDTO createChatRoom(ChatRoomDTO chatRoomDTO, AccountTeam creator) {
+
+        // ChatRoomDTO에 생성자의 정보를 추가
+        HashMap<Long, Map<String, Object>> membersInfo = new HashMap<>();
+
+        // 생성자의 정보를 첫 번째 멤버로 추가
+        Map<String, Object> creatorInfo = new HashMap<>();
+        creatorInfo.put("accountId", creator.getAccount().getId());
+        creatorInfo.put("email", creator.getAccount().getEmail());
+        creatorInfo.put("oauth2id", creator.getAccount().getOauth2id());
+        creatorInfo.put("isLeader", creator.isLeader());
+
+        membersInfo.put(creator.getId(), creatorInfo);
+
+        // chatRoomDTO에 멤버 정보를 설정
+        chatRoomDTO.setMembersInfo(membersInfo);
+
+        // ChatRoomDTO를 Redis에 저장
         opsHashChatRoom.put(CHAT_ROOMS, chatRoomDTO.getRoomId(), chatRoomDTO);
+
+        // 자동으로 채팅방에 입장
+        enterChatRoom(chatRoomDTO.getRoomId());
+
         return chatRoomDTO;
     }
 
-    /**
-     * 채팅방 입장 : redis에 topic을 만들고 pub/sub 통신을 하기 위해 리스너를 설정한다.
-     */
+    /*
+    // Register members to the chat room
+    public void registerMembersToChatRoom(String roomId, List<AccountTeam> members) {
+        for (AccountTeam member : members) {
+            String memberId = member.getAccount().getId().toString();
+            HashMap<String, Object> memberInfo = new HashMap<>();
+            memberInfo.put("nickname", member.getAccount().getNickname());
+            memberInfo.put("isLeader", member.isLeader());
+            // Store member info in Redis under the chat room
+            opsHashMembers.put(roomId + ":members", memberId, memberInfo);
+        }
+    }
+    */
+
+    // Enter chat room (set up Redis topic)
     public void enterChatRoom(String roomId) {
         ChannelTopic topic = topics.get(roomId);
 
@@ -67,6 +104,7 @@ public class ChatRoomRedisRepository {
         }
     }
 
+    // Get topic by roomId
     public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
     }
