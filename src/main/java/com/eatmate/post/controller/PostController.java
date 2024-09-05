@@ -60,19 +60,6 @@ public class PostController {
      *Read
      * TODO  -> List 로 대충 일단 바꿈 Search며 페이징이며 좀 나중에 하자
 
-    @GetMapping("/search")
-    String searchPosts(@RequestParam(value = "searchKeyword", required = false) String searchKeyword,
-                       Pageable pageable,
-                       Model model){
-
-        TeamSearchCondition condition = new TeamSearchCondition();
-        condition.setKeyword(searchKeyword);
-
-        //Page<PostPageDto> result = postJpaService.searchByCondition(condition, pageable);
-        //model.addAttribute("posts", result);
-
-        return "post/listPostForm";
-    }
      */
 
     @GetMapping("/list")
@@ -88,7 +75,7 @@ public class PostController {
     @GetMapping("/detail")
     String details(Model model){
 
-        Long id = 1L;
+        Long id = 2L;
 
         Team team = teamRepository.findById(id).get();
 
