@@ -38,22 +38,21 @@ public class PostController {
 
         return "post/createPostForm";
     }
-
+    
+    //게시글 및 팀 생성
     @PostMapping("/createPost")
     public String createPost(RedirectAttributes redirectAttributes,
-
                              Principal principal,
-
                              @ModelAttribute("createPost") PostForm postForm
     ) throws IOException{
 
-        postForm.addAuthor(
-                principal.getName()
-        );
+        postForm.addAuthor(principal.getName());
 
         //게시글 작성 로직
         postJpaService.createChatRoomAndTeamWhenWriteThePost(postForm);
+        
         // 리디렉션 시 사용자에게 메시지를 전달
+
         redirectAttributes.addFlashAttribute("message", "게시글이 성공적으로 생성되었습니다.");
         return "redirect:/post/list";
     }

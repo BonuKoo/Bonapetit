@@ -1,6 +1,7 @@
 package com.eatmate.domain.entity.user;
 
 import com.eatmate.domain.entity.Tag;
+import com.eatmate.domain.entity.chat.ChatRoom;
 import com.eatmate.domain.entity.post.TeamPost;
 import com.eatmate.domain.global.BaseTimeEntity;
 import com.eatmate.global.domain.UploadFileOfTeam;
@@ -41,6 +42,9 @@ public class Team extends BaseTimeEntity {
     @OneToMany(mappedBy = "team",cascade = CascadeType.PERSIST,orphanRemoval = true)
     private List<AccountTeam> members = new ArrayList<>();
 
+    //채팅방과 팀을 일대일로 매핑
+    @OneToOne(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private ChatRoom chatRoom;
 
     //리뷰 속성
     @OneToMany(mappedBy = "team")
@@ -110,6 +114,14 @@ public class Team extends BaseTimeEntity {
     @Transient
     public int getMembersCount() {
         return this.members.size();
+    }
+
+
+    public void setChatRoom(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
+        if (chatRoom != null && chatRoom.getTeam() != this) {
+            chatRoom.setTeam(this); // 이미 관계가 설정되어 있지 않다면 설정
+        }
     }
 
 }

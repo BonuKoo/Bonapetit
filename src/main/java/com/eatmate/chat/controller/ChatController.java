@@ -1,27 +1,34 @@
 package com.eatmate.chat.controller;
 
 import com.eatmate.chat.dto.ChatMessage;
+import com.eatmate.chat.pubsub.RedisPublisher;
+import com.eatmate.chat.redisDao.ChatRoomRedisRepository;
 import com.eatmate.dao.repository.chatroom.ChatRoomRepository;
-import com.eatmate.domain.entity.chat.ChatRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
 
-    private final SimpMessageSendingOperations messagingTemplate;
+    private final RedisPublisher redisPublisher;
+    private final ChatRoomRedisRepository chatRoomRedisRepository;
+
+    /**
+     * webSocket "/pub/chat/message"로 들어오는 메시징을 처리
+     */
 
     @MessageMapping("/chat/message")
-    public void message(ChatMessage message){
-        if (ChatMessage.MessageType.JOIN.equals(message.getType()))
-            message.setMessage(message.getSender() + "님이 입장했습니다.");
-        messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId());
+    public void message(ChatMessage message) {
+        if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
+            chatRoomRedisRepository.enterChatRoom(message.getRoomId());
+            message.setMessage(message.getSender() + "님이 입장하셨습니다.");
+        }
+
+        // WebSocket에 발행된 메시지를 redis로 발행한다 ( publish )
+        redisPublisher.publish(chatRoomRedisRepository.getTopic(message.getRoomId()),message);
     }
 
 }
