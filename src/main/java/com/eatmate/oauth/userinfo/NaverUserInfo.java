@@ -1,18 +1,16 @@
-package com.eatmate.kakao;
+package com.eatmate.oauth.userinfo;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 public class NaverUserInfo implements OAuth2UserInfo {
 
     private Map<String, Object> attributes;
 
+    // 생성자에서 네이버 response 필드를 처리
+    @SuppressWarnings("unchecked")
     public NaverUserInfo(Map<String, Object> attributes) {
-        this.attributes = (Map<String, Object>) attributes.get("response");  // 네이버의 응답은 response 안에 있다.
+        // response 안에 있는 데이터를 attributes로 설정
+        this.attributes = (Map<String, Object>) attributes.get("response");
     }
 
     @Override
@@ -23,11 +21,6 @@ public class NaverUserInfo implements OAuth2UserInfo {
     @Override
     public String getProvider() {
         return "naver";
-    }
-
-    @Override
-    public String getEmail() {
-        return (String) attributes.get("email");
     }
 
     @Override

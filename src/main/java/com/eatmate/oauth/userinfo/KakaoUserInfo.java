@@ -1,4 +1,4 @@
-package com.eatmate.kakao;
+package com.eatmate.oauth.userinfo;
 
 import java.util.Map;
 
@@ -19,13 +19,6 @@ public class KakaoUserInfo implements OAuth2UserInfo {
     @Override
     public String getProvider() {
         return "kakao";
-    }
-
-    @Override
-    public String getEmail() {
-        // 이메일은 kakao_account 내에 존재
-        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-        return kakaoAccount != null ? (String) kakaoAccount.get("email") : null;
     }
 
     @Override
