@@ -73,7 +73,6 @@ spring:
 file:
   dir:
     account: C:/TeamProject/eatmate/img/profileimg
-    post: C:/TeamProject/eatmate/img/postimg
     team: C:/TeamProject/eatmate/img/teamimg
     teamPost: C:/TeamProject/eatmate/img/teampostimg
 

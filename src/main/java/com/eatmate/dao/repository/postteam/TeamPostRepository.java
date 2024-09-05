@@ -1,4 +1,4 @@
-package com.eatmate.dao.repository.teampost;
+package com.eatmate.dao.repository.postteam;
 
 import com.eatmate.domain.entity.post.TeamPost;
 import org.springframework.data.jpa.repository.JpaRepository;
