@@ -2,6 +2,7 @@ package com.eatmate.oauth.service;
 
 import com.eatmate.account.service.AccountService;
 import com.eatmate.domain.dto.AccountDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -93,5 +94,3 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         );
     }
 }
-
-
