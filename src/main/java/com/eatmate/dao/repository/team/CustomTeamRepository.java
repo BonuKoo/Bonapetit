@@ -2,17 +2,11 @@ package com.eatmate.dao.repository.team;
 
 import com.eatmate.chat.dto.ChatRoomDTO;
 import com.eatmate.domain.entity.chat.ChatRoom;
-import com.eatmate.domain.entity.user.AccountTeam;
 import com.eatmate.domain.entity.user.Team;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.Persistence;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor

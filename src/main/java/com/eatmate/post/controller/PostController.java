@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("post")
@@ -94,9 +93,7 @@ public class PostController {
         Team team = teamRepository.findById(id).get();
 
         model.addAttribute("team",team);
-
         return "post/detailPostForm";
-
     }
 
 }
