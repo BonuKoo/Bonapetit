@@ -14,6 +14,19 @@ spring:
   redis:
     host: localhost
     port: 6379
+
+  #STATIC 파일 자동 반영
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: false
+  #FTL 템플릿 파일도 반영
+  freemarker:
+    template-loader-path: classpath:/template/
+    suffix: .ftl
+    cache: false
+
   security:
     oauth2:
       client:
