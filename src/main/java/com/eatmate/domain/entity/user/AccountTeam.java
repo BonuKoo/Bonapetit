@@ -3,12 +3,14 @@ package com.eatmate.domain.entity.user;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static jakarta.persistence.GenerationType.*;
 
 @NoArgsConstructor
 @Entity
+@Getter
 @Table(name = "account_team")
 public class AccountTeam {
 

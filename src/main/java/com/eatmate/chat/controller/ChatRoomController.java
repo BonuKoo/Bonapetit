@@ -25,7 +25,6 @@ public class ChatRoomController {
     public ChatRoomDTO createRoom(
             @RequestParam String name
     ) {
-
         return chatRoomRedisRepository.createChatRoom(name);
     }
     */
@@ -36,6 +35,18 @@ public class ChatRoomController {
         model.addAttribute("roomId",roomId);
         return "chat/roomdetail";
     }
+    
+    //채팅방 구독 처리 후 상세 화면으로 이동
+
+    @PostMapping("/room/enter/{roomId}")
+    public String  enterRoom(@PathVariable String roomId){
+        //채팅방 구독
+        chatRoomRedisRepository.enterChatRoom(roomId);
+
+        //상세 화면으로 리다이렉트
+        return "redirect:/room/enter/" + roomId;
+    }
+
 
     //특정 채팅방 조회
     @GetMapping("/room/{roomId}")
@@ -56,6 +67,5 @@ public class ChatRoomController {
     public List<ChatRoomDTO> room(){
         return chatRoomRedisRepository.findAllRoom();
     }
-
 
 }

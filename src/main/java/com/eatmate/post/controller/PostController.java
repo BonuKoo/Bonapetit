@@ -24,76 +24,37 @@ public class PostController {
     private final PostJpaService postJpaService;
     private final TeamRepository teamRepository;
 
-    /**
-     * Create
-     * */
-
+    // Create Post 페이지
     @GetMapping("/create")
     String createPost(Model model){
-
         PostForm form = new PostForm();
-
         model.addAttribute("createPost", form);
-
         return "post/createPostForm";
     }
-    
-    //게시글 및 팀 생성
+
+    // 게시글 및 팀 생성
     @PostMapping("/createPost")
-    public String createPost(RedirectAttributes redirectAttributes,
-                             Principal principal,
-                             @ModelAttribute("createPost") PostForm postForm
-    ) throws IOException{
-
+    public String createPost(RedirectAttributes redirectAttributes, Principal principal, @ModelAttribute("createPost") PostForm postForm) throws IOException{
         postForm.addAuthor(principal.getName());
-
-        //게시글 작성 로직
         postJpaService.createChatRoomAndTeamWhenWriteThePost(postForm);
-        
-        // 리디렉션 시 사용자에게 메시지를 전달
-
         redirectAttributes.addFlashAttribute("message", "게시글이 성공적으로 생성되었습니다.");
         return "redirect:/post/list";
     }
 
-    /**
-     *Read
-     * TODO  -> List 로 대충 일단 바꿈 Search며 페이징이며 좀 나중에 하자
-
-    @GetMapping("/search")
-    String searchPosts(@RequestParam(value = "searchKeyword", required = false) String searchKeyword,
-                       Pageable pageable,
-                       Model model){
-
-        TeamSearchCondition condition = new TeamSearchCondition();
-        condition.setKeyword(searchKeyword);
-
-        //Page<PostPageDto> result = postJpaService.searchByCondition(condition, pageable);
-        //model.addAttribute("posts", result);
-
-        return "post/listPostForm";
-    }
-     */
-
+    // Team 목록 조회
     @GetMapping("/list")
     String listPosts(Model model){
-
         List<Team> all = teamRepository.findAll();
-
-        model.addAttribute("teams",all);
-
+        model.addAttribute("teams", all);
         return "post/listPost";
     }
 
-    @GetMapping("/detail")
-    String details(Model model){
-
-        Long id = 1L;
-
-        Team team = teamRepository.findById(id).get();
-
-        model.addAttribute("team",team);
+    // Team 상세 페이지
+    @GetMapping("/detail/{teamId}")
+    public String details(@PathVariable Long teamId, Model model) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: " + teamId));
+        model.addAttribute("team", team);
         return "post/detailPostForm";
     }
-
 }

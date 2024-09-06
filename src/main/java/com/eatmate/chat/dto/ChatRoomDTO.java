@@ -1,13 +1,15 @@
 package com.eatmate.chat.dto;
 
-import com.eatmate.domain.entity.chat.ChatRoom;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
+@Setter
 @Getter
 @NoArgsConstructor
 public class ChatRoomDTO implements Serializable {
@@ -19,17 +21,20 @@ public class ChatRoomDTO implements Serializable {
 
     private String roomId;
     private String roomName;
+    private Long teamId;
+    private HashMap<Long, Map<String, Object>> membersInfo;
 
     @Builder
-    public ChatRoomDTO(String roomId, String roomName) {
+    public ChatRoomDTO(String roomId, String roomName, Long teamId, HashMap<Long, Map<String, Object>> membersInfo) {
         this.roomId = roomId;
         this.roomName = roomName;
+        this.teamId = teamId;
+        this.membersInfo = membersInfo;
     }
 
-    public static ChatRoomDTO create(String roomId,String roomName){
-        return ChatRoomDTO.builder()
-                .roomId(roomId)
-                .roomName(roomName)
-                .build();
+    public void setMembersInfo(HashMap<Long, Map<String, Object>> membersInfo) {
+        this.membersInfo = membersInfo;
     }
+
+
 }
