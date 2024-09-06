@@ -2,7 +2,7 @@ package com.eatmate.oauth.service;
 
 import com.eatmate.account.service.AccountService;
 import com.eatmate.domain.dto.AccountDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -10,6 +10,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Collections;
 import java.util.Map;
@@ -29,18 +31,20 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         // 로그인시 사용되는 provider 확인
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        String accessToken = userRequest.getAccessToken().getTokenValue(); // Access Token 가져오기
+        // 세션에 Access Token 저장
+        HttpSession session = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getSession();
+        session.setAttribute("naverAccessToken", accessToken);
+
         // 가져온 attributes 에서 필요한 데이터 추출을 위한 Map
         Map<String, Object> attributes = oAuth2User.getAttributes();
-
         String userNameAttributeKey;
         String oauth2Id = null;  // OAuth2 ID
         String nickname = null;  // 닉네임
 
         if ("naver".equals(registrationId)) {
             // 네이버 사용자의 경우 'response' 안에 정보가 있음
-
             Map<String, Object> reaponse = (Map<String, Object>) attributes.get("response");
-
             userNameAttributeKey = "id";        // 네이버에서는 'id'를 사용자 식별자로 사용
             oauth2Id = (String) reaponse.get("id");
             nickname = (String) reaponse.get("name");
@@ -72,17 +76,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         AccountDto accountDto = accountService.findByOauth2Id(oauth2Id);
         if (accountDto != null) {
             // 기존 사용자가 있으면 access_tokens 을 업데이트
-            accountDto.setAccess_token(userRequest.getAccessToken().getTokenValue());
+            accountDto.setAccess_token(accessToken);
             accountService.updateAccount(accountDto);
         } else {
             // 새로운 사용자인 경우 계정 생성
             accountDto = new AccountDto();
-            accountDto.setEmail(oauth2Id);      //email 제거 예정
+            accountDto.setEmail(oauth2Id);
             accountDto.setNick_name(nickname);
             accountDto.setPassword(oauth2Id);
             accountDto.setOauth2_id(oauth2Id);
             accountDto.setProvider(registrationId);
-            accountDto.setAccess_token(userRequest.getAccessToken().getTokenValue());
+            accountDto.setAccess_token(accessToken);
             accountDto.setRoles("ROLE_USER");
             accountService.createAccount(accountDto);
         }

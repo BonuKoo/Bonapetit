@@ -1,24 +1,10 @@
 package com.eatmate.weblogout.service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.IOException;
-import java.util.Map;
 
 @Service
 public class LogoutService {
@@ -48,14 +34,20 @@ public class LogoutService {
         }
     }
 
-    // 네이버 로그아웃
-    public void naverLogout(String accessToken, String clientId, String clientSecret) {
-        String url = "https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=" + clientId + "&client_secret=" + clientSecret + "&access_token=" + accessToken + "&service_provider=NAVER";
+    // 네이버 로그인 연동 해제 (토큰 삭제)
+    public void naverLogout(String accessToken) {
+        // 네이버 연동 해제 API URL
+        String url = "https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=vxzSX7hpBWdUiZGim9aX"
+                + "&client_secret=STysDb2fkw"
+                + "&access_token=" + accessToken
+                + "&service_provider=NAVER";
 
         RestTemplate restTemplate = new RestTemplate();
+
+        // POST 방식으로 요청
         ResponseEntity<String> response = restTemplate.postForEntity(url, null, String.class);
 
-        // 로그아웃 요청 상태 코드 및 응답 로그 출력
+        // 로그아웃 요청 상태 코드 및 응답 확인
         logger.info("Naver Logout request URL: {}", url);
         logger.info("Naver Logout Response Status Code: {}", response.getStatusCode());
         logger.info("Naver Logout Response Body: {}", response.getBody());
