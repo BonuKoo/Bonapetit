@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomTeamRepository4QueryDslImpl implements CustomTeamRepository4QueryDsl {
 
+    /*
     private final JPAQueryFactory queryFactory;
 
     QTeam team = QTeam.team;
@@ -59,5 +60,5 @@ public class CustomTeamRepository4QueryDslImpl implements CustomTeamRepository4Q
                 ;
 
     }
-
+    */
 }
