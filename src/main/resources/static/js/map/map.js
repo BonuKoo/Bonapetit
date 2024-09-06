@@ -121,7 +121,7 @@ function displayPlaces(places) {
         // 마커 클릭시 데이터 전송 by유석
         (function(marker, data) {
             kakao.maps.event.addListener(marker, 'click', function() {
-                sendData(data);
+                setMapData(data);
             });
         })(marker, places[i]);
 
@@ -168,7 +168,7 @@ function getListItem(index, places) {
     // 리스트 요소 클릭시 데이터 전송 by유석
     (function(li, data) {
         li.addEventListener('click', function() {
-            sendData(data);
+            setMapData(data);
         });
     })(el, places);
 
@@ -273,30 +273,41 @@ function removeAllChildNods(el) {
     }
 }
 
-// 맵 데이터 전송 by유석
-function sendData(data) {
-    var input = {
-        address_name : data.address_name,
-        id : data.id,
-        phone : data.phone,
-        place_name : data.place_name,
-        place_url : data.place_url,
-        road_address_name : data.road_address_name,
-        x : data.x,
-        y : data.y
-    };
-
-    $.ajax({
-        type : 'post',
-        url : '/map', // 추후 수정
-        dataType : 'json',
-        contentType : 'application/json; charset=utf-8',
-        data : JSON.stringify(input),
-        success : function(result) {
-            console.log(result);
-        },
-        error : function(error) {
-            console.log(error);
-        }
-    });
+function setMapData(data) {
+    document.getElementById("addressName").value = data.address_name;
+    document.getElementById("id").value = data.id;
+    document.getElementById("phone").value = data.phone;
+    document.getElementById("placeName").value = data.place_name;
+    document.getElementById("placeUrl").value = data.place_url;
+    document.getElementById("roadAddressName").value = data.road_address_name;
+    document.getElementById("x").value = data.x;
+    document.getElementById("y").value = data.y;
 }
+
+//// 맵 데이터 전송 by유석
+//function sendData(data) {
+//    var input = {
+//        address_name : data.address_name,
+//        id : data.id,
+//        phone : data.phone,
+//        place_name : data.place_name,
+//        place_url : data.place_url,
+//        road_address_name : data.road_address_name,
+//        x : data.x,
+//        y : data.y
+//    };
+//
+//    $.ajax({
+//        type : 'post',
+//        url : '/map', // 추후 수정
+//        dataType : 'json',
+//        contentType : 'application/json; charset=utf-8',
+//        data : JSON.stringify(input),
+//        success : function(result) {
+//            console.log(result);
+//        },
+//        error : function(error) {
+//            console.log(error);
+//        }
+//    });
+//}
