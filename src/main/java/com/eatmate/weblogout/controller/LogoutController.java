@@ -1,16 +1,17 @@
 package com.eatmate.weblogout.controller;
 
-import com.eatmate.account.service.AccountService;
 import com.eatmate.weblogout.service.LogoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class LogoutController {
@@ -18,23 +19,26 @@ public class LogoutController {
     @Autowired
     private LogoutService logoutService;
 
-    @Autowired
-    private AccountService accountService;
-
-    @Autowired
-    private OAuth2AuthorizedClientService authorizedClientService;
+    // 서버에서 provider 정보 제공(JSON 형식으로 전달하는 방식)
+    @GetMapping("/get-provider")
+    public ResponseEntity<Map<String, String>> getProvider(HttpSession session) {
+        String provider = (String) session.getAttribute("provider");
+        if (provider == null) {
+            provider = "local"; // 일반 로그인인 경우
+        }
+        Map<String, String> response = new HashMap<>();
+        response.put("provider", provider);
+        return ResponseEntity.ok(response);
+    }
 
     // 카카오 로그아웃
     @GetMapping("/kakao/logout")
     public void kakaologout(HttpServletResponse response, HttpSession session) throws IOException {
         String accessToken = (String) session.getAttribute("kakaoAccessToken");
 
-        // 액세스 토큰 확인을 위해 로그 출력
-        System.out.println("액세스 토큰: " + accessToken);
-
         if (accessToken != null) {
             // 액세스 토큰 무효화
-            logoutService.kakaologout(accessToken);
+            logoutService.kakaoLogout(accessToken);
             session.removeAttribute("kakaoAccessToken");
             session.invalidate();   // 세션 무효화
         }
@@ -43,7 +47,9 @@ public class LogoutController {
                 + "?client_id=e14cb05b33510d6d6fb59bc77f202156"
                 + "&logout_redirect_uri=http://localhost:8080";     // 카카오 로그아웃에 저장한 url
 
+        System.out.println("카카오 로그아웃 성공");
         response.sendRedirect(requestUrl);
+        session.invalidate();
     }
 
     // 네이버 로그아웃
@@ -67,6 +73,7 @@ public class LogoutController {
         // 세션 무효화
         session.invalidate();
 
+        System.out.println("네이버 로그아웃 성공");
         return "redirect:/";
     }
 
@@ -74,6 +81,7 @@ public class LogoutController {
     @GetMapping("/google/logout")
     public String googleLogout(HttpSession session) {
         session.invalidate();  // 세션 무효화
+        System.out.println("구글 로그아웃 성공");
         return "redirect:https://accounts.google.com/logout";
     }
 

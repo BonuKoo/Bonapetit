@@ -34,6 +34,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String accessToken = userRequest.getAccessToken().getTokenValue(); // Access Token 가져오기
         // 세션에 Access Token 저장
         HttpSession session = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getSession();
+        // 세션에 provider와 AccessToken 저장
+        session.setAttribute("provider", registrationId);
         session.setAttribute("naverAccessToken", accessToken);
 
         // 가져온 attributes 에서 필요한 데이터 추출을 위한 Map

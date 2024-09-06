@@ -38,19 +38,12 @@
     <ul>
       <!--sec:authorize="isAuthenticated()"-->
       <li sec:authorize="isAuthenticated()"><a th:href="@{/profile/detail}">프로필</a></li>
-<!--      &lt;!&ndash;sec:authorize="isAuthenticated()"&ndash;&gt;-->
-<!--      <li sec:authorize="isAuthenticated()">-->
-<!--        <a href="https://kauth.kakao.com/oauth/authorize?client_id=e14cb05b33510d6d6fb59bc77f202156&redirect_uri=http://localhost:8080/oauth/kakao/callback&response_type=code">-->
-<!--          <img height="38px" src="/img/kakao_login_medium_narrow.png" alt="카카오 로그인">-->
-<!--        </a>-->
-<!--      </li>-->
       <!--sec:authorize="isAnonymous()"-->
       <li sec:authorize="isAnonymous()"><a th:href="@{/login}">로그인</a></li>
       <!--sec:authorize="isAuthenticated()"-->
-      <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">로그아웃</a></li>
-      <li sec:authorize="isAuthenticated()"><a th:href="@{/kakao/logout}">카카오로그아웃</a></li>
-      <li sec:authorize="isAuthenticated()"><a th:href="@{/naver/logout}">네이버로그아웃</a></li>
-      <li sec:authorize="isAuthenticated()"><a th:href="@{/google/logout}">구글로그아웃</a></li>
+      <li sec:authorize="isAuthenticated()">
+        <a id="logoutButton" class="btn btn-primary" href="javascript:void(0)">로그아웃</a>
+      </li>
       <!--sec:authorize="isAnonymous()"-->
       <li sec:authorize="isAnonymous()"><a th:href="@{/join}">회원가입</a></li>
     </ul>
@@ -79,4 +72,26 @@
   </div>
 </footer>
 </body>
+<script>
+  document.getElementById('logoutButton').addEventListener('click', function() {
+      // 세션에서 provider 정보 가져오기
+      fetch('/get-provider')
+          .then(response => response.json())
+          .then(data => {
+              const provider = data.provider;
+              if (provider === 'kakao') {
+                  window.location.href = '/kakao/logout';
+              } else if (provider === 'naver') {
+                  window.location.href = '/naver/logout';
+              } else if (provider === 'google') {
+                  window.location.href = '/google/logout';
+              } else if (provider === 'local') {
+                  window.location.href = '/logout';  // 일반 로그아웃 처리
+              } else {
+                  console.error('Unknown provider');
+              }
+          })
+          .catch(error => console.error('Error fetching provider:', error));
+  });
+</script>
 </html>
