@@ -23,7 +23,7 @@ spring:
       enabled: false
   #FTL 템플릿 파일도 반영
   freemarker:
-    template-loader-path: classpath:/template/
+    template-loader-path: classpath:/template/chat/
     suffix: .ftl
     cache: false
 
@@ -94,12 +94,10 @@ kakao:
   client:
     id: e14cb05b33510d6d6fb59bc77f202156
     secret: jBgKKQxp5icYdE8NdbWWP7wbJjTFMhcJ
-
 naver:
   client:
     id: vxzSX7hpBWdUiZGim9aX
     secret: STysDb2fkw
-
 google:
   client:
     id: 22110496570-9okorgjcubqkb5qvfthfu398k6et0gg0.apps.googleusercontent.com

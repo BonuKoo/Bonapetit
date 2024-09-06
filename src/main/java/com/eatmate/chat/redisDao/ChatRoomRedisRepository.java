@@ -22,8 +22,10 @@ public class ChatRoomRedisRepository {
 
     // 채팅방(topic)에 발행되는 메시지를 처리할 Listner
     private final RedisMessageListenerContainer redisMessageListener;
+
     // 구독 처리 서비스
     private final RedisSubscriber redisSubscriber;
+
     // Redis
     private static final String CHAT_ROOMS = "CHAT_ROOM";
     private final RedisTemplate<String, Object> redisTemplate;
@@ -57,12 +59,9 @@ public class ChatRoomRedisRepository {
 
         // 1. ChatRoomDTO를 Redis에 저장
         opsHashChatRoom.put("CHAT_ROOMS", chatRoomDTO.getRoomId(), chatRoomDTO);
-        // 2. 채팅방 입장
-        enterChatRoom(chatRoomDTO.getRoomId());
 
         return chatRoomDTO;
     }
-
 
     public void enterChatRoom(String roomId) {
         ChannelTopic topic = topics.get(roomId);
@@ -77,4 +76,5 @@ public class ChatRoomRedisRepository {
     public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
     }
+
 }

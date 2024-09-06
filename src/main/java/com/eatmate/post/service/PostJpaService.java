@@ -52,13 +52,15 @@ public class PostJpaService {
                  .build();
 
          //팀에 할당되는 ChatRoom 생성
-        StringBuffer stringBuffer = new StringBuffer();
 
+        /*
+        StringBuffer stringBuffer = new StringBuffer();
         String chatRoomName = stringBuffer.append(form.getTeamName()).append(" 의 채팅방").toString();
+         */
 
         ChatRoom chatRoom = ChatRoom.builder()
                 .roomId(UUID.randomUUID().toString())
-                .roomName(chatRoomName)
+                .roomName(form.getTeamName())
                 .build();
 
         AccountTeam accountTeam = AccountTeam.builder()

@@ -19,8 +19,18 @@ public class ChatRoomService {
     //채팅방을 생성
     @Transactional
     public void connectAndCreateChatRoom(ChatRoomDTO chatRoomDTO){
-
+        //방 생성
         chatRoomRedisRepository.createChatRoom(chatRoomDTO);
 
+        //입장
+        enterChatRoom(chatRoomDTO.getRoomId());
+
     }
+
+    //채팅방에 입장
+    @Transactional
+    public void enterChatRoom(String roomId){
+        chatRoomRedisRepository.enterChatRoom(roomId);
+    }
+
 }

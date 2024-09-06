@@ -17,19 +17,18 @@
             <th>ID</th>
             <th>TeamName</th>
         </tr>
-
         </thead>
 
         <tbody>
         <!-- teams 변수는 컨트롤러에서 모델에 추가된 Team 객체의 리스트를 참조 -->
         <tr th:each="team : ${teams}">
-
             <td th:text="${team.id}"></td>
 
-            <td th:text="${team.teamName}"></td>
-
+            <!-- teamName을 클릭하면 해당 팀의 상세 정보 페이지로 이동 -->
+            <td>
+                <a th:href="@{'/post/detail/' + ${team.id}}" th:text="${team.teamName}"></a>
+            </td>
         </tr>
-
         </tbody>
     </table>
 </div>
