@@ -1,25 +1,16 @@
 package com.eatmate.weblogout.controller;
 
 import com.eatmate.account.service.AccountService;
-import com.eatmate.domain.dto.AccountDto;
 import com.eatmate.weblogout.service.LogoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @Controller
 public class LogoutController {
@@ -41,7 +32,7 @@ public class LogoutController {
         // 액세스 토큰 확인을 위해 로그 출력
         System.out.println("액세스 토큰: " + accessToken);
 
-        if (accessToken != null){
+        if (accessToken != null) {
             // 액세스 토큰 무효화
             logoutService.kakaologout(accessToken);
             session.removeAttribute("kakaoAccessToken");
@@ -57,20 +48,25 @@ public class LogoutController {
 
     // 네이버 로그아웃
     @GetMapping("/naver/logout")
-    public String naverLogout(HttpSession session) {
-        String accessToken = (String) session.getAttribute("naverAccessToken");  // 세션 또는 DB에서 토큰 가져오기
-        if (accessToken != null) {
-            String apiUrl = "https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=vxzSX7hpBWdUiZGim9aX"
-                    + "&client_secret=STysDb2fkw&access_token=" + accessToken
-                    + "&service_provider=NAVER";
-
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, null, String.class);
-
-            if (response.getStatusCode().is2xxSuccessful()) {
-                session.invalidate();  // 세션 무효화
-            }
+    public String naverLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            System.out.println("세션이 만료되었거나 존재하지 않습니다.");
+            return "redirect:/login";
         }
+
+        String accessToken = (String) session.getAttribute("naverAccessToken");
+        if (accessToken == null) {
+            System.out.println("액세스 토큰이 없습니다.");
+            return "redirect:/login";
+        }
+
+        // 네이버 로그아웃 요청 (연동 해제)
+        logoutService.naverLogout(accessToken);
+
+        // 세션 무효화
+        session.invalidate();
+
         return "redirect:/";
     }
 
