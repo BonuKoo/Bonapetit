@@ -4,12 +4,10 @@ import com.eatmate.chat.dto.ChatRoomDTO;
 import com.eatmate.chat.service.ChatRoomService;
 import com.eatmate.dao.mybatis.AccountDao;
 import com.eatmate.dao.repository.account.AccountRepository;
-import com.eatmate.dao.repository.map.MapRepository;
 import com.eatmate.dao.repository.team.CustomTeamRepository;
 import com.eatmate.dao.repository.team.TeamRepository;
 import com.eatmate.domain.dto.AccountDto;
 import com.eatmate.domain.entity.chat.ChatRoom;
-import com.eatmate.domain.entity.map.KakaoMap;
 import com.eatmate.domain.entity.user.Account;
 import com.eatmate.domain.entity.user.AccountTeam;
 import com.eatmate.domain.entity.user.Team;
@@ -31,8 +29,7 @@ public class PostJpaService {
     private final AccountDao accountDao;
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
-    private final MapRepository mapRepository;
-    
+
     private final CustomTeamRepository customTeamRepository;
 
     private final ChatRoomService chatRoomService;
@@ -48,29 +45,18 @@ public class PostJpaService {
 
         Account account = accountRepository.findById(accountDto.getAccount_id()).get();
 
-        // DB에서 map 정보 가져오기
-        KakaoMap map = mapRepository.findById(mapVo.getId()).orElse(null);
-
-        //DB에 map 정보가 없을경우 생성
-        if (map == null) {
-            map = KakaoMap.builder()
-                    .id(mapVo.getId())
-                    .phone(mapVo.getPhone())
-                    .placeName(mapVo.getPlaceName())
-                    .placeUrl(mapVo.getPlaceUrl())
-                    .roadAddressName(mapVo.getRoadAddressName())
-                    .x(mapVo.getX())
-                    .y(mapVo.getY())
-                    .build();
-
-            mapRepository.save(map);
-        }
-
         //팀 만들기
          Team team = Team.builder()
                  .teamName(form.getTeamName())
                  .description(form.getDescription())
-                 .map(map)
+                 .mapId(mapVo.getId())
+                 .addressName(mapVo.getAddressName())
+                 .phone(mapVo.getPhone())
+                 .placeName(mapVo.getPlaceName())
+                 .placeUrl(mapVo.getPlaceUrl())
+                 .roadAddressName(mapVo.getRoadAddressName())
+                 .x(mapVo.getX())
+                 .y(mapVo.getY())
                  .build();
 
          //팀에 할당되는 ChatRoom 생성

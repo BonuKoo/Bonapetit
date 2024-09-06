@@ -2,7 +2,6 @@ package com.eatmate.domain.entity.user;
 
 import com.eatmate.domain.entity.Tag;
 import com.eatmate.domain.entity.chat.ChatRoom;
-import com.eatmate.domain.entity.map.KakaoMap;
 import com.eatmate.domain.entity.post.TeamPost;
 import com.eatmate.domain.global.BaseTimeEntity;
 import com.eatmate.global.domain.UploadFileOfTeam;
@@ -37,10 +36,29 @@ public class Team extends BaseTimeEntity {
     @Column(name = "description")
     private String description;
 
-    // Team과 KakaoMap의 다대일 관계 매칭
-    @ManyToOne
-    @JoinColumn(name = "map_id")
-    private KakaoMap map;
+    @Column(name = "map_id")
+    private String mapId;
+
+    @Column(name = "address_name")
+    private String addressName;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "place_name")
+    private String placeName;
+
+    @Column(name = "place_url")
+    private String placeUrl;
+
+    @Column(name = "road_address_name")
+    private String roadAddressName;
+
+    @Column(name = "x")
+    private String x;
+
+    @Column(name = "y")
+    private String y;
 
     @OneToMany(mappedBy = "team",cascade = CascadeType.PERSIST,orphanRemoval = true)
     private List<AccountTeam> members = new ArrayList<>();
@@ -62,12 +80,33 @@ public class Team extends BaseTimeEntity {
     private List<UploadFileOfTeam> files = new ArrayList<>();
 
     @Builder
-    public Team(Long id, String teamName, Account leader, String description, KakaoMap map, List<AccountTeam> members, List<TeamPost> teamPosts, List<UploadFileOfTeam> files) {
+    public Team(Long id,
+                String teamName,
+                Account leader,
+                String description,
+                String mapId,
+                String addressName,
+                String phone,
+                String placeName,
+                String placeUrl,
+                String roadAddressName,
+                String x,
+                String y,
+                List<AccountTeam> members,
+                List<TeamPost> teamPosts,
+                List<UploadFileOfTeam> files) {
         this.id = id;
         this.teamName = teamName;
         this.leader = leader;
         this.description = description;
-        this.map = map;
+        this.mapId = mapId;
+        this.addressName = addressName;
+        this.phone = phone;
+        this.placeName = placeName;
+        this.placeUrl = placeUrl;
+        this.roadAddressName = roadAddressName;
+        this.x = x;
+        this.y = y;
         this.members = members != null ? members : new ArrayList<>();
         this.files = (files != null) ? files : new ArrayList<>();
         this.teamPosts = teamPosts;
