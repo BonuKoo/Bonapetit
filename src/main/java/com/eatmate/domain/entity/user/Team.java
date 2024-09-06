@@ -2,6 +2,7 @@ package com.eatmate.domain.entity.user;
 
 import com.eatmate.domain.entity.Tag;
 import com.eatmate.domain.entity.chat.ChatRoom;
+import com.eatmate.domain.entity.map.KakaoMap;
 import com.eatmate.domain.entity.post.TeamPost;
 import com.eatmate.domain.global.BaseTimeEntity;
 import com.eatmate.global.domain.UploadFileOfTeam;
@@ -36,8 +37,10 @@ public class Team extends BaseTimeEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "location")
-    private String location;
+    // Team과 KakaoMap의 다대일 관계 매칭
+    @ManyToOne
+    @JoinColumn(name = "map_id")
+    private KakaoMap map;
 
     @OneToMany(mappedBy = "team",cascade = CascadeType.PERSIST,orphanRemoval = true)
     private List<AccountTeam> members = new ArrayList<>();
@@ -59,12 +62,12 @@ public class Team extends BaseTimeEntity {
     private List<UploadFileOfTeam> files = new ArrayList<>();
 
     @Builder
-    public Team(Long id, String teamName, Account leader, String description, String location, List<AccountTeam> members, List<TeamPost> teamPosts, List<UploadFileOfTeam> files) {
+    public Team(Long id, String teamName, Account leader, String description, KakaoMap map, List<AccountTeam> members, List<TeamPost> teamPosts, List<UploadFileOfTeam> files) {
         this.id = id;
         this.teamName = teamName;
         this.leader = leader;
         this.description = description;
-        this.location = location;
+        this.map = map;
         this.members = members != null ? members : new ArrayList<>();
         this.files = (files != null) ? files : new ArrayList<>();
         this.teamPosts = teamPosts;

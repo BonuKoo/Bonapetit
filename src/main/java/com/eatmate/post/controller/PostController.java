@@ -2,6 +2,7 @@ package com.eatmate.post.controller;
 
 import com.eatmate.dao.repository.team.TeamRepository;
 import com.eatmate.domain.entity.user.Team;
+import com.eatmate.map.vo.MapVo;
 import com.eatmate.post.vo.PostForm;
 import com.eatmate.post.service.PostJpaService;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +35,12 @@ public class PostController {
 
     // 게시글 및 팀 생성
     @PostMapping("/createPost")
-    public String createPost(RedirectAttributes redirectAttributes, Principal principal, @ModelAttribute("createPost") PostForm postForm) throws IOException{
+    public String createPost(RedirectAttributes redirectAttributes,
+                             Principal principal,
+                             PostForm postForm,
+                             MapVo mapVo) throws IOException{
         postForm.addAuthor(principal.getName());
-        postJpaService.createChatRoomAndTeamWhenWriteThePost(postForm);
+        postJpaService.createChatRoomAndTeamWhenWriteThePost(postForm, mapVo);
         redirectAttributes.addFlashAttribute("message", "게시글이 성공적으로 생성되었습니다.");
         return "redirect:/post/list";
     }
