@@ -13,20 +13,17 @@ public class PostForm {
     private String description;
     //방장 닉네임
     private String author;
-    // 지역
-    private String location;
 
     //해시 태그 -> 추후 리스트로 변경
     //private String tag;
 
     @Builder
-    public PostForm(String description, String author, String teamName, String location
+    public PostForm(String description, String author, String teamName
             //,String tag
     ) {
         this.description = description;
         this.author = author;
         this.teamName = teamName;
-        this.location = location;
         //this.tag = tag;
     }
 
