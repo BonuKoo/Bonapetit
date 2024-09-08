@@ -22,10 +22,10 @@ spring:
     restart:
       enabled: false
   #FTL 템플릿 파일도 반영
-  freemarker:
-    template-loader-path: classpath:/template/chat/
-    suffix: .ftl
-    cache: false
+#  freemarker:
+#    template-loader-path: classpath:/template/chat/
+#    suffix: .ftl
+#    cache: false
 
   security:
     oauth2:

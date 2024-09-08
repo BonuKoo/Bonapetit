@@ -1,6 +1,6 @@
+
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
+<html
       layout:decorate="~{layout/layout.html}"
 >
 
@@ -8,30 +8,46 @@
     <th:block layout:fragment="head">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Corrected th:href -->
-        <link rel="stylesheet" th:href="@{/css/path/yourStyle.css}">
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script th:src="@{/js/post/detailPostForm.js}"></script>
     </th:block>
 </head>
-
+<!--Body-->
 <body>
 <div layout:fragment="content">
-
     <div class="team-details">
         <h1 th:text="${team.teamName}"></h1>
+        <p><strong>Description:</strong> <span th:text="${team.description}">Description</span></p>
     </div>
 
-    <div class="team-details">
-        <p><strong>Description:</strong> <span th:text="${team.description}">Description Text</span></p>
+    <div>
+        <!-- Thymeleaf 표현식을 사용하여 onclick 속성에 함수 호출 설정 -->
+        <button type="button" class="btn btn-primary"
+                th:attr="onclick='joinTeam(' + ${team.id} + ')'">채팅방 입장</button>
     </div>
 
-    <p>채팅방 입장</p>
-    <span th:text="${team.chatRoom.roomId}"></span>
-
-    <!-- 채팅방 입장을 위한 form -->
-    <form th:action="@{/room/enter/{roomId}(roomId=${team.chatRoom.roomId})}" method="post">
-        <button type="submit">채팅방 입장</button>
-    </form>
 
 </div>
+<!--<script>-->
+<!--    function joinTeam(teamId) {-->
+<!--        // 팀 가입을 위한 POST 요청을 보냅니다-->
+<!--        axios.post('/team/join/' + encodeURIComponent(teamId))-->
+<!--            .then(response => {-->
+<!--                // 응답에서 roomId를 추출합니다-->
+<!--                const roomId = response.data.roomId;-->
+<!--                if (roomId) {-->
+<!--                    // 채팅방으로 리다이렉트합니다-->
+<!--                    window.location.href = "/chat/room/enter/" + encodeURIComponent(roomId);-->
+<!--                } else {-->
+<!--                    alert('채팅방 정보를 불러오지 못했습니다.');-->
+<!--                }-->
+<!--            })-->
+<!--            .catch(error => {-->
+<!--                console.error("팀 가입 중 오류가 발생했습니다:", error);-->
+<!--                alert('팀 가입에 실패했습니다.');-->
+<!--            });-->
+<!--    }-->
+</script>
 </body>
 </html>
+

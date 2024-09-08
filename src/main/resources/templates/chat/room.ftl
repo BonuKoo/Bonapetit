@@ -37,7 +37,8 @@
     <!-- JavaScript -->
     <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
     <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
-    <script>
+
+<script>
         var vm = new Vue({
             el: '#app',
             data: {

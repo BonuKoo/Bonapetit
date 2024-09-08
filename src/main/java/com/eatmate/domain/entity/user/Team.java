@@ -60,7 +60,7 @@ public class Team extends BaseTimeEntity {
     @Column(name = "y")
     private String y;
 
-    @OneToMany(mappedBy = "team",cascade = CascadeType.PERSIST,orphanRemoval = true)
+    @OneToMany(mappedBy = "team",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<AccountTeam> members = new ArrayList<>();
 
     //채팅방과 팀을 일대일로 매핑

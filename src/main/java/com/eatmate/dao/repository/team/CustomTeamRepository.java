@@ -25,7 +25,7 @@ public class CustomTeamRepository {
             entityManager.flush();
 
             // 영속성 컨텍스트 초기화 (team과 관련된 엔티티는 비영속 상태가 됨)
-            entityManager.clear();
+            //entityManager.clear();
 
             // Team의 ID로 ChatRoom 직접 조회
             ChatRoom chatRoom = entityManager.createQuery(
