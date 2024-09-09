@@ -4,7 +4,7 @@
       layout:decorate="~{layout/layout.html}">
 <head>
     <th:block layout:fragment="head">
-        <title>회원정보</title>
+        <title>닉네임 변경</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </th:block>
@@ -12,23 +12,23 @@
 <body>
 <div layout:fragment="content">
     <div class="content">
-        <h2>회원정보</h2>
+        <h2>닉네임 변경</h2>
         <form name="profile" th:action="@{/profile/detail}" method="post" id="profileForm">
             <table id="userTable">
                 <input type="hidden" th:field="${dto.oauth2_id}" />
-                <tr>
-                    <td>이메일</td>
-                    <td><input type="text" th:field="${dto.email}"></td>
-                </tr>
-                <tr>
-                    <td colspan="2" id="id-area"></td>
-                </tr>
-                <tr>
-                    <td>비밀번호</td>
-                    <td>
-                        <input type="password" th:field="${dto.password}" placeholder="비밀번호 변경">
-                    </td>
-                </tr>
+<!--                <tr>-->
+<!--                    <td>이메일</td>-->
+<!--                    <td><input type="text" th:field="${dto.email}"></td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td colspan="2" id="id-area"></td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>비밀번호</td>-->
+<!--                    <td>-->
+<!--                        <input type="password" th:field="${dto.password}" placeholder="비밀번호 변경">-->
+<!--                    </td>-->
+<!--                </tr>-->
                 <tr>
                     <td>닉네임</td>
                     <td><input type="text" th:field="${dto.nick_name}"></td>

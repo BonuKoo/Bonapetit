@@ -20,6 +20,22 @@ public class AccountProfileController {
     @Autowired
     private AccountService accountService;
 
+    // 프로필 리스트
+    @GetMapping("/list")
+    public String getProfilePage(Model model){
+        // 인증 객체에서 현재 로그인한 사용자의 OAuth2 ID 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = authentication.getName();
+
+        AccountDto dto = accountService.findByOauth2Id(currentEmail);
+        if (dto != null) {
+            model.addAttribute("dto", dto);
+        } else {
+            return "error"; // 사용자가 없는 경우 에러 페이지로 리다이렉트 (원하는 대로 변경 가능)
+        }
+        return "account/profile/profileListForm";
+    }
+
     //회원 정보 페이지
     @GetMapping("/detail")
     public String getDetailPage(Model model) {

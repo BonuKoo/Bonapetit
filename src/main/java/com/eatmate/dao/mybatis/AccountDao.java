@@ -30,7 +30,7 @@ public interface AccountDao {
         @Select("select email, nick_name, password from account WHERE oauth2_id = #{oauth2_id}")
         AccountDto selectUser(@Param("oauth2_id") int oauth2Id);
 
-        @Update("UPDATE account SET email = #{email}, nick_name = #{nick_name}, password = #{password} WHERE oauth2_id = #{oauth2_id}")
+        @Update("UPDATE account SET nick_name = #{nick_name} WHERE oauth2_id = #{oauth2_id}")
         void updateDetailAccount(AccountDto dto);
 
         // 회원 탈퇴를 위한 쿼리 추가
