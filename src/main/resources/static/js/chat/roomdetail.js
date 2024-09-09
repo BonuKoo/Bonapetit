@@ -4,6 +4,7 @@
   var reconnect = 0;
 
   // Vue.js instance
+
   var vm = new Vue({
       el: '#app',
 

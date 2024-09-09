@@ -25,9 +25,6 @@ public class TeamJpaService {
 
         Account account = accountRepository.findByOauth2id(teamForm.getUserName());
 
-        log.info("account ID : {}", account);
-        log.info("account ID : {}", account.getId().toString());
-
         Team team = teamRepository.findById(teamForm.getTeamId()).get();
 
         AccountTeam accountTeam = AccountTeam.builder()
