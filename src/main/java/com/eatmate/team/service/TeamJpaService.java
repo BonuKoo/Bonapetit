@@ -33,7 +33,7 @@ public class TeamJpaService {
 
         AccountTeam accountTeam = AccountTeam.builder()
                 .account(account)
-                .team(team)
+                //.team(team)
                 .isLeader(false)
                 .build();
 
