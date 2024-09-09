@@ -37,7 +37,6 @@
     <ul>
       <!--sec:authorize="isAuthenticated()"-->
       <li sec:authorize="isAuthenticated()">
-        <span class="nickname" th:text="${#authentication.principal.nickname} + '님'"></span>
         <a th:href="@{/profile/list}">프로필</a></li>
       <!--sec:authorize="isAnonymous()"-->
       <li sec:authorize="isAnonymous()"><a th:href="@{/login}">로그인</a></li>
