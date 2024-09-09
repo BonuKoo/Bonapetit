@@ -72,10 +72,11 @@ public class PostJpaService {
 
         AccountTeam accountTeam = AccountTeam.builder()
                  .account(account)
-                 .team(team)
+                 //.team(team)
                  .isLeader(true)
                  .build();
 
+        team.addAccountTeam(accountTeam);
         team.setChatRoom(chatRoom);
         chatRoom.setTeam(team);
 
