@@ -26,13 +26,6 @@ public class Team extends BaseTimeEntity {
     @Column(name = "team_name")
     private String teamName;
 
-    //리더 컬럼
-
-    // 리더를 위한 OneToOne 관계 설정
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "leader_id")  // 외래 키를 'leader_id'로 명시
-    private Account leader;
-
     @Column(name = "description")
     private String description;
 
@@ -60,7 +53,7 @@ public class Team extends BaseTimeEntity {
     @Column(name = "y")
     private String y;
 
-    @OneToMany(mappedBy = "team",cascade = CascadeType.PERSIST,orphanRemoval = true)
+    @OneToMany(mappedBy = "team",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<AccountTeam> members = new ArrayList<>();
 
     //채팅방과 팀을 일대일로 매핑
@@ -82,7 +75,6 @@ public class Team extends BaseTimeEntity {
     @Builder
     public Team(Long id,
                 String teamName,
-                Account leader,
                 String description,
                 String mapId,
                 String addressName,
@@ -97,7 +89,6 @@ public class Team extends BaseTimeEntity {
                 List<UploadFileOfTeam> files) {
         this.id = id;
         this.teamName = teamName;
-        this.leader = leader;
         this.description = description;
         this.mapId = mapId;
         this.addressName = addressName;

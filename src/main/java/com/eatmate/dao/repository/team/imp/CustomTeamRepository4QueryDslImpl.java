@@ -3,6 +3,7 @@ package com.eatmate.dao.repository.team.imp;
 import com.eatmate.dao.repository.team.CustomTeamRepository4QueryDsl;
 
 
+import com.eatmate.domain.entity.user.QAccount;
 import com.eatmate.domain.entity.user.QTeam;
 import com.eatmate.post.vo.PostPageDto;
 import com.eatmate.post.vo.TeamSearchCondition;
@@ -20,14 +21,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomTeamRepository4QueryDslImpl implements CustomTeamRepository4QueryDsl {
 
-    /*
+
     private final JPAQueryFactory queryFactory;
 
     QTeam team = QTeam.team;
 
-    @Override
+    QAccount account = QAccount.account;
+
     public Page<PostPageDto> searchWithPage(TeamSearchCondition condition, Pageable pageable) {
-        List<PostPageDto> query = queryFactory
+
+                List<PostPageDto> query = queryFactory
+
                 .select(Projections.constructor(PostPageDto.class,
                         team.id,
                         team.teamName,
@@ -54,11 +58,13 @@ public class CustomTeamRepository4QueryDslImpl implements CustomTeamRepository4Q
         if (!StringUtils.hasText(keyword)){
             return null;
         }
+
         return team.teamName.containsIgnoreCase(keyword)
-                .or(team.location.containsIgnoreCase(keyword))
-                //.or(team.tags.)
+                .or(team.placeName.containsIgnoreCase(keyword))
+                .or(team.addressName.containsIgnoreCase(keyword))
+                .or(team.roadAddressName.containsIgnoreCase(keyword))
                 ;
 
     }
-    */
+
 }

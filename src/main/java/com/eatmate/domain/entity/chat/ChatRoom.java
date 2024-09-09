@@ -27,11 +27,9 @@ public class ChatRoom {
 
     private String roomName;    //채팅방 이름 -> 이 경우 teamName을 등록해줘도 괜찮을 것 같다.
 
-
     @OneToOne
     @JoinColumn(name = "team_id")
     private Team team;  //Team 마다 채팅방 하나 씩 서버에 할당
-
 
     @Builder
     public ChatRoom(String roomId, String roomName, Team team) {

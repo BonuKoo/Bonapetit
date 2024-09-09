@@ -68,8 +68,6 @@ dependencies {
 
 	//Chat
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	//View Template 프리메이커
-	implementation 'org.springframework.boot:spring-boot-starter-freemarker'
 
 	implementation 'org.webjars.bower:bootstrap:4.3.1'
 	implementation 'org.webjars.bower:vue:2.5.16'
