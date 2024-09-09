@@ -21,7 +21,7 @@ public interface AccountDao {
         @Select("SELECT * FROM account WHERE email = #{email}")
         AccountDto findByEmail(@Param("email") String email);
 
-        @Select("SELECT * FROM account WHERE oauth2_id = #{oauth2_id}")
+        @Select("SELECT  account_id, email, nick_name, password, roles, oauth2_id, access_token, provider FROM account WHERE oauth2_id = #{oauth2_id}")
         AccountDto findByOauth2Id(@Param("oauth2_id") String oauth2Id);
 
         @Update("UPDATE account SET oauth2_id = #{oauth2_id}, access_token = #{access_token} WHERE email = #{email}")
@@ -30,7 +30,7 @@ public interface AccountDao {
         @Select("select email, nick_name, password from account WHERE oauth2_id = #{oauth2_id}")
         AccountDto selectUser(@Param("oauth2_id") int oauth2Id);
 
-        @Update("UPDATE account SET email = #{email}, nick_name = #{nick_name}, password = #{password} WHERE oauth2_id = #{oauth2_id}")
+        @Update("UPDATE account SET nick_name = #{nick_name} WHERE oauth2_id = #{oauth2_id}")
         void updateDetailAccount(AccountDto dto);
 
         // 회원 탈퇴를 위한 쿼리 추가

@@ -1,12 +1,17 @@
 package com.eatmate.account.service;
 
 import com.eatmate.dao.mybatis.AccountDao;
+import com.eatmate.dao.mybatis.AccountTeamDao;
 import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.domain.dto.AccountDto;
+import com.eatmate.domain.dto.TeamDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +20,7 @@ public class AccountService {
     private final AccountDao accountDao;
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AccountTeamDao accountTeamDao;
 
     // 이메일로 사용자 조회
     public AccountDto findByEmail(String email){
@@ -76,6 +82,20 @@ public class AccountService {
     // OAuth2 ID를 기반으로 회원 탈퇴 처리
     public void deleteUserByOauth2Id(String oauth2Id) {
         accountDao.deleteByOauth2Id(oauth2Id);
+    }
+
+    public List<TeamDto> getTeamsForUser(String oauth2Id) {
+        AccountDto account = accountDao.findByOauth2Id(oauth2Id);
+        if (account == null) {
+            System.out.println("해당하는 유저가 없습니다.");
+            return Collections.emptyList();  // 유저가 없을 경우 빈 리스트 반환
+        }
+
+        // 2. 해당 account_id로 팀 리스트 조회
+        List<TeamDto> teams = accountTeamDao.findTeamsByAccountId(account.getAccount_id());
+        System.out.println("팀 리스트: " + teams);  // 로그로 확인
+
+        return teams;
     }
 
 

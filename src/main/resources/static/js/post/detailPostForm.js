@@ -1,3 +1,4 @@
+
 var x = document.getElementById('x').value;
 var y = document.getElementById('y').value;
 
@@ -81,6 +82,7 @@ function displayPlaceInfo (place) {
     placeOverlay.setPosition(new kakao.maps.LatLng(place.y, place.x));
     placeOverlay.setMap(map);
 }
+
 
 function joinTeam(teamId) {
     // 팀 가입을 위한 POST 요청

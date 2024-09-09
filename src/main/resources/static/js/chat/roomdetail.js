@@ -1,5 +1,4 @@
   // WebSocket and STOMP initialization
-
   var sock = new SockJS("/ws-stomp");
   var ws = Stomp.over(sock);
   var reconnect = 0;
@@ -31,6 +30,7 @@
               console.error('Error during Vue initialization:', error);
           }
       },
+      methods: {
 
       methods: {
           //방을 찾는 메서드

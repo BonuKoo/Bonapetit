@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html
       layout:decorate="~{layout/layout.html}"
@@ -8,6 +9,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+        <script th:src="@{/js/post/detailPostForm.js}"></script>
         <!-- Corrected th:href -->
         <link rel="stylesheet" th:href="@{/css/map/map.css}">
     </th:block>
@@ -31,6 +34,7 @@
     <input type="hidden" id="roadAddressName" th:value="${team.roadAddressName}">
     <input type="hidden" id="x" th:value="${team.x}">
     <input type="hidden" id="y" th:value="${team.y}">
+
 
     <div>
         <!-- Thymeleaf 표현식을 사용하여 onclick 속성에 함수 호출 설정 -->
