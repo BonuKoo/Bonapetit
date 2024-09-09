@@ -18,14 +18,17 @@ public class CustomTeamRepository {
     public ChatRoomDTO createTeamAndChatRoomThenReturnChatRoomDto(Team team) {
 
         try {
+
             // Team 영속성 저장
             entityManager.persist(team);
+
+
 
             // 쿼리 발생 및 즉시 반영
             entityManager.flush();
 
             // 영속성 컨텍스트 초기화 (team과 관련된 엔티티는 비영속 상태가 됨)
-            entityManager.clear();
+            //entityManager.clear();
 
             // Team의 ID로 ChatRoom 직접 조회
             ChatRoom chatRoom = entityManager.createQuery(

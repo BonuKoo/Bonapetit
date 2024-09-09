@@ -54,7 +54,6 @@ public class ChatRoomRedisRepository {
     /**
      * 채팅방 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
      */
-
     public ChatRoomDTO createChatRoom(ChatRoomDTO chatRoomDTO) {
 
         // 1. ChatRoomDTO를 Redis에 저장
@@ -76,5 +75,5 @@ public class ChatRoomRedisRepository {
     public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
     }
-
 }
+

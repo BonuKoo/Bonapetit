@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -73,10 +72,11 @@ public class PostJpaService {
 
         AccountTeam accountTeam = AccountTeam.builder()
                  .account(account)
-                 .team(team)
+                 //.team(team)
                  .isLeader(true)
                  .build();
 
+        team.addAccountTeam(accountTeam);
         team.setChatRoom(chatRoom);
         chatRoom.setTeam(team);
 
