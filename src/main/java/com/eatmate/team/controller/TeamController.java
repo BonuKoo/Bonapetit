@@ -29,9 +29,14 @@ public class TeamController {
                 .build();
 
         TeamForm createdTeamForm = teamJpaService.joinTeam(teamForm);
+
+        String userNickname = createdTeamForm.getUserNickname();
+        String teamName = createdTeamForm.getTeamName();
+
         chatRoomService.enterChatRoom(createdTeamForm.getRoomId());
 
         //roomId를 반환하기 위해
         return createdTeamForm;
     }
+
 }

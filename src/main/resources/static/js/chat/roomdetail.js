@@ -1,47 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <title>WebSocket ChatRoom</title>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css">
-  <style>
-    [v-cloak] {
-        display: none;
-    }
-  </style>
-</head>
-<body>
-<div class="container" id="app" v-cloak>
-  <div>
-    <h2>{{room.name}}</h2>
-  </div>
-  <div class="input-group">
-    <div class="input-group-prepend">
-      <label class="input-group-text">내용</label>
-    </div>
-    <input type="text" class="form-control" v-model="message" @keyup.enter="sendMessage">
-    <div class="input-group-append">
-      <button class="btn btn-primary" type="button" @click="sendMessage" :disabled="!message">보내기</button>
-    </div>
-  </div>
-  <ul class="list-group">
-    <li class="list-group-item" v-for="message in messages">
-      {{ message.sender }} - {{ message.message }}
-    </li>
-  </ul>
-</div>
-
-<!-- JavaScript -->
-<script src="/webjars/vue/2.5.16/vue.min.js"></script>
-<script src="/webjars/axios/0.17.1/axios.min.js"></script>
-<script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
-<script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
-<!--
-<script>
   // WebSocket and STOMP initialization
   var sock = new SockJS("/ws-stomp");
   var ws = Stomp.over(sock);
@@ -50,18 +6,25 @@
   // Vue.js instance
   var vm = new Vue({
       el: '#app',
+
       data: {
           roomId: '',
           room: {},
+          roomName: '',
           sender: '',
           message: '',
           messages: []
       },
+
       created() {
           try {
+
               this.roomId = localStorage.getItem('wschat.roomId') || 'defaultRoomId';
-              this.sender = localStorage.getItem('wschat.sender') || 'Guest';
+              this.sender = localStorage.getItem('wschat.userNickname') || 'Guest';
+              this.roomName = localStorage.getItem('wschat.teamName') || '기본 이름'
+
               this.findRoom();
+
           } catch (error) {
               console.error('Error during Vue initialization:', error);
           }
@@ -123,7 +86,3 @@
       });
   }
   connect();
-</script>
--->
-</body>
-</html>

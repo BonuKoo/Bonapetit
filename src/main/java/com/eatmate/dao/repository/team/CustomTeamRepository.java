@@ -18,8 +18,11 @@ public class CustomTeamRepository {
     public ChatRoomDTO createTeamAndChatRoomThenReturnChatRoomDto(Team team) {
 
         try {
+
             // Team 영속성 저장
             entityManager.persist(team);
+
+
 
             // 쿼리 발생 및 즉시 반영
             entityManager.flush();

@@ -75,5 +75,5 @@ public class ChatRoomRedisRepository {
     public ChannelTopic getTopic(String roomId) {
         return topics.get(roomId);
     }
-
 }
+

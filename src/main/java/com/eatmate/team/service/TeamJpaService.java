@@ -1,6 +1,5 @@
 package com.eatmate.team.service;
 
-import com.eatmate.dao.mybatis.AccountDao;
 import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.dao.repository.team.TeamRepository;
 import com.eatmate.domain.entity.user.Account;
@@ -11,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +41,11 @@ public class TeamJpaService {
 
         Team savedTeam = teamRepository.save(team);
 
-        teamForm.joinRoomId(savedTeam.getChatRoom().getRoomId());
+        //RoomId, 공통 닉네임, 팀 이름을 저장 후 반환
+        teamForm.attachRoomIdAndNickname(
+                savedTeam.getChatRoom().getRoomId(),
+                account.getNickname(),
+                savedTeam.getTeamName());
 
         return teamForm;
 
