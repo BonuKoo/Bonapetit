@@ -9,7 +9,10 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
         <script th:src="@{/js/post/detailPostForm.js}"></script>
+        <!-- Corrected th:href -->
+        <link rel="stylesheet" th:href="@{/css/map/map.css}">
     </th:block>
 </head>
 <!--Body-->
@@ -20,11 +23,29 @@
         <p><strong>Description:</strong> <span th:text="${team.description}">Description</span></p>
     </div>
 
+    <div class="map_wrap">
+        <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+    </div>
+    <input type="hidden" id="mapId" th:value="${team.mapId}">
+    <input type="hidden" id="addressName" th:value="${team.addressName}">
+    <input type="hidden" id="phone" th:value="${team.phone}">
+    <input type="hidden" id="placeName" th:value="${team.placeName}">
+    <input type="hidden" id="placeUrl" th:value="${team.placeUrl}">
+    <input type="hidden" id="roadAddressName" th:value="${team.roadAddressName}">
+    <input type="hidden" id="x" th:value="${team.x}">
+    <input type="hidden" id="y" th:value="${team.y}">
+
+
     <div>
         <!-- Thymeleaf 표현식을 사용하여 onclick 속성에 함수 호출 설정 -->
         <button type="button" class="btn btn-primary"
                 th:attr="onclick='joinTeam(' + ${team.id} + ')'">채팅방 입장</button>
     </div>
+
+
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5d87d514e58d6b2485b57e6b109fab58&libraries=services,clusterer,drawing"></script>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script th:src="@{/js/post/detailPostForm.js}"></script>
 
 
 </div>

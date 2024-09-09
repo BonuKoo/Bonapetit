@@ -19,6 +19,7 @@
       created() {
           try {
 
+              //roomId, sender, roomName 등을 서버에서 부터 불러온다
               this.roomId = localStorage.getItem('wschat.roomId') || 'defaultRoomId';
               this.sender = localStorage.getItem('wschat.userNickname') || 'Guest';
               this.roomName = localStorage.getItem('wschat.teamName') || '기본 이름'
@@ -30,6 +31,9 @@
           }
       },
       methods: {
+
+      methods: {
+          //방을 찾는 메서드
           findRoom: function() {
               axios.get('/chat/room/' + this.roomId)
                 .then(response => {
@@ -39,6 +43,7 @@
                     console.error('Error fetching room data:', error);
                 });
           },
+          //입장 시
           sendMessage: function() {
               if (this.sender.trim() === '') {
                   alert('Please enter your name before sending a message.');

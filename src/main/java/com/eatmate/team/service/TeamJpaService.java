@@ -23,7 +23,6 @@ public class TeamJpaService {
     @Transactional
     public TeamForm joinTeam(TeamForm teamForm){
 
-
         Account account = accountRepository.findByOauth2id(teamForm.getUserName());
 
         log.info("account ID : {}", account);
