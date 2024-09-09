@@ -68,6 +68,7 @@
       }
   });
 
+
   function connect() {
       ws.connect({}, function(frame) {
           ws.subscribe("/sub/chat/room/" + vm.$data.roomId, function(message) {
