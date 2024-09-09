@@ -129,7 +129,6 @@ public class Team extends BaseTimeEntity {
     Tag 연관 관리 메서드
     */
 
-
     public void addTag(Tag tag) {
         tags.add(tag);
         tag.attachPost(this);
@@ -148,7 +147,6 @@ public class Team extends BaseTimeEntity {
     public int getMembersCount() {
         return this.members.size();
     }
-
 
     public void setChatRoom(ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
