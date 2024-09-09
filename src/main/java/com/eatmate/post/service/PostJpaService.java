@@ -40,9 +40,7 @@ public class PostJpaService {
     @Transactional
      public void createChatRoomAndTeamWhenWriteThePost(PostForm form, MapVo mapVo){
 
-        AccountDto accountDto = accountDao.findByOauth2Id(form.getAuthor());
-
-        Account account = accountRepository.findById(accountDto.getAccount_id()).get();
+        Account account = accountRepository.findByOauth2id(form.getAuthor());
 
         //팀 만들기
          Team team = Team.builder()
