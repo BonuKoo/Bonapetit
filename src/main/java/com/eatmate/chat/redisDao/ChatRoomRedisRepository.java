@@ -57,7 +57,7 @@ public class ChatRoomRedisRepository {
     public ChatRoomDTO createChatRoom(ChatRoomDTO chatRoomDTO) {
 
         // 1. ChatRoomDTO를 Redis에 저장
-        opsHashChatRoom.put("CHAT_ROOMS", chatRoomDTO.getRoomId(), chatRoomDTO);
+        opsHashChatRoom.put(CHAT_ROOMS, chatRoomDTO.getRoomId(), chatRoomDTO);
 
         return chatRoomDTO;
     }
