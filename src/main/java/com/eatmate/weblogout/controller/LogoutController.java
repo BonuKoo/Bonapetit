@@ -62,6 +62,7 @@ public class LogoutController {
         }
 
         String accessToken = (String) session.getAttribute("naverAccessToken");
+        System.out.println("네이버 로그아웃 액세스 토큰: " + accessToken); // 로그 추가
         if (accessToken == null) {
             System.out.println("액세스 토큰이 없습니다.");
             return "redirect:/login";
