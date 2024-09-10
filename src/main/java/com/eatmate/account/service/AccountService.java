@@ -4,6 +4,7 @@ import com.eatmate.dao.mybatis.AccountDao;
 import com.eatmate.dao.mybatis.AccountTeamDao;
 import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.domain.dto.AccountDto;
+import com.eatmate.domain.dto.AccountTeamDto;
 import com.eatmate.domain.dto.TeamDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -91,11 +92,19 @@ public class AccountService {
             return Collections.emptyList();  // 유저가 없을 경우 빈 리스트 반환
         }
 
-        // 2. 해당 account_id로 팀 리스트 조회
-        List<TeamDto> teams = accountTeamDao.findTeamsByAccountId(account.getAccount_id());
-        System.out.println("팀 리스트: " + teams);  // 로그로 확인
+        // 해당 account_id로 팀 리스트 조회
+        return accountTeamDao.findTeamsByAccountId(account.getAccount_id());
+    }
 
-        return teams;
+    public List<AccountTeamDto> getTeamsWhereIsLeader(String oauth2Id) {
+        AccountDto account = accountDao.findByOauth2Id(oauth2Id);
+        if (account == null) {
+            System.out.println("해당하는 유저가 없습니다.");
+            return Collections.emptyList();  // 유저가 없을 경우 빈 리스트 반환
+        }
+
+        // 해당 account_id로 팀 리스트 조회
+        return accountTeamDao.findTeamsWhereIsLeader(account.getAccount_id());
     }
 
 

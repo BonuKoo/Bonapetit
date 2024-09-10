@@ -2,6 +2,7 @@ package com.eatmate.account.controller;
 
 import com.eatmate.account.service.AccountService;
 import com.eatmate.domain.dto.AccountDto;
+import com.eatmate.domain.dto.AccountTeamDto;
 import com.eatmate.domain.dto.TeamDto;
 import com.eatmate.weblogout.service.LogoutService;
 import feign.Param;
@@ -50,9 +51,14 @@ public class AccountProfileController {
         AccountDto dto = accountService.findByOauth2Id(currentEmail);
         if (dto != null) {
             model.addAttribute("dto", dto);
-            // 팀 리스트 가져오기
+
+            // 본인이 속한 팀 리스트 가져오기
             List<TeamDto> teams = accountService.getTeamsForUser(currentEmail);
             model.addAttribute("teams", teams); // 팀 리스트 추가
+
+            // 본인이 개설한 팀(리더인 팀) 리스트 가져오기
+            List<AccountTeamDto> leaderTeams = accountService.getTeamsWhereIsLeader(currentEmail);
+            model.addAttribute("leaderTeams", leaderTeams);
         } else {
             return "error"; // 사용자가 없는 경우 에러 페이지로 리다이렉트 (원하는 대로 변경 가능)
         }
