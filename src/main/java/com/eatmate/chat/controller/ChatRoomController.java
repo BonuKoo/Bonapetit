@@ -3,13 +3,22 @@ package com.eatmate.chat.controller;
 import com.eatmate.chat.dto.ChatRoomDTO;
 
 import com.eatmate.chat.redisDao.ChatRoomRedisRepository;
+import com.eatmate.dao.repository.chatroom.ChatRoomRepository;
+import com.eatmate.dao.repository.team.TeamRepository;
 import com.eatmate.domain.entity.chat.ChatRoom;
+import com.eatmate.jwt.JwtTokenProvider;
+import com.eatmate.jwt.dto.LoginInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -17,17 +26,8 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomRedisRepository chatRoomRedisRepository;
-
-    /*
-    채팅방 생성 -> Team 만들 때 채팅방은 생성됨.
-    @PostMapping("/room")
-    @ResponseBody
-    public ChatRoomDTO createRoom(
-            @RequestParam String name
-    ) {
-        return chatRoomRedisRepository.createChatRoom(name);
-    }
-    */
+    private final JwtTokenProvider jwtTokenProvider;
+    private final ChatRoomRepository chatRoomRepository;
 
     //채팅방 입장 화면
     @GetMapping("/room/enter/{roomId}")
@@ -35,20 +35,6 @@ public class ChatRoomController {
         model.addAttribute("roomId",roomId);
         return "chat/roomdetail";
     }
-
-    /*
-    //채팅방 구독 처리 후 상세 화면으로 이동
-    @PostMapping("/room/enter/{roomId}")
-    public String  enterRoom(@PathVariable String roomId){
-
-        //채팅방 구독
-        chatRoomRedisRepository.enterChatRoom(roomId);
-
-        //상세 화면으로 리다이렉트
-        return "redirect:/room/enter/" + roomId;
-    }
-    */
-
 
     //특정 채팅방 조회
     @GetMapping("/room/{roomId}")
@@ -69,5 +55,36 @@ public class ChatRoomController {
     public List<ChatRoomDTO> room(){
         return chatRoomRedisRepository.findAllRoom();
     }
+
+    //JWT 토큰 생성하는 예시
+    @GetMapping("/user")
+    @ResponseBody
+    public LoginInfo getUserInfo(){
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String oauthId = auth.getName();
+        String nickname = (String) ((Map<String, Object>) ((OAuth2AuthenticationToken) auth).getPrincipal().getAttributes().get("properties")).get("nickname");
+
+        return LoginInfo.builder()
+                .nickname(nickname)
+                .token(jwtTokenProvider.generateToken(nickname,nickname))
+                .build();
+    }
+
+    @PostMapping("/enter/{teamId}")
+    @ResponseBody
+    public ChatRoomDTO enterRoom(
+            @PathVariable Long teamId,
+            Principal principal){
+
+        ChatRoom chatRoom = chatRoomRepository.findByTeam(teamId);
+
+        ChatRoomDTO chatRoomDTO = ChatRoomDTO.builder()
+                .roomName(chatRoom.getRoomName())
+                .roomId(chatRoom.getRoomId())
+                .build();
+        return chatRoomDTO;
+    }
+
 
 }

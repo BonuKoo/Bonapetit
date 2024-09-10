@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout.html}">
+<head>
+  <th:block layout:fragment="head">
+    <title>프로필 관리</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- axios CDN 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </th:block>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/profile/profileListForm.css}">
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- 왼쪽 사이드바 -->
+      <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="#" onclick="showSection('profileSection')">닉네임 변경 및 탈퇴</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0);" onclick="showSection('teamSection')">가입된 팀 관리</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- 메인 컨텐츠 -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <!-- 프로필 관리 섹션 -->
+        <div id="profileSection">
+          <h2>프로필 관리</h2>
+          <div class="d-flex flex-column">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nicknameModal">닉네임 변경</button>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">계정 삭제</button>
+          </div>
+        </div>
+
+        <!-- 가입된 팀 관리 섹션 -->
+        <div id="teamSection" style="display: none;">
+          <h2>가입된 팀 관리</h2>
+          <!-- 팀 목록 테이블 -->
+          <div class="mb-3">
+            <form name="profile" th:action="@{/profile/joinedTeam}" method="post">
+              <table class="table table-striped">
+                <input type="hidden" th:value="${dto.account_id}" name="account_id"/>
+                <thead>
+                <tr>
+                  <th scope="col">팀아이디</th>
+                  <th scope="col">팀명</th>
+                  <th scope="col">팀 설명</th>
+                  <th scope="col">팀 입장</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 팀 리스트 출력 -->
+                <tr th:each="team : ${teams}">
+                  <td th:text="${team.team_id}"></td>
+                  <td><a th:href="@{'/post/detail/' + ${team.team_id}}" th:text="${team.team_name}"></a></td>
+                  <td th:text="${team.description}"></td>
+                  <td>
+                    <!-- 채팅방 입장 버튼 추가 -->
+                    <button type="button" class="btn btn-primary"
+                            th:attr="onclick='enterChat(' + ${team.team_id} + ')'">채팅방 입장</button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- 닉네임 변경 모달 -->
+  <div class="modal fade" id="nicknameModal" tabindex="-1" aria-labelledby="nicknameModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="nicknameModalLabel">닉네임 변경</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form name="profile" th:action="@{/profile/detail}" method="post" id="profileForm">
+            <div class="mb-3">
+              <input type="hidden" th:field="${dto.oauth2_id}" />
+              <label for="nickName" class="form-label">닉네임</label>
+              <input type="text" class="form-control" id="nickName" th:field="${dto.nick_name}">
+            </div>
+            <button type="submit" class="btn btn-primary">변경</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 계정 삭제 모달 -->
+  <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteAccountModalLabel">계정 삭제</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>정말로 계정을 삭제하시겠습니까?</p>
+          <form th:action="@{/profile/delete}" method="post" id="deleteForm">
+            <input type="hidden" th:field="${dto.oauth2_id}">
+            <button id="logoutButton" type="submit" class="btn btn-danger" href="javascript:void(0)">삭제</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS 및 jQuery 추가 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script th:src="@{/js/account/profile/profileListForm.js}"></script>
+</div>
+</body>
+</html>

@@ -13,18 +13,23 @@
           roomId: '',
           room: {},
           roomName: '',
-          sender: '',
           message: '',
-          messages: []
+          messages: [],
+          token: ''
       },
 
       created() {
           try {
 
-              //roomId, sender, roomName 등을 서버에서 부터 불러온다
+              //roomId, roomName 등을 서버에서 부터 불러온다
               this.roomId = localStorage.getItem('wschat.roomId') || 'defaultRoomId';
-              this.sender = localStorage.getItem('wschat.userNickname') || 'Guest';
               this.roomName = localStorage.getItem('wschat.teamName') || '기본 이름'
+              var _this = this;
+
+              axios.get('chat/user').then(response => {
+                _this.token = response.data.token;
+                ws.
+              })
 
               this.findRoom();
 
@@ -68,7 +73,6 @@
       }
   });
 
-
   function connect() {
       ws.connect({}, function(frame) {
           ws.subscribe("/sub/chat/room/" + vm.$data.roomId, function(message) {
@@ -93,3 +97,4 @@
       });
   }
   connect();
+
