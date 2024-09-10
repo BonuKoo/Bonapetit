@@ -28,12 +28,12 @@ header {
     margin: 0 auto;
 }
 
-/* user-tab 설정: logo 오른쪽에 위치 */
+/* user-tab 설정: logo 오른쪽에 위치, 이모티콘 크기 줄이기 */
 .user-tab {
     position: absolute;
-    top: 40%; /* 로고의 중간 위치로 이동 */
-    right: 20px;
-    transform: translateY(-40%); /* 중간 위치 보정 */
+    top: 225px; /* 페이지 맨 위에서 10px 내려옴 */
+    right: 20px; /* 페이지 오른쪽에서 20px 떨어짐 */
+    z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 설정 */
 }
 
 .user-tab ul {
@@ -46,6 +46,11 @@ header {
 
 .user-tab li {
     display: inline;
+}
+
+.user-tab img {
+    width: 40px; /* 이미지 크기를 30px로 설정 */
+    height: 40px;
 }
 
 /* main-action 설정 */

@@ -1,0 +1,129 @@
+/* 전체 레이아웃 관련 */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+}
+
+.container-fluid {
+    padding-top: 20px;
+}
+
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* 사이드바 */
+.sidebar {
+    background-color: #f8f9fa;
+    border-right: 1px solid #ddd;
+    padding-top: 20px;
+    min-height: 100vh;
+}
+
+.sidebar .nav-link {
+    color: #007bff;
+    font-weight: bold;
+    padding: 10px;
+    display: block;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* 메인 컨텐츠 */
+main {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 모달 스타일 */
+.modal-header {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+/* 경고 메시지 */
+.alert {
+    padding: 15px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border-radius: 4px;
+    margin-top: 20px;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.alert-warning .alert-heading {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* 테이블 스타일 */
+.table-striped {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.table-striped th, .table-striped td {
+    padding: 10px;
+    text-align: left;
+}
+
+.table-striped th {
+    background-color: #007bff;
+    color: white;
+}
+
+.table-striped td {
+    background-color: #f2f2f2;
+}
+
+/* 하단 영역 */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #007bff;
+    color: white;
+    margin-top: 20px;
+}
+
+footer a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+footer img {
+    width: 50px;
+    height: 50px;
+    margin-top: 10px;
+}
