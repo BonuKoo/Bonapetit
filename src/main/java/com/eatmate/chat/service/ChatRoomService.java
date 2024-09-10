@@ -23,19 +23,5 @@ public class ChatRoomService {
         //방 생성
         chatRoomRedisRepository.createChatRoom(chatRoomDTO);
 
-        /*
-        //입장
-        enterChatRoom(chatRoomDTO.getRoomId());
-        */
-
     }
-
-    //채팅방에 입장
-    /*
-    @Transactional
-    public void enterChatRoom(String roomId){
-        chatRoomRedisRepository.enterChatRoom(roomId);
-    }
-    */
-
 }

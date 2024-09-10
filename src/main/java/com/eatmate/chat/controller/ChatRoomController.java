@@ -4,21 +4,15 @@ import com.eatmate.chat.dto.ChatRoomDTO;
 
 import com.eatmate.chat.redisDao.ChatRoomRedisRepository;
 import com.eatmate.dao.repository.chatroom.ChatRoomRepository;
-import com.eatmate.dao.repository.team.TeamRepository;
 import com.eatmate.domain.entity.chat.ChatRoom;
 import com.eatmate.jwt.JwtTokenProvider;
-import com.eatmate.jwt.dto.LoginInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -56,21 +50,7 @@ public class ChatRoomController {
         return chatRoomRedisRepository.findAllRoom();
     }
 
-    //JWT 토큰 생성하는 예시
-    @GetMapping("/user")
-    @ResponseBody
-    public LoginInfo getUserInfo(){
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String oauthId = auth.getName();
-        String nickname = (String) ((Map<String, Object>) ((OAuth2AuthenticationToken) auth).getPrincipal().getAttributes().get("properties")).get("nickname");
-
-        return LoginInfo.builder()
-                .nickname(nickname)
-                .token(jwtTokenProvider.generateToken(nickname,nickname))
-                .build();
-    }
-
+    //profileListForm에서 채팅방 정보를 불러온다.
     @PostMapping("/enter/{teamId}")
     @ResponseBody
     public ChatRoomDTO enterRoom(

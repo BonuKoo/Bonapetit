@@ -43,27 +43,18 @@ public class ChatRoomRedisRepository {
 
     /**
      * 채팅방 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
+     채팅방의 고유한 roomId가 Redis의 해시 맵에서 채팅방을 식별하는 키로 사용
+     chatRoomDTO가 Value로 Redis에 저장
      */
     public ChatRoomDTO createChatRoom(ChatRoomDTO chatRoomDTO) {
         // ChatRoomDTO 사양을 Redis에 저장
         opsHashChatRoom.put(CHAT_ROOMS, chatRoomDTO.getRoomId(), chatRoomDTO);
         return chatRoomDTO;
     }
-
-    /*
-    public void enterChatRoom(String roomId) {
-        ChannelTopic topic = topics.get(roomId);
-        if (topic == null) {
-            topic = new ChannelTopic(roomId);
-            redisMessageListener.addMessageListener(redisSubscriber, topic);
-            topics.put(roomId, topic);
-        }
-    }
-
-    // Get topic by roomId
-    public ChannelTopic getTopic(String roomId) {
-        return topics.get(roomId);
-    }*/
-
 }
 
+/**
+ * 해시 키 : CHAT_ROOMS ( 모든 채팅방이 저장되는 곳)
+ * 필드 키 : roomId ( 각 채팅방을 고유하게 식별한s UUID )
+ * ChatRoomDto : 해당 채팅방의 정보
+ */

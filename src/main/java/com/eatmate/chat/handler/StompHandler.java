@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class StompHandler implements ChannelInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
-    
-    
+
+
     //Websocket을 통해 들어온 요청이 처리 되기 전 실행
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
