@@ -102,7 +102,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         // 최종적으로 attributes에 DB에서 조회한 닉네임을 넣음
-        attributes.put("nickname", nickname);
+        attributes.put("nickname", accountDto.getNick_name());
 
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),

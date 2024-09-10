@@ -10,9 +10,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -20,7 +24,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/profile")
@@ -56,7 +63,53 @@ public class AccountProfileController {
     @PostMapping("/detail")
     public String updateEmployee(@ModelAttribute AccountDto dto) {
         accountService.updateDetailAccount(dto);
+
+        // 현재 사용자 정보 갱신
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+
+        // attributes에 새로운 닉네임을 반영
+        Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes());
+        attributes.put("nickname", dto.getNick_name());
+
+        // 사용자 식별자 키를 결정하는 메서드 추가
+        String userNameAttributeKey = getUserNameAttributeKey(authentication); // 여기서 수정
+
+        // 새로운 DefaultOAuth2User 객체 생성
+        OAuth2User updatedUser = new DefaultOAuth2User(
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+                attributes,
+                userNameAttributeKey // 사용자의 식별자 key
+        );
+
+        // 새로운 Authentication 객체로 교체
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(
+                updatedUser,
+                authentication.getCredentials(),
+                authentication.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+
         return "redirect:/";
+    }
+
+    // OAuth2 제공자에 따른 식별자 키를 가져오는 메서드
+    private String getUserNameAttributeKey(Authentication authentication) {
+        // OAuth2AuthenticationToken에서 제공자의 registrationId를 가져옴
+        if (authentication instanceof OAuth2AuthenticationToken) {
+            OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
+            String registrationId = oAuth2AuthenticationToken.getAuthorizedClientRegistrationId();
+
+            // 각 제공자에 따른 식별자 key를 반환
+            if ("naver".equals(registrationId)) {
+                return "id"; // 네이버는 'id' 사용
+            } else if ("kakao".equals(registrationId)) {
+                return "id"; // 카카오는 'id' 사용
+            } else if ("google".equals(registrationId)) {
+                return "sub"; // 구글은 'sub' 사용
+            }
+        }
+        throw new IllegalArgumentException("Unknown provider");
     }
 
     // 회원 탈퇴
