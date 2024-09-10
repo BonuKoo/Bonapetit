@@ -16,7 +16,7 @@ import java.util.List;
 public class AccountDto {
 
     private Long account_id;
-    private String email;    //로그인은 email로
+    private String email;
     private String nick_name;
     private String password;
     private String roles;

@@ -27,16 +27,22 @@
   <nav class="user-tab jua-regular">
     <ul>
       <!--sec:authorize="isAuthenticated()"-->
+      <!-- 로그인된 사용자일 경우 닉네임과 프로필 이미지 표시 -->
       <li sec:authorize="isAuthenticated()">
-        <a th:href="@{/profile/list}">프로필</a></li>
-      <!--sec:authorize="isAnonymous()"-->
-      <li sec:authorize="isAnonymous()"><a th:href="@{/login}">로그인</a></li>
-      <!--sec:authorize="isAuthenticated()"-->
-      <li sec:authorize="isAuthenticated()">
-        <a id="logoutButton" class="btn btn-primary" href="javascript:void(0)">로그아웃</a>
+        <span class="nickname" th:text="${#authentication.principal.attributes['nickname']} + '님'"></span>
+        <a th:href="@{/profile/list}">
+          <img th:src="@{/img/profile.png}" alt="프로필">
+        </a>
       </li>
       <!--sec:authorize="isAnonymous()"-->
-      <li sec:authorize="isAnonymous()"><a th:href="@{/join}">회원가입</a></li>
+      <li sec:authorize="isAnonymous()">
+        <a th:href="@{/login}"><img th:src="@{/img/Login.png}" alt="로그인"></a></li>
+      <!--sec:authorize="isAuthenticated()"-->
+      <li sec:authorize="isAuthenticated()">
+        <a id="logoutButton" href="javascript:void(0)"><img th:src="@{/img/Logout.png}" alt="로그아웃"></a>
+      </li>
+      <!--sec:authorize="isAnonymous()"-->
+      <!--<li sec:authorize="isAnonymous()"><a th:href="@{/join}">회원가입</a></li>-->
     </ul>
   </nav>
 
