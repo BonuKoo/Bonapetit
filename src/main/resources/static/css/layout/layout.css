@@ -1,221 +1,112 @@
-/* Global Styles */
+/* 폰트 */
+.jua-regular {
+  font-family: "Jua", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* 전체 배경 설정 */
 body {
-    font-family: Arial, sans-serif;
+    background-color: white;
     margin: 0;
-    padding: 0;
-    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
 }
 
-a {
-    text-decoration: none;
-    color: #333;
-}
-
-/* Header */
+/* Header 부분 */
 header {
-    background-color: #ffa726;
+    text-align: center;
     padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background-color: white;
+    position: relative;
 }
 
+/* logo 설정 */
 .logo img {
-    width: 150px;
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 0 auto;
 }
 
-/* 기본 nav 스타일 (공통) */
-nav ul {
+/* user-tab 설정: logo 오른쪽에 위치, 이모티콘 크기 줄이기 */
+.user-tab {
+    position: absolute;
+    top: 225px; /* 페이지 맨 위에서 10px 내려옴 */
+    right: 20px; /* 페이지 오른쪽에서 20px 떨어짐 */
+    z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 설정 */
+}
+
+.user-tab ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
     display: flex;
-    gap: 20px;
+    gap: 15px;
 }
 
-nav ul li {
+.user-tab li {
     display: inline;
 }
 
-nav ul li a {
-    color: white;
-    font-weight: bold;
-    text-decoration: none;
+.user-tab img {
+    width: 40px; /* 이미지 크기를 30px로 설정 */
+    height: 40px;
 }
 
-/* main-action 스타일 */
+/* main-action 설정 */
+.main-action {
+    text-align: center;
+    padding: 15px 0;
+    background-color: #0080FF;
+    border-top: 2px solid #2E9AFE;
+    border-left: 2px solid #2E9AFE;
+    border-right: 2px solid #2E9AFE;
+    border-bottom: 2px solid #2E9AFE;
+    border-radius: 7px;
+}
+
 .main-action ul {
-    justify-content: flex-start; /* 왼쪽 정렬 */
-}
-
-.main-action ul li {
-    margin-right: 20px; /* 간격 설정 */
-}
-
-/* user-tab 스타일 */
-.user-tab ul {
-    justify-content: flex-end; /* 오른쪽 정렬 */
-}
-
-.user-tab ul li {
-    margin-left: 20px; /* 간격 설정 */
-}
-
-/* Main Banner */
-.main-banner {
-    background-color: #ffb74d;
-    color: white;
-    text-align: center;
-    padding: 100px 20px;
-}
-
-.main-banner h1 {
-    font-size: 3em;
+    list-style-type: none;
     margin: 0;
-}
-
-.cta-button {
-    margin-top: 20px;
-    padding: 15px 30px;
-    background-color: #ef6c00;
-    border: none;
-    color: white;
-    font-size: 1.2em;
-    cursor: pointer;
-}
-
-/* Introduction Section */
-.introduction {
-    padding: 50px 20px;
-    text-align: center;
-}
-
-.introduction h2 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
-}
-
-.features {
+    padding: 0;
     display: flex;
     justify-content: center;
-    gap: 50px;
+    gap: 15px;
 }
 
-.feature-item {
-    text-align: center;
+.main-action li {
+    display: inline;
 }
 
-.feature-item img {
-    width: 100px;
-}
-
-/* Matching Section */
-.matching {
-    padding: 50px 20px;
-    background-color: #ffcc80;
-    text-align: center;
-}
-
-.matching h2 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
-}
-
-.profile-cards {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.profile-card {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 150px;
-    text-align: center;
-}
-
-.profile-card img {
-    width: 100px;
-    border-radius: 50%;
-}
-
-/* Testimonials Section */
-.testimonials {
-    padding: 50px 20px;
-    text-align: center;
-}
-
-.testimonial-item {
-    background-color: #ffe0b2;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-}
-
-/* Newsletter Section */
-.newsletter {
-    padding: 50px 20px;
-    background-color: #ffb74d;
-    text-align: center;
-}
-
-.newsletter h2 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
-}
-
-.newsletter form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-}
-
-.newsletter input[type="text"],
-.newsletter input[type="email"] {
-    padding: 10px;
-    width: 300px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.newsletter button {
-    padding: 15px 30px;
-    background-color: #ef6c00;
-    border: none;
+.main-action li a {
+    text-decoration: none;
     color: white;
-    font-size: 1.2em;
-    cursor: pointer;
 }
 
-/* Footer */
+.main-action li a:hover {
+    font-weight: bold;
+}
+
+.center {
+    width: 80%;
+    margin: 10px auto 10px auto;
+}
+
 footer {
-    background-color: #ffa726;
-    padding: 20px;
     text-align: center;
-    color: white;
 }
 
-.footer-logo img {
+/* logo 설정 */
+footer .footer-logo img {
     width: 150px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
 }
 
-.footer-links {
-    margin-top: 20px;
-}
-
-.footer-links a {
-    color: white;
-    margin: 0 10px;
-}
-
-.social-media {
-    margin-top: 20px;
-}
-
-.social-media img {
-    width: 30px;
-    margin: 0 10px;
+footer a {
+    color: #2C3E50;
+    font-size: 24px;
+    padding: 10px;
+    text-decoration: none;
 }
