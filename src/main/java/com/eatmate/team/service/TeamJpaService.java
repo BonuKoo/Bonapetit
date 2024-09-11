@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.naming.ldap.PagedResultsControl;
 import java.util.Optional;
 
 @Service
@@ -23,33 +24,34 @@ public class TeamJpaService {
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
     private final AccountTeamRepository accountTeamRepository;
+    /*
+    @Transactional
+    public TeamForm joinTeam(TeamForm teamForm){
 
-//    @Transactional
-//    public TeamForm joinTeam(TeamForm teamForm){
-//
-//        Account account = accountRepository.findByOauth2id(teamForm.getUserName());
-//
-//        Team team = teamRepository.findById(teamForm.getTeamId()).get();
-//
-//        AccountTeam accountTeam = AccountTeam.builder()
-//                .account(account)
-//                //.team(team)
-//                .isLeader(false)
-//                .build();
-//
-//        team.addAccountTeam(accountTeam);
-//
-//        Team savedTeam = teamRepository.save(team);
-//
-//        //RoomId, 공통 닉네임, 팀 이름을 저장 후 반환
-//        teamForm.attachRoomIdAndNickname(
-//                savedTeam.getChatRoom().getRoomId(),
-//                account.getNickname(),
-//                savedTeam.getTeamName());
-//
-//        return teamForm;
-//
-//    }
+        Account account = accountRepository.findByOauth2id(teamForm.getUserName());
+
+        Team team = teamRepository.findById(teamForm.getTeamId()).get();
+
+        AccountTeam accountTeam = AccountTeam.builder()
+                .account(account)
+                //.team(team)
+                .isLeader(false)
+                .build();
+
+        team.addAccountTeam(accountTeam);
+
+        Team savedTeam = teamRepository.save(team);
+
+        //RoomId, 공통 닉네임, 팀 이름을 저장 후 반환
+        teamForm.attachRoomIdAndNickname(
+                savedTeam.getChatRoom().getRoomId(),
+                account.getNickname(),
+                savedTeam.getTeamName());
+
+        return teamForm;
+
+    }
+    */
 
     @Transactional
     public TeamForm joinTeam(TeamForm teamForm){
@@ -86,6 +88,5 @@ public class TeamJpaService {
 
         return teamForm;
     }
-
 
 }

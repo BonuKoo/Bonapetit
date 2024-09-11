@@ -40,3 +40,22 @@
           })
           .catch(error => console.error('Error fetching provider:', error));
   });
+
+//채팅방 입장
+function enterChat(teamId) {
+    axios.post('/chat/enter/' + teamId)
+        .then(response =>{
+
+        const chatRoomDTO = response.data;
+        // roomName과 roomId를 LocalStorage에 저장
+        localStorage.setItem('wschat.roomId', chatRoomDTO.roomId);
+        localStorage.setItem('wschat.roomName', chatRoomDTO.roomName);
+
+        console.log(chatRoomDTO); // ChatRoom 정보 출력
+
+        // 채팅방 입장 로직 추가해야 함
+        window.location.href = '/chat/room/enter/' + chatRoomDTO.roomId;
+        }).catch(error => {
+              console.error('채팅방 입장 중 오류 발생:', error);
+        });
+}
