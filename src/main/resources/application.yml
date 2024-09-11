@@ -15,7 +15,7 @@ spring:
     host: localhost
     port: 6379
   jwt:
-    secret: specifiedsecretchat!@#
+    secret: jIxcYARLKbjsUFEPksAcekGXpubvTVL+UxuNL68nqpE=
 
   #STATIC 파일 자동 반영
   devtools:

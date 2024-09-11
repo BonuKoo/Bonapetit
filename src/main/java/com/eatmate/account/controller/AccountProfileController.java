@@ -173,7 +173,7 @@ public class AccountProfileController {
     public String getAppliedTeamListPage() {
         return "account/profile/listApplyTeamForm";
     }
-    
+
     //활성된 채팅방 리스트 페이지
     @GetMapping("/chatRoom")
     public String getChatRoomListPage() {

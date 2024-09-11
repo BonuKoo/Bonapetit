@@ -18,15 +18,15 @@
 <body>
 <div class="container" id="app" v-cloak>
   <div>
-    <h2>{{room.name}}</h2>
+    <h2>{{roomName}}</h2>
   </div>
   <div class="input-group">
     <div class="input-group-prepend">
       <label class="input-group-text">내용</label>
     </div>
-    <input type="text" class="form-control" v-model="message" @keyup.enter="sendMessage">
+    <input type="text" class="form-control" v-model="message" @keyup.enter="sendMessage('TALK')">
     <div class="input-group-append">
-      <button class="btn btn-primary" type="button" @click="sendMessage" :disabled="!message">보내기</button>
+      <button class="btn btn-primary" type="button" @click="sendMessage('TALK')" :disabled="!message">보내기</button>
     </div>
   </div>
   <ul class="list-group">

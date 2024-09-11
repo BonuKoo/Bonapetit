@@ -3,6 +3,7 @@ package com.eatmate.chat.controller;
 import com.eatmate.chat.dto.ChatMessage;
 import com.eatmate.chat.redisDao.ChatRoomRedisRepository;
 import com.eatmate.jwt.JwtTokenProvider;
+import com.eatmate.post.vo.PostForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -34,6 +35,9 @@ public class ChatController {
         }
         // Websocket에 발행된 메시지를 redis로 발행(publish)
         redisTemplate.convertAndSend(channelTopic.getTopic(), message);
+
+
+
     }
 
 }

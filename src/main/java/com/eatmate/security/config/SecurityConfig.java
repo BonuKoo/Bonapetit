@@ -62,6 +62,8 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", true) // 성공 후 리디렉션될 URL 설정
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService))) // OAuth2 로그인 설정
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .authenticationProvider(authenticationProvider)
         ;
         return http.build();
