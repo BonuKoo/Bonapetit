@@ -2,11 +2,10 @@ package com.eatmate.account.controller;
 
 import com.eatmate.account.service.AccountMyBatisService;
 import com.eatmate.account.service.AccountService;
-import com.eatmate.dao.mybatis.AccountDao;
+import com.eatmate.dao.mybatis.account.AccountDao;
 import com.eatmate.domain.dto.AccountDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +62,7 @@ public class AccountController {
             String email = authentication.getName();
 
             // 이메일로 계정 조회 후 로그아웃 처리
-            AccountDto accountDto = accountService.findByEmail(email);
+            AccountDto accountDto = myBatisService.findByEmail(email);
             if (accountDto != null) {
                 // 로그아웃 처리
                 new SecurityContextLogoutHandler().logout(request, response, authentication);

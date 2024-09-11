@@ -15,67 +15,74 @@
 </head>
 <body>
 <div layout:fragment="content">
-<div class="container-fluid">
-  <div class="row">
-    <!-- 왼쪽 사이드바 -->
-    <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-      <div class="position-sticky">
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link active" href="#" onclick="showSection('profileSection')">닉네임 변경 및 탈퇴</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="javascript:void(0);" onclick="showSection('teamSection')">가입된 팀 관리</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="javascript:void(0);" onclick="showSection('teamSectionOpen')">개설한 팀 관리</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <!-- 메인 컨텐츠 -->
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <!-- 프로필 관리 섹션 -->
-      <div id="profileSection">
-        <h2>프로필 관리</h2>
-        <div class="d-flex flex-column">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nicknameModal">닉네임 변경</button>
-        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">계정 삭제</button>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- 왼쪽 사이드바 -->
+      <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="#" onclick="showSection('profileSection')">닉네임 변경 및 탈퇴</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0);" onclick="showSection('teamSection')">가입된 팀 관리</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0);" onclick="showSection('teamSectionOpen')">개설한 팀 관리</a>
+            </li>
+          </ul>
         </div>
-      </div>
+      </nav>
 
-      <!-- 가입된 팀 관리 섹션 -->
-      <div id="teamSection" style="display: none;">
-        <h2>가입된 팀 관리</h2>
-        <!-- 팀 목록 테이블 -->
-        <div class="mb-3">
-          <form name="profile" th:action="@{/profile/joinedTeam}" method="post">
-            <table class="table table-striped">
-              <input type="hidden" th:value="${dto.account_id}" name="account_id"/>
-              <thead>
-            <tr>
-              <th scope="col">팀아이디</th>
-              <th scope="col">팀명</th>
-              <th scope="col">팀 설명</th>
-              <th scope="col">팀 입장</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- 팀 리스트 출력 -->
-            <tr th:each="team : ${teams}">
-              <td th:text="${team.team_id}"></td>
-              <td><a th:href="@{'/post/detail/' + ${team.team_id}}" th:text="${team.team_name}"></a></td>
-              <td th:text="${team.description}"></td>
-              <td>
-                <!-- 채팅방 입장 버튼 추가 -->
-                <button type="button" class="btn btn-primary"
-                        th:attr="onclick='joinTeam(' + ${team.team_id} + ')'">채팅방 입장</button>
-              </td>
-            </tr>
-            </tbody>
+      <!-- 메인 컨텐츠 -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <!-- 프로필 관리 섹션 -->
+        <div id="profileSection">
+          <h2>프로필 관리</h2>
+          <div class="d-flex flex-column">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nicknameModal">닉네임 변경</button>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">계정 삭제</button>
+          </div>
+        </div>
+
+        <!-- 가입된 팀 관리 섹션 -->
+        <div id="teamSection" style="display: none;">
+          <h2>가입된 팀 관리</h2>
+          <!-- 팀 목록 테이블 -->
+          <div class="mb-3">
+              <table class="table table-striped">
+                <input type="hidden" th:value="${dto.account_id}" name="account_id"/>
+                <thead>
+                  <tr>
+                    <th scope="col">팀아이디</th>
+                    <th scope="col">팀명</th>
+                    <th scope="col">팀 설명</th>
+                    <th scope="col">팀 입장</th>
+                    <th scope="col">팀 탈퇴</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <!-- 팀 리스트 출력 -->
+                <tr th:each="team : ${nonLeaderTeams}">
+                  <td th:text="${team.team_id}"></td>
+                  <td><a th:href="@{'/post/detail/' + ${team.team_id}}" th:text="${team.team_name}"></a></td>
+                  <td th:text="${team.description}"></td>
+                  <td>
+                    <!-- 채팅방 입장 버튼 추가 -->
+                    <button type="button" class="btn btn-primary"
+                            th:attr="onclick='joinTeam(' + ${team.team_id} + ')'">채팅방 입장</button>
+                  </td>
+                  <td>
+                    <!-- 리더가 아닌 팀에만 탈퇴 버튼 표시 -->
+                    <form th:action="@{/profile/leaveTeam}" method="post">
+                      <input type="hidden" name="teamId" th:value="${team.team_id}">
+                      <input type="hidden" name="accountId" th:value="${dto.account_id}">
+                      <button type="submit" class="btn btn-danger" onclick="return confirm('정말로 팀에서 탈퇴하시겠습니까?')">팀 탈퇴</button>
+                    </form>
+                  </td>
+                </tr>
+              </tbody>
             </table>
-          </form>
         </div>
       </div>
 
@@ -91,7 +98,9 @@
                 <th scope="col">팀아이디</th>
                 <th scope="col">팀명</th>
                 <th scope="col">팀 설명</th>
-                <th scope="col">팀 관리</th>
+                <th scope="col">팀 입장</th>
+                <th scope="col">수정 및 삭제</th>
+                <th scope="col">팀원 관리</th>
               </tr>
               </thead>
               <tbody>
@@ -104,6 +113,16 @@
                   <!-- 채팅방 입장 버튼 추가 -->
                   <button type="button" class="btn btn-primary"
                           th:attr="onclick='joinTeam(' + ${leaderTeam.team_id} + ')'">채팅방 입장</button>
+                </td>
+                <td>
+                  <!-- 수정 버튼 추가 -->
+                  <button type="button" class="btn btn-primary"
+                          th:onclick="'window.location.href=\'/post/update/' + ${leaderTeam.team_id} + '\';'">수정</button>
+                </td>
+                <td>
+                  <!-- 팀원 관리 버튼: 팀원 목록 페이지로 이동 -->
+                  <button type="button" class="btn btn-primary"
+                          th:onclick="'window.location.href=\'/post/members/' + ${leaderTeam.team_id} + '\';'">팀원 관리</button>
                 </td>
               </tr>
               </tbody>

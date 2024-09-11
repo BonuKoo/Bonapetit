@@ -2,11 +2,10 @@ package com.eatmate.post.service;
 
 import com.eatmate.chat.dto.ChatRoomDTO;
 import com.eatmate.chat.service.ChatRoomService;
-import com.eatmate.dao.mybatis.AccountDao;
+import com.eatmate.dao.mybatis.account.AccountDao;
 import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.dao.repository.team.CustomTeamRepository;
 import com.eatmate.dao.repository.team.TeamRepository;
-import com.eatmate.domain.dto.AccountDto;
 import com.eatmate.domain.entity.chat.ChatRoom;
 import com.eatmate.domain.entity.user.Account;
 import com.eatmate.domain.entity.user.AccountTeam;

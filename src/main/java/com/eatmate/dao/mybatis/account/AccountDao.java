@@ -1,7 +1,6 @@
-package com.eatmate.dao.mybatis;
+package com.eatmate.dao.mybatis.account;
 
 import com.eatmate.domain.dto.AccountDto;
-import com.eatmate.domain.entity.user.Account;
 import org.apache.ibatis.annotations.*;
 import org.springframework.dao.DataAccessException;
 
