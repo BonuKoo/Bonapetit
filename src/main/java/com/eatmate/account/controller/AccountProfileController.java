@@ -1,11 +1,11 @@
 package com.eatmate.account.controller;
 
-import com.eatmate.account.service.AccountService;
+import com.eatmate.account.service.AccountMyBatisService;
 import com.eatmate.domain.dto.AccountDto;
 import com.eatmate.domain.dto.AccountTeamDto;
 import com.eatmate.domain.dto.TeamDto;
+import com.eatmate.post.service.PostTeamService;
 import com.eatmate.weblogout.service.LogoutService;
-import feign.Param;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -29,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/profile")
@@ -36,10 +36,13 @@ import java.util.Map;
 public class AccountProfileController {
 
     @Autowired
-    private AccountService accountService;
+    private AccountMyBatisService accountMyBatisService;
 
     @Autowired
     private LogoutService logoutService;
+
+    @Autowired
+    private PostTeamService postTeamService;
 
     // 닉네임 변경 및 팀 리스트
     @GetMapping("/list")
@@ -48,27 +51,37 @@ public class AccountProfileController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentEmail = authentication.getName();
 
-        AccountDto dto = accountService.findByOauth2Id(currentEmail);
+        // 로그인한 사용자 정보를 가져옴
+        AccountDto dto = accountMyBatisService.findByOauth2Id(currentEmail);
         if (dto != null) {
             model.addAttribute("dto", dto);
 
-            // 본인이 속한 팀 리스트 가져오기
-            List<TeamDto> teams = accountService.getTeamsForUser(currentEmail);
+            // 사용자가 속한 모든 팀을 가져옴
+            List<TeamDto> teams = accountMyBatisService.getTeamsForUser(currentEmail);
             model.addAttribute("teams", teams); // 팀 리스트 추가
 
-            // 본인이 개설한 팀(리더인 팀) 리스트 가져오기
-            List<AccountTeamDto> leaderTeams = accountService.getTeamsWhereIsLeader(currentEmail);
+            // 사용자가 리더인 팀만 필터링하여 가져옴
+            List<AccountTeamDto> leaderTeams = accountMyBatisService.getTeamsWhereIsLeader(currentEmail);
             model.addAttribute("leaderTeams", leaderTeams);
+
+            // 리더가 아닌 팀 리스트 필터링
+            List<TeamDto> nonLeaderTeams = teams.stream()
+                    .filter(team -> leaderTeams.stream()
+                            .noneMatch(leaderTeam -> leaderTeam.getTeam_id().equals(team.getTeam_id())))
+                    .collect(Collectors.toList());
+            model.addAttribute("nonLeaderTeams", nonLeaderTeams);
+
         } else {
-            return "error"; // 사용자가 없는 경우 에러 페이지로 리다이렉트 (원하는 대로 변경 가능)
+            return "error"; // 사용자가 없는 경우 에러 페이지로 리다이렉트
         }
         return "account/profile/profileListForm";
     }
 
+
     // 회원 정보 수정
     @PostMapping("/detail")
     public String updateEmployee(@ModelAttribute AccountDto dto) {
-        accountService.updateDetailAccount(dto);
+        accountMyBatisService.updateDetailAccount(dto);
 
         // 현재 사용자 정보 갱신
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -125,7 +138,7 @@ public class AccountProfileController {
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
         // 계정 삭제
-        accountService.deleteUserByOauth2Id(oauth2Id);
+        accountMyBatisService.deleteUserByOauth2Id(oauth2Id);
         redirectAttributes.addFlashAttribute("message", "회원 탈퇴가 완료되었습니다.");
 
         // 세션에서 provider 정보 가져오기
@@ -168,6 +181,21 @@ public class AccountProfileController {
         return "redirect:/";
     }
 
+    // 팀 탈퇴 처리
+    @PostMapping("/leaveTeam")
+    public String leaveTeam(@RequestParam Long accountId,
+                            @RequestParam Long teamId,
+                            RedirectAttributes redirectAttributes) {
+        // 팀에서 탈퇴 처리 (AccountTeam 관계 삭제)
+        postTeamService.kickMember(accountId, teamId);
+
+        // 탈퇴 성공 메시지 추가
+        redirectAttributes.addFlashAttribute("message", "팀에서 성공적으로 탈퇴하였습니다.");
+
+        // 홈으로 리다이렉트
+        return "redirect:/";
+    }
+
     //신청한 모임 리스트 페이지
     @GetMapping("/appliedTeam")
     public String getAppliedTeamListPage() {
@@ -180,4 +208,7 @@ public class AccountProfileController {
         return "account/profile/listChatroomForm";
     }
 
+
+
 }
+

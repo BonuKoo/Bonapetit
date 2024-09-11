@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout/layout.html}">
+<head>
+  <th:block layout:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/team/teamMemberList.css}">
+  </th:block>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="team-members">
+    <h2>팀원 목록 - 팀: <span th:text="${team.teamName}"></span></h2>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>닉네임</th>
+        <th>강퇴</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="member : ${team.members}">
+        <td th:text="${member.account.nickname}"></td>
+        <td>
+          <!-- 강퇴 버튼을 리더가 아닌 팀원에게만 표시 -->
+          <form th:if="${!member.isLeader}" th:action="@{/post/kickMember}" method="post" onsubmit="return confirm('정말 강퇴하시겠습니까?')">
+            <input type="hidden" name="accountId" th:value="${member.account.id}">
+            <input type="hidden" name="teamId" th:value="${team.id}">
+            <button type="submit" class="btn btn-danger">강퇴</button>
+          </form>
+          <!-- 리더 표시 -->
+          <span th:if="${member.isLeader}">리더</span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
