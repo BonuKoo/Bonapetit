@@ -45,7 +45,7 @@ public class LogoutController {
         // 카카오 로그아웃 URL로 리다이렉트
         String requestUrl = "https://kauth.kakao.com/oauth/logout"
                 + "?client_id=e14cb05b33510d6d6fb59bc77f202156"
-                + "&logout_redirect_uri=https://add4-1-245-252-171.ngrok-free.app";     // 카카오 로그아웃에 저장한 url
+                + "&logout_redirect_uri=http://192.168.1.12:8080";     // 카카오 로그아웃에 저장한 url
 
         System.out.println("카카오 로그아웃 성공");
         response.sendRedirect(requestUrl);
