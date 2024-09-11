@@ -69,7 +69,8 @@ public class PostController {
         return "post/detailPostForm";
     }
 
-    // Team 수정 페이지
+
+    // 팀 수정 페이지
     @GetMapping("/update/{teamId}")
     public String crystals(@PathVariable Long teamId, Model model) {
         Team team = teamRepository.findById(teamId)
@@ -131,6 +132,5 @@ public class PostController {
         redirectAttributes.addFlashAttribute("message", "해당 멤버를 강퇴했습니다.");
         return "redirect:/post/members/" + teamId; // 팀원 목록 페이지로 리다이렉트
     }
-
 
 }

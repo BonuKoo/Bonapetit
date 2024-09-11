@@ -44,7 +44,7 @@ public class AccountProfileController {
     @Autowired
     private PostTeamService postTeamService;
 
-    // 닉네임 변경 및 팀 리스트
+    // 로그인한 유저 프로필 불러오기
     @GetMapping("/list")
     public String getProfilePage(Model model){
         // 인증 객체에서 현재 로그인한 사용자의 OAuth2 ID 가져오기
@@ -76,7 +76,6 @@ public class AccountProfileController {
         }
         return "account/profile/profileListForm";
     }
-
 
     // 회원 정보 수정
     @PostMapping("/detail")
@@ -112,7 +111,7 @@ public class AccountProfileController {
         return "redirect:/";
     }
 
-    // OAuth2 제공자에 따른 식별자 키를 가져오는 메서드
+    // OAuth2 제공자에 따른 식별자 키를 가져오는 메서드 (회원 탈퇴시 필요)
     private String getUserNameAttributeKey(Authentication authentication) {
         // OAuth2AuthenticationToken에서 제공자의 registrationId를 가져옴
         if (authentication instanceof OAuth2AuthenticationToken) {
@@ -207,8 +206,6 @@ public class AccountProfileController {
     public String getChatRoomListPage() {
         return "account/profile/listChatroomForm";
     }
-
-
 
 }
 
