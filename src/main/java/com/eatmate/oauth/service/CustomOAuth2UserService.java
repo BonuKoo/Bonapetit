@@ -1,6 +1,6 @@
 package com.eatmate.oauth.service;
 
-import com.eatmate.account.service.AccountService;
+import com.eatmate.account.service.AccountMyBatisService;
 import com.eatmate.domain.dto.AccountDto;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,10 +20,10 @@ import java.util.Map;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final AccountService accountService;
+    private final AccountMyBatisService accountMyBatisService;
 
-    public CustomOAuth2UserService(AccountService accountService) {
-        this.accountService = accountService;
+    public CustomOAuth2UserService(AccountMyBatisService accountService) {
+        this.accountMyBatisService = accountService;
     }
 
     //닉네임 불러오는거 추가 된 코드
@@ -82,12 +82,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         // 계정 서비스에서 사용자 정보 확인 또는 새로 생성
-        AccountDto accountDto = accountService.findByOauth2Id(oauth2Id);
+        AccountDto accountDto = accountMyBatisService.findByOauth2Id(oauth2Id);
         if (accountDto != null) {
             // 기존 사용자가 있으면 DB에서 닉네임 사용
             nickname = accountDto.getNick_name();
             accountDto.setAccess_token(accessToken); // Access Token 업데이트
-            accountService.updateAccount(accountDto);
+            accountMyBatisService.updateAccount(accountDto);
         } else {
             // 새로운 사용자의 경우 소셜에서 받은 닉네임으로 계정 생성
             accountDto = new AccountDto();
@@ -98,7 +98,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             accountDto.setProvider(registrationId);
             accountDto.setAccess_token(accessToken);
             accountDto.setRoles("ROLE_USER");
-            accountService.createAccount(accountDto);
+            accountMyBatisService.createAccount(accountDto);
         }
 
         // 최종적으로 attributes에 DB에서 조회한 닉네임을 넣음
