@@ -5,29 +5,47 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- Corrected th:href -->
+        <script th:src="@{/js/post/listPostForm.js}"></script>
     </th:block>
 </head>
 <body>
 <div layout:fragment="content" id="content">
 
     <h1>Teams</h1>
+    <div id="search-area">
+        <input type="text" id="keyword-area" th:value="${keyword}">
+        <button class="btn btn-primary" type="button" onclick="searchTeam()">검색</button>
+    </div>
+
+    <form action="/post/list" method="get" id="searchForm">
+        <input type="hidden" name="keyword" id="keyword" th:value="${keyword}">
+        <input type="hidden" name="page" id="page" th:value="${page}">
+    </form>
+
     <table>
         <thead>
         <tr>
-            <th>ID</th>
-            <th>TeamName</th>
+            <th>방제</th>
+            <th>주소</th>
+            <th>상호명</th>
+            <th>방장</th>
+            <th>인원</th>
+            <th>생성일자</th>
         </tr>
         </thead>
 
         <tbody>
         <!-- teams 변수는 컨트롤러에서 모델에 추가된 Team 객체의 리스트를 참조 -->
         <tr th:each="team : ${teams}">
-            <td th:text="${team.id}"></td>
-
             <!-- teamName을 클릭하면 해당 팀의 상세 정보 페이지로 이동 -->
             <td>
                 <a th:href="@{'/post/detail/' + ${team.id}}" th:text="${team.teamName}"></a>
             </td>
+            <td th:text="${team.addressName}"></td>
+<!--            <td th:text="${team.placeName}"></td>-->
+<!--            <td th:text="${team.author}"></td>-->
+            <td th:text="${team.memberSize}"></td>
+            <td th:text="${team.createdDate}"></td>
         </tr>
         </tbody>
     </table>

@@ -33,3 +33,10 @@ function updatePlaceholder() {
 document.addEventListener("DOMContentLoaded", function() {
     updatePlaceholder();
 });
+
+// 리스트 검색
+function searchTeam() {
+    document.getElementById('keyword').value = document.getElementById('keyword-area').value;
+    document.getElementById('page').value = 1;
+    document.getElementById('searchForm').submit();
+}

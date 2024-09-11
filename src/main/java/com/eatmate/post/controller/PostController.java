@@ -9,8 +9,14 @@ import com.eatmate.map.vo.MapVo;
 import com.eatmate.post.service.PostTeamService;
 import com.eatmate.post.vo.PostForm;
 import com.eatmate.post.service.PostJpaService;
+import com.eatmate.post.vo.PostPageDto;
+import com.eatmate.post.vo.TeamSearchCondition;
+import com.eatmate.team.service.TeamJpaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +33,7 @@ import java.util.List;
 public class PostController {
 
     private final PostJpaService postJpaService;
+    private final TeamJpaService teamJpaService;
     private final TeamRepository teamRepository;
     private final AccountTeamRepository accountTeamRepository;
 
@@ -54,9 +61,24 @@ public class PostController {
 
     // Team 목록 조회
     @GetMapping("/list")
-    String listPosts(Model model){
-        List<Team> all = teamRepository.findAll();
-        model.addAttribute("teams", all);
+    String listPosts(@RequestParam(name = "page", defaultValue = "0") int page,
+                     @RequestParam(name = "",defaultValue = "10") int size,
+                     @RequestParam(name = "keyword", defaultValue = "") String keyword,
+                     Model model) {
+
+
+        TeamSearchCondition condition = new TeamSearchCondition();
+        condition.setKeyword(keyword);
+
+        Pageable pageable = PageRequest.of(page,size);
+
+        Page<PostPageDto> list = teamJpaService.getList(condition, pageable);
+
+        model.addAttribute("teams", list);
+
+        model.addAttribute("keyword", keyword);
+
+        model.addAttribute("page", page);
         return "post/listPost";
     }
 
@@ -131,6 +153,7 @@ public class PostController {
         redirectAttributes.addFlashAttribute("message", "해당 멤버를 강퇴했습니다.");
         return "redirect:/post/members/" + teamId; // 팀원 목록 페이지로 리다이렉트
     }
+
 
 
 }

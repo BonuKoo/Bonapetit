@@ -6,9 +6,13 @@ import com.eatmate.dao.repository.team.TeamRepository;
 import com.eatmate.domain.entity.user.Account;
 import com.eatmate.domain.entity.user.AccountTeam;
 import com.eatmate.domain.entity.user.Team;
+import com.eatmate.post.vo.PostPageDto;
+import com.eatmate.post.vo.TeamSearchCondition;
 import com.eatmate.team.vo.TeamForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,6 +91,10 @@ public class TeamJpaService {
                 team.getTeamName());
 
         return teamForm;
+    }
+
+    public Page<PostPageDto> getList(TeamSearchCondition condition, Pageable pageable){
+        return teamRepository.searchWithPage(condition, pageable);
     }
 
 }
