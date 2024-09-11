@@ -70,7 +70,7 @@
                   <td>
                     <!-- 채팅방 입장 버튼 추가 -->
                     <button type="button" class="btn btn-primary"
-                            th:attr="onclick='joinTeam(' + ${team.team_id} + ')'">채팅방 입장</button>
+                            th:attr="onclick='enterChat(' + ${team.team_id} + ')'">채팅방 입장</button>
                   </td>
                   <td>
                     <!-- 리더가 아닌 팀에만 탈퇴 버튼 표시 -->
@@ -112,7 +112,7 @@
                 <td>
                   <!-- 채팅방 입장 버튼 추가 -->
                   <button type="button" class="btn btn-primary"
-                          th:attr="onclick='joinTeam(' + ${leaderTeam.team_id} + ')'">채팅방 입장</button>
+                          th:attr="onclick='enterChat(' + ${leaderTeam.team_id} + ')'">채팅방 입장</button>
                 </td>
                 <td>
                   <!-- 수정 버튼 추가 -->
