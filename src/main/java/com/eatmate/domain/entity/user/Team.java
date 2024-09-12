@@ -164,11 +164,5 @@ public class Team extends BaseTimeEntity {
     public void setDescription(String description) {
         this.description = description;
     }
-//
-//    // 팀 멤버 제거 메서드 추가
-//    public void removeMember(AccountTeam accountTeam) {
-//        this.members.remove(accountTeam);
-//        accountTeam.updateTeam(null); // 연관관계 제거
-//    }
 
 }

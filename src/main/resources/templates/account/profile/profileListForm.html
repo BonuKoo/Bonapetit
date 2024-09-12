@@ -40,8 +40,16 @@
         <div id="profileSection">
           <h2>프로필 관리</h2>
           <div class="d-flex flex-column">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nicknameModal">닉네임 변경</button>
-            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">계정 삭제</button>
+            <!-- 닉네임 변경 버튼과 제목 가로 정렬 -->
+            <div class="d-flex align-items-center mb-3">
+              <h4 class="me-3">닉네임 변경</h4>
+              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nicknameModal">닉네임 변경</button>
+            </div>
+            <!-- 계정 삭제 버튼과 제목 가로 정렬 -->
+            <div class="d-flex align-items-center mb-3">
+              <h4 class="me-3">계정 삭제</h4>
+              <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">계정 삭제</button>
+            </div>
           </div>
         </div>
 
