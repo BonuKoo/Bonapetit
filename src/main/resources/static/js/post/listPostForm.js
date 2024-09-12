@@ -33,3 +33,19 @@ function updatePlaceholder() {
 document.addEventListener("DOMContentLoaded", function() {
     updatePlaceholder();
 });
+
+// 리스트 검색
+function searchTeam() {
+    document.getElementById('keyword').value = document.getElementById('keyword-area').value;
+    document.getElementById('page').value = 1;
+    document.getElementById('searchForm').submit();
+}
+
+// 페이지 번호 눌렀을 때
+function changePage(page) {
+    var pageNumber = page.getAttribute('data-page'); // 페이지 번호 가져오기
+
+    document.getElementById('page').value = pageNumber; // searchForm의 <input type="hidden" name="page" id="page">에 페이지 번호 저장
+
+    document.getElementById('searchForm').submit(); // 전송
+}

@@ -9,8 +9,11 @@ import com.eatmate.map.vo.MapVo;
 import com.eatmate.post.service.PostTeamService;
 import com.eatmate.post.vo.PostForm;
 import com.eatmate.post.service.PostJpaService;
+import com.eatmate.team.service.TeamJpaService;
+import com.eatmate.team.vo.TeamVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +30,7 @@ import java.util.List;
 public class PostController {
 
     private final PostJpaService postJpaService;
+    private final TeamJpaService teamJpaService;
     private final TeamRepository teamRepository;
     private final AccountTeamRepository accountTeamRepository;
 
@@ -54,9 +58,24 @@ public class PostController {
 
     // Team 목록 조회
     @GetMapping("/list")
-    String listPosts(Model model){
-        List<Team> all = teamRepository.findAll();
-        model.addAttribute("teams", all);
+    String listPosts(@RequestParam(name = "page", defaultValue = "1") int page,
+                     @RequestParam(name = "keyword", defaultValue = "") String keyword,
+                     Model model) {
+        Page<TeamVo> list = teamJpaService.getList(page, keyword);
+
+        int startPage = ((page - 1) / list.getSize()) * list.getSize() + 1;
+        int endPage = startPage + list.getSize() - 1;
+        if (endPage > list.getTotalPages()) {
+            endPage = list.getTotalPages();
+        }
+        int lastPage = list.getTotalPages();
+
+        model.addAttribute("teams", list);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("page", page);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("lastPage", lastPage);
         return "post/listPost";
     }
 
