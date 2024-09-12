@@ -1,3 +1,17 @@
+var x = document.getElementById('x').value;
+var y = document.getElementById('y').value;
+
+var place = {
+    id : document.getElementById('mapId').value,
+    address_name : document.getElementById('addressName').value,
+    phone : document.getElementById('phone').value,
+    place_name : document.getElementById('placeName').value,
+    place_url : document.getElementById('placeUrl').value,
+    road_address_name : document.getElementById('roadAddressName').value,
+    x : document.getElementById('x').value,
+    y : document.getElementById('y').value
+};
+
 // 마커를 클릭했을 때 해당 장소의 상세정보를 보여줄 커스텀오버레이입니다
 var placeOverlay = new kakao.maps.CustomOverlay({zIndex:1}),
     contentNode = document.createElement('div'), // 커스텀 오버레이의 컨텐츠 엘리먼트 입니다
@@ -5,7 +19,7 @@ var placeOverlay = new kakao.maps.CustomOverlay({zIndex:1}),
 
 var mapContainer = document.getElementById('map'), // 지도를 표시할 div
     mapOption = {
-        center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
+        center: new kakao.maps.LatLng(y, x), // 지도의 중심좌표
         level: 5 // 지도의 확대 레벨
     };
 
@@ -23,6 +37,17 @@ placeOverlay.setContent(contentNode);
 
 // 검색 결과 목록이나 마커를 클릭했을 때 장소명을 표출할 인포윈도우를 생성합니다
 var infowindow = new kakao.maps.InfoWindow({zIndex:1});
+
+displayPlace(place);
+
+// 기존 마커를 표출하는 함수입니다
+function displayPlace(place) {
+    // 마커를 생성하고 지도에 표시합니다
+    var placePosition = new kakao.maps.LatLng(place.y, place.x),
+        marker = addMarker(placePosition, 0);
+
+    displayPlaceInfo(place);
+}
 
 // 키워드 검색을 요청하는 함수입니다
 function searchPlaces() {
@@ -283,31 +308,3 @@ function setMapData(data) {
     document.getElementById("x").value = data.x;
     document.getElementById("y").value = data.y;
 }
-
-//// 맵 데이터 전송 by유석
-//function sendData(data) {
-//    var input = {
-//        address_name : data.address_name,
-//        id : data.id,
-//        phone : data.phone,
-//        place_name : data.place_name,
-//        place_url : data.place_url,
-//        road_address_name : data.road_address_name,
-//        x : data.x,
-//        y : data.y
-//    };
-//
-//    $.ajax({
-//        type : 'post',
-//        url : '/map', // 추후 수정
-//        dataType : 'json',
-//        contentType : 'application/json; charset=utf-8',
-//        data : JSON.stringify(input),
-//        success : function(result) {
-//            console.log(result);
-//        },
-//        error : function(error) {
-//            console.log(error);
-//        }
-//    });
-//}

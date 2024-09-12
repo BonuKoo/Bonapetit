@@ -15,7 +15,7 @@ public class MapVo {
 //    private String distance;
 
     @JsonProperty("id")
-    private String id;
+    private String mapId;
 
     @JsonProperty("phone")
     private String phone;

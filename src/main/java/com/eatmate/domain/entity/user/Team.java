@@ -5,6 +5,7 @@ import com.eatmate.domain.entity.chat.ChatRoom;
 import com.eatmate.domain.entity.post.TeamPost;
 import com.eatmate.domain.global.BaseTimeEntity;
 import com.eatmate.global.domain.UploadFileOfTeam;
+import com.eatmate.map.vo.MapVo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -153,6 +154,20 @@ public class Team extends BaseTimeEntity {
         if (chatRoom != null && chatRoom.getTeam() != this) {
             chatRoom.setTeam(this); // 이미 관계가 설정되어 있지 않다면 설정
         }
+    }
+
+    // 팀 수정 메서드
+    public void updateTeam(String teamName, String description, MapVo mapVo) {
+        this.teamName = teamName;
+        this.description = description;
+        this.mapId = mapVo.getMapId();
+        this.addressName = mapVo.getAddressName();
+        this.phone = mapVo.getPhone();
+        this.placeName = mapVo.getPlaceName();
+        this.placeUrl = mapVo.getPlaceUrl();
+        this.roadAddressName = mapVo.getRoadAddressName();
+        this.x = mapVo.getX();
+        this.y = mapVo.getY();
     }
 
     // 팀 이름 수정 메서드

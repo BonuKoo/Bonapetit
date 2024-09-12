@@ -100,17 +100,22 @@ public class PostController {
 
     // 팀 수정 처리
     @PostMapping("/updateTeam")
-    public String updateTeam(@RequestParam Long teamId, @RequestParam String teamName,
-                             @RequestParam String description, Model model) {
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: " + teamId));
+    public String updateTeam(@RequestParam Long teamId,
+                             @RequestParam String teamName,
+                             @RequestParam String description,
+                             MapVo mapVo,
+                             Model model) {
+        postJpaService.updateTeam(teamId, teamName, description, mapVo);
 
-        // 수정된 값을 팀 객체에 설정
-        team.setTeamName(teamName);
-        team.setDescription(description);
-
-        // 변경 사항을 저장
-        teamRepository.save(team);
+//        Team team = teamRepository.findById(teamId)
+//                .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: " + teamId));
+//
+//        // 수정된 값을 팀 객체에 설정
+//        team.setTeamName(teamName);
+//        team.setDescription(description);
+//
+//        // 변경 사항을 저장
+//        teamRepository.save(team);
 
         // 수정 후 해당 페이지로 리다이렉트
         return "redirect:/post/detail/" + teamId;
