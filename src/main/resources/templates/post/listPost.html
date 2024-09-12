@@ -39,16 +39,36 @@
         <tr th:each="team : ${teams}">
             <!-- teamName을 클릭하면 해당 팀의 상세 정보 페이지로 이동 -->
             <td>
-                <a th:href="@{'/post/detail/' + ${team.id}}" th:text="${team.teamName}"></a>
+                <a th:href="@{'/post/detail/' + ${team.teamId}}" th:text="${team.teamName}"></a>
             </td>
             <td th:text="${team.addressName}"></td>
-<!--            <td th:text="${team.placeName}"></td>-->
-<!--            <td th:text="${team.author}"></td>-->
-            <td th:text="${team.memberSize}"></td>
+            <td th:text="${team.placeName}"></td>
+            <td th:text="${team.author}"></td>
+            <td th:text="${team.memCnt}"></td>
             <td th:text="${team.createdDate}"></td>
         </tr>
         </tbody>
     </table>
+
+    <div th:if="${!teams.isEmpty()}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${page} == 1 ? 'disabled'">
+                <a class="page-link" href="javascript:void(0)" th:data-page="${page - 1}" onclick="changePage(this)">이전</a>
+            </li>
+
+            <li class="page-item"
+                th:each="pageElement : ${#numbers.sequence(startPage, endPage)}"
+                th:classappend="${pageElement == page} ? 'active'">
+                <a class="page-link" th:text="${pageElement}" href="javascript:void(0)" th:data-page="${pageElement}" onclick="changePage(this)"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${page} == ${lastPage} ? 'disabled'">
+                <a class="page-link" href="javascript:void(0)" th:data-page="${page + 1}" onclick="changePage(this)">다음</a>
+            </li>
+        </ul>
+    </div>
+
 </div>
 </body>
 </html>
+

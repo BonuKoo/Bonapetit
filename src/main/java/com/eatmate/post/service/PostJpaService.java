@@ -45,7 +45,7 @@ public class PostJpaService {
          Team team = Team.builder()
                  .teamName(form.getTeamName())
                  .description(form.getDescription())
-                 .mapId(mapVo.getId())
+                 .mapId(mapVo.getMapId())
                  .addressName(mapVo.getAddressName())
                  .phone(mapVo.getPhone())
                  .placeName(mapVo.getPlaceName())
@@ -83,4 +83,12 @@ public class PostJpaService {
 
     }
 
+    public void updateTeam(Long teamId, String teamName, String description, MapVo mapVo) {
+        Team team = teamRepository.findById(teamId).orElse(null);
+
+        if (team != null) {
+            team.updateTeam(teamName, description, mapVo);
+            teamRepository.save(team);
+        }
+    }
 }

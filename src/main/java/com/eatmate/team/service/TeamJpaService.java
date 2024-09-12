@@ -6,17 +6,21 @@ import com.eatmate.dao.repository.team.TeamRepository;
 import com.eatmate.domain.entity.user.Account;
 import com.eatmate.domain.entity.user.AccountTeam;
 import com.eatmate.domain.entity.user.Team;
-import com.eatmate.post.vo.PostPageDto;
-import com.eatmate.post.vo.TeamSearchCondition;
 import com.eatmate.team.vo.TeamForm;
+import com.eatmate.team.vo.TeamVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.ldap.PagedResultsControl;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -93,8 +97,35 @@ public class TeamJpaService {
         return teamForm;
     }
 
-    public Page<PostPageDto> getList(TeamSearchCondition condition, Pageable pageable){
-        return teamRepository.searchWithPage(condition, pageable);
+    public Page<TeamVo> getList(int page, String keyword) {
+        Pageable pageable = PageRequest.of(page - 1, 10);
+
+        Page<Team> teamList = teamRepository.findPageByKeyword(keyword, pageable);
+
+        List<TeamVo> teamVoList = new ArrayList<>();
+
+
+        for (Team team : teamList) {
+            Long teamId = team.getId();
+            AccountTeam accountTeam = accountTeamRepository.findLeaderAccountTeamByTeamId(teamId);
+
+            if (accountTeam != null) {
+                String nickname = accountRepository.findById(accountTeam.getAccount().getId()).get().getNickname();
+
+                teamVoList.add(TeamVo.builder()
+                        .teamId(team.getId())
+                        .teamName(team.getTeamName())
+                        .addressName(team.getAddressName())
+                        .roadAddressName(team.getRoadAddressName())
+                        .placeName(team.getPlaceName())
+                        .author(nickname)
+                        .memCnt(team.getMembersCount())
+                        .createdDate(team.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
+                        .build());
+            }
+        }
+
+        return new PageImpl<>(teamVoList, pageable, teamList.getTotalElements());
     }
 
 }
