@@ -79,7 +79,7 @@ public class AccountProfileController {
 
     // 회원 정보 수정
     @PostMapping("/detail")
-    public String updateEmployee(@ModelAttribute AccountDto dto) {
+    public String updateEmployee(@ModelAttribute AccountDto dto, HttpServletRequest request) {
         accountMyBatisService.updateDetailAccount(dto);
 
         // 현재 사용자 정보 갱신
@@ -91,7 +91,7 @@ public class AccountProfileController {
         attributes.put("nickname", dto.getNick_name());
 
         // 사용자 식별자 키를 결정하는 메서드 추가
-        String userNameAttributeKey = getUserNameAttributeKey(authentication); // 여기서 수정
+        String userNameAttributeKey = getUserNameAttributeKey(authentication, request);
 
         // 새로운 DefaultOAuth2User 객체 생성
         OAuth2User updatedUser = new DefaultOAuth2User(
@@ -108,11 +108,18 @@ public class AccountProfileController {
         );
         SecurityContextHolder.getContext().setAuthentication(newAuth);
 
+        // 세션에 provider 정보 저장
+        HttpSession session = request.getSession();
+        if (authentication instanceof OAuth2AuthenticationToken) {
+            String provider = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();
+            session.setAttribute("provider", provider); // provider 정보를 세션에 저장
+        }
+
         return "redirect:/";
     }
 
     // OAuth2 제공자에 따른 식별자 키를 가져오는 메서드 (회원 탈퇴시 필요)
-    private String getUserNameAttributeKey(Authentication authentication) {
+    private String getUserNameAttributeKey(Authentication authentication, HttpServletRequest request) {
         // OAuth2AuthenticationToken에서 제공자의 registrationId를 가져옴
         if (authentication instanceof OAuth2AuthenticationToken) {
             OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
@@ -125,6 +132,18 @@ public class AccountProfileController {
                 return "id"; // 카카오는 'id' 사용
             } else if ("google".equals(registrationId)) {
                 return "sub"; // 구글은 'sub' 사용
+            }
+        }
+        // 만약 Authentication이 OAuth2가 아니라면 세션에서 provider를 가져옴
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            String provider = (String) session.getAttribute("provider");
+            if ("naver".equals(provider)) {
+                return "id";
+            } else if ("kakao".equals(provider)) {
+                return "id";
+            } else if ("google".equals(provider)) {
+                return "sub";
             }
         }
         throw new IllegalArgumentException("Unknown provider");
