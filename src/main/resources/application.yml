@@ -1,16 +1,29 @@
+#spring:
+#  datasource:
+#    jdbc-url: jdbc:h2:tcp://localhost/~/eatmate
+#    driver-class-name: org.h2.Driver
+#    username: sa
+#    password:
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        dialect: org.hibernate.dialect.H2Dialect
 spring:
   datasource:
-    jdbc-url: jdbc:h2:tcp://localhost/~/eatmate
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    jdbc-url: jdbc:mysql://localhost:3308/bonapetit?useSSL=false&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 1234
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
   redis:
     host: localhost
     port: 6379
