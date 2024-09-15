@@ -1,47 +1,32 @@
-#spring:
-#  datasource:
-#    jdbc-url: jdbc:h2:tcp://localhost/~/eatmate
-#    driver-class-name: org.h2.Driver
-#    username: sa
-#    password:
-#  jpa:
-#    hibernate:
-#      ddl-auto: create-drop
-#    properties:
-#      hibernate:
-#        format_sql: true
-#        dialect: org.hibernate.dialect.H2Dialect
+# 운영
 spring:
+  config:
+    activate:
+      on-profile: prod
+  #DB - 1
   datasource:
-    jdbc-url: jdbc:mysql://localhost:3308/bonapetit?useSSL=false&serverTimezone=UTC
+    jdbc-url:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 1234
+  #jpa
   jpa:
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
+  #redis
   redis:
     host: localhost
     port: 6379
+  #jwt 토큰
   jwt:
     secret: jIxcYARLKbjsUFEPksAcekGXpubvTVL+UxuNL68nqpE=
-
-  #STATIC 파일 자동 반영
+  #devTools
   devtools:
     livereload:
       enabled: true
     restart:
       enabled: false
-  #FTL 템플릿 파일도 반영
-  #  freemarker:
-  #    template-loader-path: classpath:/template/chat/
-  #    suffix: .ftl
-  #    cache: false
-
+  #Security 및 Oauth 설정
   security:
     oauth2:
       client:
@@ -96,13 +81,6 @@ spring:
             user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
             user-name-attribute: sub
 
-#파일 업로드 경로
-file:
-  dir:
-    account: C:/TeamProject/eatmate/img/profileimg
-    team: C:/TeamProject/eatmate/img/teamimg
-    teamPost: C:/TeamProject/eatmate/img/teampostimg
-
 #OPEN API 설정
 kakao:
   client:
@@ -116,3 +94,10 @@ google:
   client:
     id: 22110496570-9okorgjcubqkb5qvfthfu398k6et0gg0.apps.googleusercontent.com
     secret: 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
+
+#파일 업로드 경로
+file:
+  dir:
+    account: C:/TeamProject/eatmate/img/profileimg
+    team: C:/TeamProject/eatmate/img/teamimg
+    teamPost: C:/TeamProject/eatmate/img/teampostimg
