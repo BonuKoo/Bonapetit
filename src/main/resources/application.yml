@@ -3,16 +3,21 @@ spring:
   config:
     activate:
       on-profile: prod
+  server:
+    port: 80
   #DB - 1
   datasource:
-    jdbc-url:
+    jdbc-url: jdbc:mysql://bonapetit.cnucyg8w8tyu.ap-northeast-2.rds.amazonaws.com:3306/bonapetit?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: 1234
+    username: admin
+    password: bonapetit0902
   #jpa
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect     
   #redis
   redis:
     host: localhost
@@ -38,7 +43,7 @@ spring:
             client-name: Kakao
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+            redirect-uri: "https://api.bonappetit.p-e.kr/login/oauth2/code/kakao"
 
           #네이버
           naver:
@@ -84,8 +89,8 @@ spring:
 #OPEN API 설정
 kakao:
   client:
-    id: e14cb05b33510d6d6fb59bc77f202156
-    secret: jBgKKQxp5icYdE8NdbWWP7wbJjTFMhcJ
+    id: fde79d1d4d914a0bafc33c44c782740b
+    secret: QnDQdaUkBbH4zoppp9t42xTVzSnHNjKL
 naver:
   client:
     id: vxzSX7hpBWdUiZGim9aX
@@ -101,3 +106,4 @@ file:
     account: C:/TeamProject/eatmate/img/profileimg
     team: C:/TeamProject/eatmate/img/teamimg
     teamPost: C:/TeamProject/eatmate/img/teampostimg
+

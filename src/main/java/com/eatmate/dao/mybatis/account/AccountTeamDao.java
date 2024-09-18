@@ -23,7 +23,7 @@ public interface AccountTeamDao {
     @Select("SELECT at.account_team_id, at.account_id, at.team_id, at.is_leader, " +
             "t.team_name, t.description " +
             "FROM account_team at " +
-            "JOIN team t ON at.team_id = t.team_id " +
+            "JOIN Team t ON at.team_id = t.team_id " +
             "WHERE at.account_id = #{account_id} " +
             "AND at.is_leader = TRUE")
     List<AccountTeamDto> findTeamsWhereIsLeader(@Param("account_id") Long account_id);
