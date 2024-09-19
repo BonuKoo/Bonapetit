@@ -148,7 +148,9 @@ public class PostController {
 
     // 팀원 강퇴 처리
     @PostMapping("/kickMember")
-    public String kickMember(@RequestParam Long accountId, @RequestParam Long teamId, RedirectAttributes redirectAttributes) {
+    public String kickMember(@RequestParam String accountId,
+                             @RequestParam String teamId,
+                             RedirectAttributes redirectAttributes) {
         // 서비스 호출하여 팀원 강퇴
         postTeamService.kickMember(accountId, teamId);
 
