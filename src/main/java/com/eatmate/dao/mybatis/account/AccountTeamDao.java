@@ -31,6 +31,7 @@ public interface AccountTeamDao {
     @Delete("DELETE FROM ACCOUNT_TEAM WHERE account_id = #{account_id} AND team_id = #{team_id}")
     void deleteAccountFromTeam(@Param("account_id") Long account_id, @Param("team_id") Long team_id);
 
+    // 계정 삭제
     @Delete("DELETE FROM account_team WHERE account_id = #{account_id}")
     void deleteByAccountId(@Param("account_id") String accountId);
 
