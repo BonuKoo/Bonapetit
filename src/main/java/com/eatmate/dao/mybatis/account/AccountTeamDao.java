@@ -12,10 +12,9 @@ import java.util.List;
 @Mapper
 public interface AccountTeamDao {
 
-    // 가입된 모든 팀 조회
     @Select("SELECT t.team_id, t.team_name, t.description " +
-            "FROM TEAM t " +
-            "JOIN ACCOUNT_TEAM at ON t.team_id = at.team_id " +
+            "FROM Team t " +  // 대소문자 일치 확인
+            "JOIN account_team at ON t.team_id = at.team_id " +
             "WHERE at.account_id = #{account_id}")
     List<TeamDto> findTeamsByAccountId(@Param("account_id") Long account_id);
 
