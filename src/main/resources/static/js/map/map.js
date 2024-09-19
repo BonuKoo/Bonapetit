@@ -9,7 +9,7 @@ var placeOverlay = new kakao.maps.CustomOverlay({zIndex:1}),
 //        level: 5 // 지도의 확대 레벨
 //    };
 
-var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+var mapContainer = document.getElementById('map'); // 지도를 표시할 div
 var map;
 
 navigator.geolocation.getCurrentPosition(function(position) {
