@@ -33,6 +33,6 @@ public interface AccountTeamDao {
 
     // 만약 특정 유저와 관련된 모든 팀 관계를 삭제해야 한다면 (계정 삭제 시)
     @Delete("DELETE FROM account_team WHERE account_id = #{account_id}")
-    void deleteByAccountId(@Param("account_id") String accountId);
+    void deleteByAccountId(@Param("account_id") String account_id);
 
 }

@@ -83,8 +83,8 @@
                 <td>
                   <!-- 리더가 아닌 팀에만 탈퇴 버튼 표시 -->
                   <form th:action="@{/profile/leaveTeam}" method="post">
-                    <input type="hidden" name="teamId" th:value="${team.team_id}">
-                    <input type="hidden" name="accountId" th:value="${dto.account_id}">
+                    <input type="hidden" name="team_id" th:value="${team.team_id}">
+                    <input type="hidden" name="account_id" th:value="${dto.account_id}">
                     <button type="submit" class="btn btn-danger" onclick="return confirm('정말로 팀에서 탈퇴하시겠습니까?')">팀 탈퇴</button>
                   </form>
                 </td>
