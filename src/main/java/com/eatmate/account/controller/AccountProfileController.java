@@ -202,11 +202,11 @@ public class AccountProfileController {
 
     // 팀 탈퇴 처리
     @PostMapping("/leaveTeam")
-    public String leaveTeam(@RequestParam("account_id") String account_id,
-                            @RequestParam("team_id") String team_id,
+    public String leaveTeam(@RequestParam("account_id") String accountId,
+                            @RequestParam("team_id") String teamId,
                             RedirectAttributes redirectAttributes) {
         // 팀에서 탈퇴 처리 (AccountTeam 관계 삭제)
-        postTeamService.kickMember(account_id, team_id);
+        postTeamService.kickMember(accountId, teamId);
 
         // 탈퇴 성공 메시지 추가
         redirectAttributes.addFlashAttribute("message", "팀에서 성공적으로 탈퇴하였습니다.");
