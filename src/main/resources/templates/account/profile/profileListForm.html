@@ -176,6 +176,7 @@
         <div class="modal-body">
           <p>정말로 계정을 삭제하시겠습니까?</p>
           <form th:action="@{/profile/delete}" method="post" id="deleteForm">
+            <input type="hidden" th:field="${dto.account_id}">
             <input type="hidden" th:field="${dto.oauth2_id}">
             <button id="logoutButton" type="submit" class="btn btn-danger" href="javascript:void(0)">삭제</button>
           </form>
