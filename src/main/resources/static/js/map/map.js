@@ -9,22 +9,23 @@ var placeOverlay = new kakao.maps.CustomOverlay({zIndex:1}),
 //        level: 5 // 지도의 확대 레벨
 //    };
 
-var lat = null;
-var lon = null;
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+var map;
 
 navigator.geolocation.getCurrentPosition(function(position) {
-        lat = position.coords.latitude, // 위도
-        lon = position.coords.longitude; // 경도
+        var lat = position.coords.latitude, // 위도
+        var lon = position.coords.longitude; // 경도
+
+        var mapOption = {
+            center: new kakao.maps.LatLng(lat, lon), // 지도의 중심좌표
+            level: 5 // 지도의 확대 레벨
+        };
+
+        map = new kakao.maps.Map(mapContainer, mapOption);
       });
 
-var mapContainer = document.getElementById('map'), // 지도를 표시할 div
-    mapOption = {
-        center: new kakao.maps.LatLng(lat, lon), // 지도의 중심좌표
-        level: 5 // 지도의 확대 레벨
-    };
-
 // 지도를 생성합니다
-var map = new kakao.maps.Map(mapContainer, mapOption);
+//var map = new kakao.maps.Map(mapContainer, mapOption);
 
 // 장소 검색 객체를 생성합니다
 var ps = new kakao.maps.services.Places();
