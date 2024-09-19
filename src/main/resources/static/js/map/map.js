@@ -13,7 +13,7 @@ var mapContainer = document.getElementById('map'), // 지도를 표시할 div
 var map;
 
 navigator.geolocation.getCurrentPosition(function(position) {
-        var lat = position.coords.latitude, // 위도
+        var lat = position.coords.latitude; // 위도
         var lon = position.coords.longitude; // 경도
 
         var mapOption = {
