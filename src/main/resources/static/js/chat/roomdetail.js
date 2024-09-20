@@ -12,7 +12,8 @@ var vm = new Vue({
         roomName: '',
         message: '',
         messages: [],
-        token: ''
+        token: '',
+        userCount: 0
     },
     created() {
         try {
@@ -35,7 +36,6 @@ var vm = new Vue({
                 ws.connect({"token": _this.token}, function(frame) {
                     // 연결이 완료되면 ws.subscribe()로 해당 채팅방을 구독한다.
                     // "/sub/chat/room/" + _this.roomId 경로로 들어오는 메시지를 실시간으로 받아서 처리
-
                 ws.subscribe("/sub/chat/room/" + _this.roomId, function(message) {
                         console.log("구독자 : ", message);
 
@@ -44,7 +44,6 @@ var vm = new Vue({
                         _this.recvMessage(recv);
 
                     });
-                    _this.sendMessage('ENTER');
                 }, function(error) {
                     alert("서버 연결에 실패 했습니다. 다시 접속해 주세요.");
                     location.href = "/chat/room";
@@ -80,7 +79,9 @@ var vm = new Vue({
                 "sender": recv.sender || "알 수 없음",
                 "message": recv.message
             });
-        }
-
+        },
+  exitRoom() {
+    location.href = "/profile/list";
+  }
     }
 });
