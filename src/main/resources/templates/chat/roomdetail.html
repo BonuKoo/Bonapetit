@@ -16,90 +16,90 @@
        display: none;
     }
 
-    /* 메시지 영역을 채우고 스크롤 가능하도록 설정 */
-.message-container {
-   height: calc(100vh - 150px); /* 하단 입력창 공간을 제외한 영역 */
-   overflow-y: auto;
-   padding: 10px;
-   background-color: #f8f9fa;
-}
-
-/* 입력창을 화면 하단에 고정 */
-.input-container {
-   position: fixed;
-   bottom: 0;
-   left: 0;
-   width: 100%;
-   background-color: white;
-   padding: 10px;
-   border-top: 1px solid #ccc;
-}
-
-.input-container .form-control {
-   margin-right: 10px;
-}
-
-/* Container */
-.container {
+/* 전체 컨테이너: 여백을 줄이고 최대 너비를 넓힘 */
+.container.roomdetail-css {
+    max-width: 1000px;  /* 가로폭을 넓힘 */
+    margin: 0 auto;  /* 중앙 정렬 */
+    padding: 20px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    max-width: 800px;
-    margin: 20px auto;
 }
 
-/* Chat Room Header */
+/* 메시지 영역: 입력창 공간을 제외하고 스크롤 가능 */
+.message-container {
+    height: calc(100vh - 250px);  /* 입력창을 제외한 영역 */
+    overflow-y: auto;
+    padding: 10px 15px;  /* 좌우 패딩을 줄여서 보폭을 넓힘 */
+    background-color: #f8f9fa;
+}
+
+/* 입력창을 화면 하단에 고정, 높이를 조금 높임 */
+.input-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 70%;
+    background-color: white;
+    padding: 20px;
+    border-top: 1px solid #ccc;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);  /* 상단 그림자 효과 */
+    margin: 0 auto; /* 중앙 정렬 */
+}
+
+
+/* 입력창의 텍스트 필드 높이를 증가시킴 */
+.input-container .form-control {
+    height: 50px;
+    padding: 10px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+/* 보내기 버튼 스타일 */
+.input-container .btn-primary {
+    height: 50px;
+    padding: 0 20px;
+    font-size: 16px;
+}
+
+/* 채팅방 이름과 나가기 버튼을 정렬 */
+.row.align-items-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 채팅방 제목 스타일 */
 h2 {
     color: #0080FF;
     font-weight: bold;
     font-size: 24px;
+    margin: 0;
 }
 
-/* Exit Button */
-.btn-info {
-    background-color: #2E9AFE;
-    border-color: #2E9AFE;
-    color: white;
-    padding: 8px 12px;
+/* 나가기 버튼 스타일 */
+.exit-btn {
+    padding: 8px 16px;
     font-size: 14px;
-}
-
-.btn-info:hover {
-    background-color: #1C6EA4;
-    border-color: #1C6EA4;
-    opacity: 0.9;
-}
-
-/* Message Input */
-.input-group-text {
     background-color: #2E9AFE;
-    border-color: #2E9AFE;
+    border: none;
     color: white;
-    font-weight: bold;
-}
-
-.form-control {
-    border: 1px solid #2E9AFE;
     border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
-.btn-primary {
-    background-color: #0080FF;
-    border-color: #0080FF;
-    color: white;
+.exit-btn:hover {
+    background-color: #1C6EA4;
 }
 
-.btn-primary:hover {
-    background-color: #0066CC;
-    border-color: #0066CC;
-}
-
-/* Chat Messages */
+/* 채팅 메시지 리스트 아이템 스타일 */
 .list-group-item {
     border: 1px solid #2E9AFE;
     border-radius: 5px;
     margin-bottom: 10px;
+    padding: 10px 15px;
     background-color: white;
     color: #333;
 }
@@ -108,48 +108,26 @@ h2 {
     background-color: #f1f9ff;
 }
 
-/* Footer */
-footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #2E9AFE;
-    color: white;
-}
-
-footer a {
-    color: white;
-    font-size: 18px;
-    text-decoration: none;
-}
-
-footer a:hover {
-    color: #0080FF;
-    text-decoration: underline;
-}
-
-
   </style>
 
 </head>
 <body>
 <div class="container roomdetail-css" id="app" v-cloak>
   <!-- 상단: 채팅방 이름 및 나가기 버튼 -->
-  <div class="row">
+  <div class="row align-items-center justify-content-between">
     <div class="col-md-6">
       <h2>{{roomName}}</h2>
     </div>
     <div class="col-md-6 text-right">
-      <div class="input-group-append">
-        <button class="btn btn-info btn-sm" type="button" @click="exitRoom">채팅방 나가기</button>
-      </div>
+      <button class="btn btn-info btn-sm exit-btn" type="button" @click="exitRoom">채팅방 나가기</button>
     </div>
   </div>
 
   <!-- 중간: 메시지 리스트 -->
   <div class="row mt-3">
-    <div class="col-md-12 message-container">
+    <div class="col-md-12 message-container" ref="messageContainer">
       <ul class="list-group">
-        <li class="list-group-item" v-for="message in messages">
+        <li class="list-group-item" v-for="message in messages" :key="message.id">
           {{ message.sender }} - {{ message.message }}
         </li>
       </ul>
