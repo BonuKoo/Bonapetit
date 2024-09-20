@@ -22,6 +22,7 @@ public class ChatRoomDTO implements Serializable {
     private String roomId;
     private String roomName;
     private Long teamId;
+    private long userCount; //채팅방 인원수
 
     private HashMap<Long, Map<String, Object>> membersInfo;
 
