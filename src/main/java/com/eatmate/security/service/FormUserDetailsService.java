@@ -42,7 +42,6 @@ public class FormUserDetailsService implements UserDetailsService {
                 .email(account.getEmail())
                 .nickname(account.getNickname())
                 .password(account.getPassword())
-                .files(account.getFiles())
                 .build();
 
         return new AccountContext(accountDto,authorities);

@@ -1,10 +1,7 @@
 package com.eatmate.domain.entity.user;
 
-import com.eatmate.domain.entity.Tag;
 import com.eatmate.domain.entity.chat.ChatRoom;
-import com.eatmate.domain.entity.post.TeamPost;
 import com.eatmate.domain.global.BaseTimeEntity;
-import com.eatmate.global.domain.UploadFileOfTeam;
 import com.eatmate.map.vo.MapVo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -61,18 +58,6 @@ public class Team extends BaseTimeEntity {
     @OneToOne(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ChatRoom chatRoom;
 
-    //리뷰 속성
-    @OneToMany(mappedBy = "team")
-    private List<TeamPost> teamPosts = new ArrayList<>();  // 팀과 팀 게시글 간의 관계
-    
-    //태그
-    @OneToMany(mappedBy = "team", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<Tag> tags = new ArrayList<>();
-
-    @OneToMany(mappedBy = "team", cascade = CascadeType.PERSIST,orphanRemoval = true,
-            fetch = FetchType.LAZY)
-    private List<UploadFileOfTeam> files = new ArrayList<>();
-
     @Builder
     public Team(Long id,
                 String teamName,
@@ -85,9 +70,8 @@ public class Team extends BaseTimeEntity {
                 String roadAddressName,
                 String x,
                 String y,
-                List<AccountTeam> members,
-                List<TeamPost> teamPosts,
-                List<UploadFileOfTeam> files) {
+                List<AccountTeam> members
+    ) {
         this.id = id;
         this.teamName = teamName;
         this.description = description;
@@ -100,8 +84,6 @@ public class Team extends BaseTimeEntity {
         this.x = x;
         this.y = y;
         this.members = members != null ? members : new ArrayList<>();
-        this.files = (files != null) ? files : new ArrayList<>();
-        this.teamPosts = teamPosts;
 
     }
 
@@ -111,33 +93,6 @@ public class Team extends BaseTimeEntity {
     public void addAccountTeam(AccountTeam accountTeam){
         this.members.add(accountTeam);
         accountTeam.updateTeam(this);
-    }
-
-    /**
-        File 연관
-     */
-    public void addFile(UploadFileOfTeam file) {
-        files.add(file);
-        file.attachTeam(this);
-    }
-
-    public void removeFile(UploadFileOfTeam file) {
-        files.remove(file);
-        file.attachTeam(null);
-    }
-
-    /*
-    Tag 연관 관리 메서드
-    */
-
-    public void addTag(Tag tag) {
-        tags.add(tag);
-        tag.attachPost(this);
-    }
-
-    public void removeTag(Tag tag) {
-        tags.remove(tag);
-        tag.attachPost(null);
     }
 
     /**
