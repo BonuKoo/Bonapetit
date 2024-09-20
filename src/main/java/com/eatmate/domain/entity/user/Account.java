@@ -1,7 +1,5 @@
 package com.eatmate.domain.entity.user;
 
-import com.eatmate.domain.entity.post.TeamPost;
-import com.eatmate.global.domain.UploadFileOfAccount;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -48,40 +46,15 @@ public class Account {
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<AccountTeam> accountTeams = new ArrayList<>();
 
-    /*==Role==*/
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
-    private List<AccountRole> accountRoles = new ArrayList<>();
 
-    // 사용자가 작성한 팀 게시글
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
-    private List<TeamPost> teamPosts = new ArrayList<>();
-
-    @OneToMany(mappedBy = "account", cascade = CascadeType.MERGE, orphanRemoval = true,
-            fetch = FetchType.EAGER)
-    private List<UploadFileOfAccount> files = new ArrayList<>();
 
     @Builder
-    public Account(Long id, String email, String nickname, String password, List<AccountTeam> accountTeams, List<AccountRole> accountRoles, List<TeamPost> teamPosts, List<UploadFileOfAccount> files) {
+    public Account(Long id, String email, String nickname, String password, List<AccountTeam> accountTeams) {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
         this.password = password;
         this.accountTeams = accountTeams;
-        this.accountRoles = accountRoles;
-        this.teamPosts = teamPosts;
-        this.files = (files != null) ? files : new ArrayList<>();
     }
 
-    /*
-       File 연관
-    */
-    public void addFile(UploadFileOfAccount file) {
-        files.add(file);
-        file.attachAccount(this);
-    }
-
-    public void removeFile(UploadFileOfAccount file) {
-        files.remove(file);
-        file.attachAccount(null);
-    }
 }
