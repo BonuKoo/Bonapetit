@@ -83,8 +83,8 @@
                 <td>
                   <!-- 리더가 아닌 팀에만 탈퇴 버튼 표시 -->
                   <form th:action="@{/profile/leaveTeam}" method="post">
-                    <input type="hidden" name="teamId" th:value="${team.team_id}">
-                    <input type="hidden" name="accountId" th:value="${dto.account_id}">
+                    <input type="hidden" name="team_id" th:value="${team.team_id}">
+                    <input type="hidden" name="account_id" th:value="${dto.account_id}">
                     <button type="submit" class="btn btn-danger" onclick="return confirm('정말로 팀에서 탈퇴하시겠습니까?')">팀 탈퇴</button>
                   </form>
                 </td>
@@ -176,6 +176,7 @@
         <div class="modal-body">
           <p>정말로 계정을 삭제하시겠습니까?</p>
           <form th:action="@{/profile/delete}" method="post" id="deleteForm">
+            <input type="hidden" th:field="${dto.account_id}">
             <input type="hidden" th:field="${dto.oauth2_id}">
             <button id="logoutButton" type="submit" class="btn btn-danger" href="javascript:void(0)">삭제</button>
           </form>

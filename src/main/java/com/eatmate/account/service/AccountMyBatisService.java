@@ -92,7 +92,10 @@ public class AccountMyBatisService {
     }
 
     // OAuth2 ID를 기반으로 회원 탈퇴 처리
-    public void deleteUserByOauth2Id(String oauth2Id) {
+    public void deleteUserByOauth2Id(String oauth2Id,String accountId) {
+        // 참조 테이블에서 먼저 삭제
+        accountTeamDao.deleteByAccountId(accountId);
+        // Account 테이블에서 계정 삭제
         accountDao.deleteByOauth2Id(oauth2Id);
     }
 
