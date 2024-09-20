@@ -21,13 +21,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomTeamRepository4QueryDslImpl implements CustomTeamRepository4QueryDsl {
 
-
     private final JPAQueryFactory queryFactory;
 
     QTeam team = QTeam.team;
 
     QAccount account = QAccount.account;
 
+    @Override
     public Page<PostPageDto> searchWithPage(TeamSearchCondition condition, Pageable pageable) {
 
                 List<PostPageDto> query = queryFactory
@@ -35,11 +35,14 @@ public class CustomTeamRepository4QueryDslImpl implements CustomTeamRepository4Q
                 .select(Projections.constructor(PostPageDto.class,
                         team.id,
                         team.teamName,
+                        team.addressName,
+                        team.placeName,
+                        //team.members.get(0).account.nickname,
+                        team.members.size(),
                         team.createdAt
                 ))
                 .from(team)
                 .where(keywordEq(condition.getKeyword()))
-                .groupBy(team.id)
                 .orderBy(team.createdAt.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -58,13 +61,10 @@ public class CustomTeamRepository4QueryDslImpl implements CustomTeamRepository4Q
         if (!StringUtils.hasText(keyword)){
             return null;
         }
-
         return team.teamName.containsIgnoreCase(keyword)
                 .or(team.placeName.containsIgnoreCase(keyword))
                 .or(team.addressName.containsIgnoreCase(keyword))
                 .or(team.roadAddressName.containsIgnoreCase(keyword))
                 ;
-
     }
-
 }

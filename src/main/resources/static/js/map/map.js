@@ -3,14 +3,29 @@ var placeOverlay = new kakao.maps.CustomOverlay({zIndex:1}),
     contentNode = document.createElement('div'), // 커스텀 오버레이의 컨텐츠 엘리먼트 입니다
     markers = []; // 마커를 담을 배열입니다
 
-var mapContainer = document.getElementById('map'), // 지도를 표시할 div
-    mapOption = {
-        center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
-        level: 5 // 지도의 확대 레벨
-    };
+//var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+//    mapOption = {
+//        center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
+//        level: 5 // 지도의 확대 레벨
+//    };
+
+var mapContainer = document.getElementById('map'); // 지도를 표시할 div
+var map;
+
+navigator.geolocation.getCurrentPosition(function(position) {
+        var lat = position.coords.latitude; // 위도
+        var lon = position.coords.longitude; // 경도
+
+        var mapOption = {
+            center: new kakao.maps.LatLng(lat, lon), // 지도의 중심좌표
+            level: 5 // 지도의 확대 레벨
+        };
+
+        map = new kakao.maps.Map(mapContainer, mapOption);
+      });
 
 // 지도를 생성합니다
-var map = new kakao.maps.Map(mapContainer, mapOption);
+//var map = new kakao.maps.Map(mapContainer, mapOption);
 
 // 장소 검색 객체를 생성합니다
 var ps = new kakao.maps.services.Places();

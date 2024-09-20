@@ -148,13 +148,15 @@ public class PostController {
 
     // 팀원 강퇴 처리
     @PostMapping("/kickMember")
-    public String kickMember(@RequestParam Long accountId, @RequestParam Long teamId, RedirectAttributes redirectAttributes) {
+    public String kickMember(@RequestParam String account_id,
+                             @RequestParam String team_id,
+                             RedirectAttributes redirectAttributes) {
         // 서비스 호출하여 팀원 강퇴
-        postTeamService.kickMember(accountId, teamId);
+        postTeamService.kickMember(account_id, team_id);
 
         // 강퇴 후 팀 수정 페이지로 리다이렉트
         redirectAttributes.addFlashAttribute("message", "해당 멤버를 강퇴했습니다.");
-        return "redirect:/post/members/" + teamId; // 팀원 목록 페이지로 리다이렉트
+        return "redirect:/post/members/" + team_id; // 팀원 목록 페이지로 리다이렉트
     }
 
 }

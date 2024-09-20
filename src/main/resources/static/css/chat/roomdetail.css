@@ -1,0 +1,95 @@
+/* 전체 컨테이너 */
+.container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+/* 상단 섹션: 채팅방 이름 및 버튼 배치 */
+.row.align-items-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 채팅방 제목 스타일 */
+h2 {
+    color: #0080FF;
+    font-weight: bold;
+    font-size: 24px;
+    margin: 0;
+}
+
+/* 나가기 버튼 스타일 */
+.exit-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #2E9AFE;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.exit-btn:hover {
+    background-color: #1C6EA4;
+}
+
+/* 메시지 입력창 스타일 */
+.input-group-text {
+    background-color: #2E9AFE;
+    border-color: #2E9AFE;
+    color: white;
+    font-weight: bold;
+}
+
+.form-control {
+    border: 1px solid #2E9AFE;
+    border-radius: 5px;
+}
+
+.btn-primary {
+    background-color: #0080FF;
+    border-color: #0080FF;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0066CC;
+    border-color: #0066CC;
+}
+
+/* 채팅 메시지 스타일 */
+.list-group-item {
+    border: 1px solid #2E9AFE;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: white;
+    color: #333;
+}
+
+.list-group-item:hover {
+    background-color: #f1f9ff;
+}
+
+/* Footer 스타일 */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #2E9AFE;
+    color: white;
+}
+
+footer a {
+    color: white;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: #0080FF;
+    text-decoration: underline;
+}

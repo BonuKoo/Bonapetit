@@ -12,7 +12,8 @@ var vm = new Vue({
         roomName: '',
         message: '',
         messages: [],
-        token: ''
+        token: '',
+        userCount: 0
     },
     created() {
         try {
@@ -35,8 +36,7 @@ var vm = new Vue({
                 ws.connect({"token": _this.token}, function(frame) {
                     // 연결이 완료되면 ws.subscribe()로 해당 채팅방을 구독한다.
                     // "/sub/chat/room/" + _this.roomId 경로로 들어오는 메시지를 실시간으로 받아서 처리
-
-                ws.subscribe("/sub/chat/room/" + _this.roomId, function(message) {
+                    ws.subscribe("/sub/chat/room/" + _this.roomId, function(message) {
                         console.log("구독자 : ", message);
 
                         var recv = JSON.parse(message.body);
@@ -44,7 +44,6 @@ var vm = new Vue({
                         _this.recvMessage(recv);
 
                     });
-                    _this.sendMessage('ENTER');
                 }, function(error) {
                     alert("서버 연결에 실패 했습니다. 다시 접속해 주세요.");
                     location.href = "/chat/room";
@@ -54,19 +53,27 @@ var vm = new Vue({
             console.error("에러 발생:", error);
         }
     },
+    mounted() {
+        // 페이지가 로드될 때 마지막 메시지로 스크롤
+        this.scrollToBottom();
+    },
     methods: {
         // 사용자가 메시지를 입력하고 '보내기' 버튼을 클릭하면
         // sendMessage('TALK') 메서드가 실행된다.
         // 사용자가 입력한 메시지와 메시지 타입을 WebSocket을 통해 서버로 전송
         sendMessage: function(type) {
-        console.log("전송하는 type 값:", type);
+            console.log("전송하는 type 값:", type);
             try {
                 ws.send("/pub/chat/message", {"token": this.token}, JSON.stringify({
-                type: type,
-                roomId: this.roomId,
-                message: this.message
+                    type: type,
+                    roomId: this.roomId,
+                    message: this.message
                 }));
                 this.message = '';
+                // 메시지를 보낸 후에도 스크롤을 맨 아래로 이동
+                this.$nextTick(() => {
+                    this.scrollToBottom();
+                });
             } catch (error) {
                 console.error("메시지 전송 중 에러 발생:", error);
             }
@@ -80,7 +87,21 @@ var vm = new Vue({
                 "sender": recv.sender || "알 수 없음",
                 "message": recv.message
             });
-        }
 
+            // 새로운 메시지를 받은 후 스크롤을 맨 아래로 이동
+            this.$nextTick(() => {
+                this.scrollToBottom();
+            });
+        },
+
+        // 채팅 리스트 맨 아래로 스크롤하는 함수
+        scrollToBottom() {
+            const container = this.$refs.messageContainer;
+            container.scrollTop = container.scrollHeight;
+        },
+
+        exitRoom() {
+            location.href = "/profile/list";
+        }
     }
 });

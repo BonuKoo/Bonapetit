@@ -152,11 +152,12 @@ public class AccountProfileController {
     // 회원 탈퇴
     @PostMapping("/delete")
     public String deleteAccount(@RequestParam("oauth2_id") String oauth2Id,
+                                @RequestParam("account_id") String accountId,
                                 RedirectAttributes redirectAttributes,
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
         // 계정 삭제
-        accountMyBatisService.deleteUserByOauth2Id(oauth2Id);
+        accountMyBatisService.deleteUserByOauth2Id(oauth2Id,accountId);
         redirectAttributes.addFlashAttribute("message", "회원 탈퇴가 완료되었습니다.");
 
         // 세션에서 provider 정보 가져오기
@@ -201,8 +202,8 @@ public class AccountProfileController {
 
     // 팀 탈퇴 처리
     @PostMapping("/leaveTeam")
-    public String leaveTeam(@RequestParam Long accountId,
-                            @RequestParam Long teamId,
+    public String leaveTeam(@RequestParam("account_id") String accountId,
+                            @RequestParam("team_id") String teamId,
                             RedirectAttributes redirectAttributes) {
         // 팀에서 탈퇴 처리 (AccountTeam 관계 삭제)
         postTeamService.kickMember(accountId, teamId);
