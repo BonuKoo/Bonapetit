@@ -1,0 +1,88 @@
+/* 전체 레이아웃 스타일 */
+body {
+    background-color: white;
+    margin: 0;
+    font-family: "Jua", sans-serif;  /* Jua 폰트를 기본으로 사용 */
+}
+
+/* 폼 컨테이너 */
+form {
+    background-color: white;
+    padding: 20px;
+    margin: 0 auto;
+    border-radius: 7px; /* main-action과 일관된 둥근 모서리 */
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid #2E9AFE;  /* 레이아웃의 파란색과 조화 */
+}
+
+/* 제목 */
+h1 {
+    text-align: center;
+    color: #0080FF;  /* 메인 색상과 일치 */
+    margin-bottom: 20px;
+    font-weight: 400;
+}
+
+/* 입력 필드 스타일 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #2C3E50;  /* footer 텍스트 색상과 일치 */
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #2E9AFE;
+    box-sizing: border-box;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+    border-color: #0080FF;
+    outline: none;
+}
+
+/* 텍스트 입력창 높이 조절 */
+textarea {
+    resize: vertical;
+}
+
+/* 버튼 스타일 */
+button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #0080FF;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 7px;  /* 레이아웃과 통일된 둥근 모서리 */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* 반응형 레이아웃 */
+@media (max-width: 600px) {
+    form {
+        padding: 15px;
+    }
+
+    button[type="submit"] {
+        font-size: 14px;
+        padding: 8px;
+    }
+}

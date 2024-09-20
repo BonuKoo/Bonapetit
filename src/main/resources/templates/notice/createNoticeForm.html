@@ -1,0 +1,36 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{layout/layout.html}">
+
+<head>
+  <th:block layout:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/notice/createNoticeForm.css}">
+    <title>Create Notice</title>
+  </th:block>
+</head>
+
+<body>
+<div layout:fragment="content">
+  <h1>Create Notice</h1>
+
+  <form th:action="@{/notice/create}" method="post" th:object="${noticeForm}">
+    <!-- 제목 입력 필드 -->
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" th:field="*{title}" class="form-control" id="title" placeholder="Enter notice title" required>
+    </div>
+
+    <!-- 내용 입력 필드 -->
+    <div class="form-group">
+      <label for="content">Content</label>
+      <textarea th:field="*{content}" class="form-control" id="content" rows="5" placeholder="Enter notice content" required></textarea>
+    </div>
+
+    <!-- 전송 버튼 -->
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+</body>
+</html>
