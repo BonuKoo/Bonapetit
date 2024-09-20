@@ -1,61 +1,122 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-}
-
 .main-section {
-    padding: 20px;
     max-width: 800px;
     margin: 0 auto;
     background-color: white;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
-h1 {
+/* 제목 스타일 */
+.main-section h1 {
     text-align: center;
+    font-size: 2.5em;
+    color: #333;
     margin-bottom: 20px;
 }
 
+/* 지도 영역 스타일 */
+.map_wrap {
+    width: 100%;
+    height: 400px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 메뉴 스타일 */
+#menu_wrap {
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* 검색 키워드 입력창 */
+#menu_wrap .option input {
+    padding: 10px;
+    font-size: 14px;
+    width: 130px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+}
+
+#menu_wrap .option button {
+    padding: 10px 15px;
+    font-size: 14px;
+    background-color: #0080FF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#menu_wrap .option button:hover {
+    background-color: #005bb5;
+}
+
+/* 폼 그룹 스타일 */
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .form-group label {
     display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: #333;
 }
 
 .form-group input[type="text"],
-.form-group input[type="number"],
-.form-group input[type="date"],
 .form-group textarea {
     width: 100%;
     padding: 10px;
+    font-size: 16px;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
 .form-group textarea {
     height: 150px;
-    resize: vertical;
+    resize: none;
 }
 
+/* 게시글 작성 버튼 스타일 */
 .form-group button {
     display: block;
-    width: 100%;
-    padding: 10px;
-    background-color: #1a73e8;
-    color: white;
+    margin: 20px auto; /* 중앙 정렬 */
+    padding: 10px 20px;
     font-size: 16px;
+    background-color: #0080FF;
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: auto; /* 텍스트 너비에 맞춤 */
 }
 
 .form-group button:hover {
-    background-color: #0c58c2;
+    background-color: #005bb5;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .main-section {
+        padding: 15px;
+    }
+
+    #menu_wrap .option input {
+        width: 150px;
+    }
+
+    .form-group button {
+        font-size: 14px;
+        padding: 10px;
+    }
 }
