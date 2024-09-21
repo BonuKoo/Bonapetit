@@ -20,6 +20,7 @@ public class LoginController {
             OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
             Map<String, Object> attributes = oAuth2User.getAttributes();
             Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
             String oauth2Id = (String) response.get("id");
 
             // 세션에 OAuth2 ID 저장

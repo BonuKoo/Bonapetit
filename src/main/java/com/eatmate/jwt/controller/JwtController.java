@@ -2,6 +2,7 @@ package com.eatmate.jwt.controller;
 
 import com.eatmate.jwt.JwtTokenProvider;
 import com.eatmate.jwt.dto.LoginInfo;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Map;
 
@@ -35,7 +38,32 @@ public class JwtController {
         String oauthId = auth.getName();
         log.info("oauthId :{}",oauthId);
         //로그인 중인 계정의 닉네임
-        String nickname = (String) ((Map<String, Object>) ((OAuth2AuthenticationToken) auth).getPrincipal().getAttributes().get("properties")).get("nickname");
+        String nickname = null;
+
+        HttpSession session = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getSession();
+        String platform = (String) session.getAttribute("provider");
+
+        switch (platform) {
+            case "kakao":
+                nickname = (String) ((Map<String, Object>) ((OAuth2AuthenticationToken) auth).getPrincipal()
+                        .getAttributes()
+                        .get("properties"))
+                        .get("nickname");
+                break;
+            case "naver":
+                nickname = (String) ((Map<String, Object>) ((OAuth2AuthenticationToken) auth).getPrincipal()
+                        .getAttributes()
+                        .get("response"))
+                        .get("name");
+                break;
+            case "google":
+                nickname = (String) ((OAuth2AuthenticationToken) auth).getPrincipal()
+                        .getAttributes()
+                        .get("name");
+                break;
+        }
+
+
         log.info("nickname :{}",nickname);
 
         return LoginInfo.builder()

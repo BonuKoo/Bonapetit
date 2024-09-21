@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface TeamRepository extends JpaRepository<Team,Long>
-//    ,CustomTeamRepository4QueryDsl
 {
     @Query("select t " +
             "from Team t " +
