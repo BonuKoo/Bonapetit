@@ -36,9 +36,8 @@ public class SecurityConfig {
                         .requestMatchers("/post/search").permitAll()
                         .requestMatchers("/post/list").permitAll()
                         .requestMatchers("/post/detail").permitAll()
-
-                        // 카카오 인증 콜백 경로 허용
-//                        .requestMatchers("/oauth/kakao/callback").permitAll()
+                        .requestMatchers("/notice").permitAll()
+                        .requestMatchers("/notice/detail").permitAll()
 
                         // 카카오 인증 콜백 및 로그아웃
                         .requestMatchers("/login/oauth2/code/kakao").permitAll()

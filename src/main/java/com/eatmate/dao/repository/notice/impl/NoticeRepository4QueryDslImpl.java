@@ -34,7 +34,7 @@ public class NoticeRepository4QueryDslImpl implements NoticeRepository4QueryDsl 
                         notice.title,
                         account.nickname,
                         notice.content
-                        ))
+                ))
                 .from(notice)
                 .where(titleEq(condition.getTitle()))
                 .orderBy(notice.id.asc())
@@ -59,3 +59,20 @@ public class NoticeRepository4QueryDslImpl implements NoticeRepository4QueryDsl 
         }
     }
 }
+
+/*
+    // 정렬 처리 로직을 별도 메소드로 분리
+    private void addSorting(JPAQuery<NoticePageForm> query, Pageable pageable) {
+        for (Sort.Order order : pageable.getSort()) {
+            PathBuilder<Notice> entityPath = new PathBuilder<>(Notice.class, "notice");
+            OrderSpecifier<?> orderSpecifier = switch (order.getProperty()) {
+                case "id" -> new OrderSpecifier<>(order.isAscending() ? com.querydsl.core.types.Order.ASC : com.querydsl.core.types.Order.DESC,
+                        entityPath.getNumber(order.getProperty(), Long.class));
+                case "title" -> new OrderSpecifier<>(order.isAscending() ? com.querydsl.core.types.Order.ASC : com.querydsl.core.types.Order.DESC,
+                        entityPath.getString(order.getProperty()));
+                default -> throw new IllegalArgumentException("정렬할 수 없는 속성: " + order.getProperty());
+            };
+            query.orderBy(orderSpecifier);
+        }
+    }
+}*/

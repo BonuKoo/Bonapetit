@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
+@Table(indexes = {
+        @Index(name = "idx_notice_title", columnList = "title"),
+        @Index(name = "idx_notice_account", columnList = "account_id")
+})
 public class Notice {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

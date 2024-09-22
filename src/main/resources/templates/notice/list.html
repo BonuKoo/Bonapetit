@@ -46,19 +46,27 @@
         <!-- 페이지네이션 -->
         <div class="pagination">
             <ul class="pagination">
+                <!-- 이전 페이지 버튼 -->
                 <li th:classappend="${notice.hasPrevious()} ? 'enabled' : 'disabled'">
                     <a th:href="@{|/notice?page=${notice.number - 1}&size=${notice.size}|}">&laquo;</a>
                 </li>
 
-                <li th:each="i : ${#numbers.sequence(1, notice.totalPages)}"
+                <!-- 페이지 번호 반복 -->
+                <li th:each="i : ${#numbers.sequence(startPage, endPage)}"
                     th:classappend="${i == notice.number + 1} ? 'active'">
                     <a th:href="@{|/notice?page=${i - 1}&size=${notice.size}|}" th:text="${i}">1</a>
                 </li>
 
+                <!-- 다음 페이지 버튼 -->
                 <li th:classappend="${notice.hasNext()} ? 'enabled' : 'disabled'">
                     <a th:href="@{|/notice?page=${notice.number + 1}&size=${notice.size}|}">&raquo;</a>
                 </li>
             </ul>
+        </div>
+
+        <!-- 전체 페이지 버튼 -->
+        <div class="last-page-info">
+            <span th:text="'총 페이지: ' + ${lastPage}"></span>
         </div>
     </div>
 </div>
