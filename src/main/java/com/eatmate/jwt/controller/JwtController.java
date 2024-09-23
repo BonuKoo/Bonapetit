@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,10 +52,8 @@ public class JwtController {
                         .get("nickname");
                 break;
             case "naver":
-                nickname = (String) ((Map<String, Object>) ((OAuth2AuthenticationToken) auth).getPrincipal()
-                        .getAttributes()
-                        .get("response"))
-                        .get("name");
+                OAuth2User test = ((OAuth2AuthenticationToken) auth).getPrincipal();
+                System.out.println(test);
                 break;
             case "google":
                 nickname = (String) ((OAuth2AuthenticationToken) auth).getPrincipal()
