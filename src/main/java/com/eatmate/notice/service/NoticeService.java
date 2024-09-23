@@ -46,7 +46,7 @@ public class NoticeService {
                 .build();
     }
 
-    //리스트
+    //@Cacheable(value = "noticeCache", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #sortProperty + '-' + #sortDirection")
     public Page<NoticePageForm> searchWithPage(NoticeSearchCondition condition, Pageable pageable){
         return noticeRepository.searchWithPage(condition,pageable);
     }
