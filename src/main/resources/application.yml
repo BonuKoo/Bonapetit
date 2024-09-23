@@ -1,21 +1,41 @@
 spring:
   datasource:
-    jdbc-url: jdbc:h2:tcp://localhost/~/eatmate
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    jdbc-url: jdbc:mysql://localhost:3306/eatmate?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 1234
+  #jpa
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        jdbc.batch_size: 1000
+        order_inserts: true
+        order_updates: true
+
+  #datasource:
+  #  jdbc-url: jdbc:h2:tcp://localhost/~/eatmate
+  #  driver-class-name: org.h2.Driver
+  #  username: sa
+  #  password:
+  #jpa:
+  #  hibernate:
+  #    ddl-auto: create-drop
+  #  properties:
+  #    hibernate:
+  #      format_sql: true
+  #      dialect: org.hibernate.dialect.H2Dialect
   redis:
     host: localhost
     port: 6379
   jwt:
     secret: jIxcYARLKbjsUFEPksAcekGXpubvTVL+UxuNL68nqpE=
+  logging:
+    level:
+      org.springframework.cache: trace
+      org.springframework.cache.interceptor.CacheInterceptor: trace
 
   #STATIC 파일 자동 반영
   devtools:

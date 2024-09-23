@@ -4,10 +4,12 @@ import com.eatmate.notice.service.NoticeService;
 import com.eatmate.notice.vo.NoticeForm;
 import com.eatmate.notice.vo.NoticePageForm;
 import com.eatmate.notice.vo.NoticeSearchCondition;
+import com.eatmate.redis.config.dto.NoticePageFormCacheable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +56,7 @@ public class NoticeController {
         model.addAttribute("notice",noticeForm);
         return "notice/noticeView";
     }
+
     //페이지
     @GetMapping("")
     public String searchWithPage(@RequestParam(required = false) String keyword,
@@ -66,10 +69,15 @@ public class NoticeController {
         Pageable pageable = PageRequest.of(page,size);
 
         Page<NoticePageForm> noticePage = noticeService.searchWithPage(condition, pageable);
+        int startPage = ((page / 10) * 10) + 1;
+        int endPage = Math.min(startPage + 9, noticePage.getTotalPages());
 
         model.addAttribute("notice", noticePage);
-        return "notice/list";
-    }
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("lastPage", noticePage.getTotalPages());
+        return "notice/list";    }
+
     //수정 페이지
     @GetMapping("/update/{id}")
     public String modifyNotice(@PathVariable Long id, Model model){
