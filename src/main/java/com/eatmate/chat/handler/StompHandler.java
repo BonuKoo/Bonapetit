@@ -44,9 +44,8 @@ public class StompHandler implements ChannelInterceptor {
             // 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
 
             String nickname = Optional.ofNullable((OAuth2AuthenticationToken) message.getHeaders().get("simpUser"))
-                    .map(auth -> (String) ((Map<String, Object>) auth.getPrincipal()
+                    .map(auth -> (String) auth.getPrincipal()
                             .getAttributes()
-                            .get("properties"))
                             .get("nickname"))
                     .orElse("UnknownUser");
 
@@ -63,9 +62,8 @@ public class StompHandler implements ChannelInterceptor {
 
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
             String nickname = Optional.ofNullable((OAuth2AuthenticationToken) message.getHeaders().get("simpUser"))
-                    .map(auth -> (String) ((Map<String, Object>) auth.getPrincipal()
+                    .map(auth -> (String) auth.getPrincipal()
                             .getAttributes()
-                            .get("properties"))
                             .get("nickname"))
                     .orElse("UnknownUser");
 

@@ -43,25 +43,9 @@ public class JwtController {
         HttpSession session = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getSession();
         String platform = (String) session.getAttribute("provider");
 
-        switch (platform) {
-            case "kakao":
-                nickname = (String) ((Map<String, Object>) ((OAuth2AuthenticationToken) auth).getPrincipal()
-                        .getAttributes()
-                        .get("properties"))
-                        .get("nickname");
-                break;
-            case "naver":
-                nickname = (String) ((OAuth2AuthenticationToken) auth).getPrincipal()
-                        .getAttributes()
-                        .get("nickname");
-                break;
-            case "google":
-                nickname = (String) ((OAuth2AuthenticationToken) auth).getPrincipal()
-                        .getAttributes()
-                        .get("nickname");
-                break;
-        }
-
+        nickname = (String) ((OAuth2AuthenticationToken) auth).getPrincipal()
+                .getAttributes()
+                .get("nickname");
 
         log.info("nickname :{}",nickname);
 
