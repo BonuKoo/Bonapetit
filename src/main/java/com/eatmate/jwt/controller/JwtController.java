@@ -51,15 +51,14 @@ public class JwtController {
                         .get("nickname");
                 break;
             case "naver":
-                nickname = (String) ((Map<String, Object>) ((OAuth2AuthenticationToken) auth).getPrincipal()
+                nickname = (String) ((OAuth2AuthenticationToken) auth).getPrincipal()
                         .getAttributes()
-                        .get("response"))
-                        .get("name");
+                        .get("nickname");
                 break;
             case "google":
                 nickname = (String) ((OAuth2AuthenticationToken) auth).getPrincipal()
                         .getAttributes()
-                        .get("name");
+                        .get("nickname");
                 break;
         }
 
