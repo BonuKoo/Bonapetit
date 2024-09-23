@@ -332,12 +332,12 @@ kakao:
     secret: QnDQdaUkBbH4zoppp9t42xTVzSnHNjKL
 naver:
   client:
-    id: vxzSX7hpBWdUiZGim9aX
-    secret: STysDb2fkw
+    id: lAdfDOROdRGWjU95bKiI
+    secret: dt4nxfpYqd
 google:
   client:
-    id: 22110496570-9okorgjcubqkb5qvfthfu398k6et0gg0.apps.googleusercontent.com
-    secret: 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
+    id: 96886339757-jqmnr3cf8715lqjujmmfjubnjcablnor.apps.googleusercontent.com
+    secret: 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
 
 #파일 업로드 경로
 file:
