@@ -45,6 +45,10 @@
         </tbody>
     </table>
 
+    <div id="create-area" sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/notice/create" class="btn btn-primary">게시판 관리</a>
+    </div>
+
     <!-- 페이지네이션 -->
     <div class="pagination-container">
         <ul class="pagination">
