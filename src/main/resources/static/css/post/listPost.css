@@ -1,7 +1,7 @@
 /* 검색 영역을 오른쪽에 위치시키기 */
 #search-area {
-    display: flex; /* 검색창과 버튼을 한 줄에 나란히 배치 */
-    justify-content: flex-end; /* 검색창을 오른쪽 정렬 */
+    display: flex;
+    justify-content: flex-end;
     margin-bottom: 20px;
 }
 
@@ -14,7 +14,7 @@
 }
 
 #search-area button {
-    margin-left: 10px; /* 검색창과 버튼 사이에 간격 추가 */
+    margin-left: 10px;
     padding: 10px 20px;
     font-size: 16px;
     background-color: #0080FF;
@@ -28,7 +28,6 @@
 #search-area button:hover {
     background-color: #005bb5;
 }
-
 
 /* 테이블 스타일 */
 table {

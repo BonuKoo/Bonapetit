@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{layout/layout.html}">
@@ -12,62 +13,62 @@
 </head>
 
 <body>
-<div layout:fragment="content">
-    <div class="notice-list-container">
-        <!-- 검색 기능 -->
+<div layout:fragment="content" id="content">
+    <!-- 검색 기능 -->
+    <h1>Notice List</h1>
         <form th:action="@{/notice}" method="get">
-            <div class="form-group">
-                <input type="text" name="keyword" class="form-control" placeholder="검색어를 입력하세요" th:value="${param.keyword}">
-                <button type="submit" class="btn btn-primary">검색</button>
+            <div id="search-area">
+            <input type="text" name="keyword" id="keyword-area" class="form-control" placeholder="검색어를 입력하세요" th:value="${param.keyword}">
+            <button type="submit" class="btn btn-primary"  >검색</button>
             </div>
         </form>
 
-        <!-- 공지사항 목록 -->
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>번호</th>
-                <th>제목</th>
-                <th>작성자</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!-- 공지사항 리스트 반복 -->
-            <tr th:each="notice, iterStat : ${notice.content}">
-                <td th:text="${notice.id}">공지 ID</td>
-                <td>
-                    <a th:href="@{/notice/detail/{id}(id=${notice.id})}" th:text="${notice.title}">공지 제목</a>
-                </td>
-                <td th:text="${notice.author}">작성자</td>
-            </tr>
-            </tbody>
-        </table>
 
-        <!-- 페이지네이션 -->
-        <div class="pagination">
-            <ul class="pagination">
-                <!-- 이전 페이지 버튼 -->
-                <li th:classappend="${notice.hasPrevious()} ? 'enabled' : 'disabled'">
-                    <a th:href="@{|/notice?page=${notice.number - 1}&size=${notice.size}|}">&laquo;</a>
-                </li>
+    <!-- 공지사항 목록 -->
+    <table>
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 공지사항 리스트 반복 -->
+        <tr th:each="notice, iterStat : ${notice.content}">
+            <td th:text="${notice.id}">공지 ID</td>
+            <td>
+                <a th:href="@{/notice/detail/{id}(id=${notice.id})}" th:text="${notice.title}">공지 제목</a>
+            </td>
+            <td th:text="${notice.author}">작성자</td>
+        </tr>
+        </tbody>
+    </table>
 
-                <!-- 페이지 번호 반복 -->
-                <li th:each="i : ${#numbers.sequence(startPage, endPage)}"
-                    th:classappend="${i == notice.number + 1} ? 'active'">
-                    <a th:href="@{|/notice?page=${i - 1}&size=${notice.size}|}" th:text="${i}">1</a>
-                </li>
+    <!-- 페이지네이션 -->
+    <div class="pagination-container">
+        <ul class="pagination">
+            <!-- 이전 페이지 버튼 -->
+            <li class="page-item" th:classappend="${notice.hasPrevious()} ? '' : 'disabled'">
+                <a class="page-link" th:href="@{|/notice?page=${notice.number - 1}&size=${notice.size}|}">&laquo;</a>
+            </li>
 
-                <!-- 다음 페이지 버튼 -->
-                <li th:classappend="${notice.hasNext()} ? 'enabled' : 'disabled'">
-                    <a th:href="@{|/notice?page=${notice.number + 1}&size=${notice.size}|}">&raquo;</a>
-                </li>
-            </ul>
-        </div>
+            <!-- 페이지 번호 반복 -->
+            <li class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}"
+                th:classappend="${i == notice.number + 1} ? 'active'">
+                <a class="page-link" th:href="@{|/notice?page=${i - 1}&size=${notice.size}|}" th:text="${i}"></a>
+            </li>
 
-        <!-- 전체 페이지 버튼 -->
-        <div class="last-page-info">
-            <span th:text="'총 페이지: ' + ${lastPage}"></span>
-        </div>
+            <!-- 다음 페이지 버튼 -->
+            <li class="page-item" th:classappend="${notice.hasNext()} ? '' : 'disabled'">
+                <a class="page-link" th:href="@{|/notice?page=${notice.number + 1}&size=${notice.size}|}">&raquo;</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 전체 페이지 정보 -->
+    <div class="last-page-info">
+        <span th:text="'총 페이지: ' + ${lastPage}"></span>
     </div>
 </div>
 </body>
