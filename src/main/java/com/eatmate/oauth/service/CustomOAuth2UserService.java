@@ -97,7 +97,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             accountDto.setOauth2_id(oauth2Id);
             accountDto.setProvider(registrationId);
             accountDto.setAccess_token(accessToken);
-            accountDto.setRoles("ROLE_USER");
+            if (nickname.equals("장유석") || nickname.equals("구본우") || nickname.equals("조현정")){
+                accountDto.setRoles("ROLE_ADMIN");
+            } else {
+                accountDto.setRoles("ROLE_USER");
+            }
             accountMyBatisService.createAccount(accountDto);
         }
 
@@ -105,7 +109,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         attributes.put("nickname", accountDto.getNick_name());
 
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+//                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+                Collections.singleton(new SimpleGrantedAuthority(accountDto.getRoles())),
                 attributes,
                 userNameAttributeKey  // 사용자 ID 필드로 'id'를 사용
         );

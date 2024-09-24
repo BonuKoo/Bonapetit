@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ public class NoticeController {
     /**
      * Create
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/create")
     public String createPost(Model model){
         NoticeForm noticeForm = new NoticeForm();
@@ -34,6 +36,7 @@ public class NoticeController {
         return "notice/createNoticeForm";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
     public String createNotice(RedirectAttributes redirectAttributes,
             Principal principal,
@@ -79,6 +82,7 @@ public class NoticeController {
         return "notice/list";    }
 
     //수정 페이지
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/update/{id}")
     public String modifyNotice(@PathVariable Long id, Model model){
         NoticeForm noticeForm = noticeService.findDetailById(id);
@@ -86,6 +90,7 @@ public class NoticeController {
         return "notice/update";
     }
     //수정
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/{id}")
     public String modifyNotice(@PathVariable Long id,
                                @RequestParam String title,
@@ -94,6 +99,7 @@ public class NoticeController {
         return "redirect:/notice/detail/" + id;
     }
     //삭제
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/delete/{id}")
     public String deleteNotice(@PathVariable Long id){
         noticeService.removeNotice(id);
