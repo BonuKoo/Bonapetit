@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,24 +43,9 @@ public class JwtController {
         HttpSession session = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getSession();
         String platform = (String) session.getAttribute("provider");
 
-        switch (platform) {
-            case "kakao":
-                nickname = (String) ((Map<String, Object>) ((OAuth2AuthenticationToken) auth).getPrincipal()
-                        .getAttributes()
-                        .get("properties"))
-                        .get("nickname");
-                break;
-            case "naver":
-                OAuth2User test = ((OAuth2AuthenticationToken) auth).getPrincipal();
-                System.out.println(test);
-                break;
-            case "google":
-                nickname = (String) ((OAuth2AuthenticationToken) auth).getPrincipal()
-                        .getAttributes()
-                        .get("name");
-                break;
-        }
-
+        nickname = (String) ((OAuth2AuthenticationToken) auth).getPrincipal()
+                .getAttributes()
+                .get("nickname");
 
         log.info("nickname :{}",nickname);
 

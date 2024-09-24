@@ -1,32 +1,32 @@
 spring:
-  datasource:
-    jdbc-url: jdbc:mysql://localhost:3306/eatmate?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: 1234
+  #datasource:
+  #  jdbc-url: jdbc:mysql://localhost:3306/eatmate?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+  #  driver-class-name: com.mysql.cj.jdbc.Driver
+  #  username: root
+  #  password: 1234
   #jpa
   jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        jdbc.batch_size: 1000
-        order_inserts: true
-        order_updates: true
-
-  #datasource:
-  #  jdbc-url: jdbc:h2:tcp://localhost/~/eatmate
-  #  driver-class-name: org.h2.Driver
-  #  username: sa
-  #  password:
-  #jpa:
   #  hibernate:
-  #    ddl-auto: create-drop
+  #    ddl-auto: update
   #  properties:
   #    hibernate:
-  #      format_sql: true
-  #      dialect: org.hibernate.dialect.H2Dialect
+  #      dialect: org.hibernate.dialect.MySQL8Dialect
+  #      jdbc.batch_size: 1000
+  #      order_inserts: true
+  #      order_updates: true
+
+  #datasource:
+    jdbc-url: jdbc:h2:tcp://localhost/~/eatmate
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  #jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
   redis:
     host: localhost
     port: 6379
@@ -332,12 +332,12 @@ kakao:
     secret: QnDQdaUkBbH4zoppp9t42xTVzSnHNjKL
 naver:
   client:
-    id: vxzSX7hpBWdUiZGim9aX
-    secret: STysDb2fkw
+    id: lAdfDOROdRGWjU95bKiI
+    secret: dt4nxfpYqd
 google:
   client:
-    id: 22110496570-9okorgjcubqkb5qvfthfu398k6et0gg0.apps.googleusercontent.com
-    secret: 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
+    id: 96886339757-jqmnr3cf8715lqjujmmfjubnjcablnor.apps.googleusercontent.com
+    secret: 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
 
 #파일 업로드 경로
 file:
