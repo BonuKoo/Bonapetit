@@ -17,14 +17,13 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class DataInitializer
-//        implements CommandLineRunner
+        //implements CommandLineRunner
 {   /*
     private final PostJpaService teamService;
     private final AccountRepository accountRepository;
-    */
-    /*
+
     private final NoticeRepository noticeRepository;
-    */
+*/
 
 
     /*
@@ -32,9 +31,10 @@ public class DataInitializer
     public void run(String... args) throws Exception {
         // 초기화 로직 실행
         createTeamsAndChatRooms();
-    }
+    }*/
 
     // 이 메서드는 ApplicationReadyEvent나 필요한 시점에서 호출 가능
+    /*
     public void createTeamsAndChatRooms() {
         List<PostForm> postForms = generatePostForms();  // 팀 정보가 담긴 리스트
         List<MapVo> mapVos = generateMapVos();  // 장소 정보가 담긴 리스트
@@ -47,9 +47,9 @@ public class DataInitializer
             teamService.createChatRoomAndTeamWhenWriteThePost(postForm, mapVo);
         }
     }
-    */
+*/
     // PostForm을 생성하는 예시 (원하는 데이터로 교체 가능)
-    /*
+
     private List<PostForm> generatePostForms() {
         //Account account = accountRepository.findByOauth2id("3683546464");
         List<PostForm> postForms = new ArrayList<>();
@@ -62,9 +62,9 @@ public class DataInitializer
         }
         return postForms;
     }
-    */
+
     // MapVo를 생성하는 예시 (원하는 데이터로 교체 가능)
-    /*
+
     private List<MapVo> generateMapVos() {
         List<MapVo> mapVos = new ArrayList<>();
         for (int i = 1; i <= 300; i++) {
@@ -82,7 +82,7 @@ public class DataInitializer
         }
         return mapVos;
     }
-    */
+
     /*
     @Override
     public void run(String... args) throws Exception {

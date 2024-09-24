@@ -17,9 +17,9 @@ var vm = new Vue({
     },
     created() {
         try {
-            // roomId, roomName 등을 서버에서 부터 불러온다
+            // roomId, roomName 등을 localStorage 에서 부터 불러온다
             this.roomId = localStorage.getItem('wschat.roomId') || 'defaultRoomId';
-            this.roomName = localStorage.getItem('wschat.teamName') || '기본 이름';
+            this.roomName = localStorage.getItem('wschat.roomName') || '기본 이름';
             var _this = this;
 
             // 접속중인 계정의 JWT 토큰을 호출해서 사용자 정보를 가져오고,

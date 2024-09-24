@@ -59,12 +59,10 @@ public class ChatRoomController {
 
         ChatRoom chatRoom = chatRoomRepository.findByTeam(teamId);
 
-        ChatRoomDTO chatRoomDTO = ChatRoomDTO.builder()
+        return ChatRoomDTO.builder()
                 .roomName(chatRoom.getRoomName())
                 .roomId(chatRoom.getRoomId())
                 .build();
-        return chatRoomDTO;
+
     }
-
-
 }
