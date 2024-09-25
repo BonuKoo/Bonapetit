@@ -28,16 +28,16 @@ public class NoticeController {
     /**
      * Create
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/create")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String createPost(Model model){
         NoticeForm noticeForm = new NoticeForm();
         model.addAttribute("noticeForm",noticeForm);
         return "notice/createNoticeForm";
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String createNotice(RedirectAttributes redirectAttributes,
             Principal principal,
             NoticeForm noticeForm){
@@ -82,16 +82,16 @@ public class NoticeController {
         return "notice/list";    }
 
     //수정 페이지
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/update/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String modifyNotice(@PathVariable Long id, Model model){
         NoticeForm noticeForm = noticeService.findDetailById(id);
         model.addAttribute("notice",noticeForm);
         return "notice/update";
     }
     //수정
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String modifyNotice(@PathVariable Long id,
                                @RequestParam String title,
                                @RequestParam String content){
@@ -99,8 +99,8 @@ public class NoticeController {
         return "redirect:/notice/detail/" + id;
     }
     //삭제
+    @GetMapping("/delete/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/delete/{id}")
     public String deleteNotice(@PathVariable Long id){
         noticeService.removeNotice(id);
         return "redirect:/notice";
