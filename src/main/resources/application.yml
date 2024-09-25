@@ -5,7 +5,7 @@ spring:
   #  username: root
   #  password: 1234
   #jpa
-  jpa:
+#  jpa:
   #  hibernate:
   #    ddl-auto: update
   #  properties:
@@ -15,12 +15,12 @@ spring:
   #      order_inserts: true
   #      order_updates: true
 
-  #datasource:
+  datasource:
     jdbc-url: jdbc:h2:tcp://localhost/~/eatmate
     driver-class-name: org.h2.Driver
     username: sa
     password:
-  #jpa:
+  jpa:
     hibernate:
       ddl-auto: create-drop
     properties:
@@ -44,10 +44,10 @@ spring:
     restart:
       enabled: false
   #FTL 템플릿 파일도 반영
-  #  freemarker:
-  #    template-loader-path: classpath:/template/chat/
-  #    suffix: .ftl
-  #    cache: false
+#    freemarker:
+#      template-loader-path: classpath:/template/chat/
+#      suffix: .ftl
+#      cache: false
 
   security:
     oauth2:
