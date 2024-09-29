@@ -1,8 +1,6 @@
 package com.eatmate.security.config;
 
 import com.eatmate.oauth.service.CustomOAuth2UserService;
-import com.eatmate.security.handler.FormAuthenticationFailureHandler;
-import com.eatmate.security.handler.FormAuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +19,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
-    private final FormAuthenticationSuccessHandler successHandler;
-    private final FormAuthenticationFailureHandler failureHandler;
     private final CustomOAuth2UserService customOAuth2UserService; // CustomOAuth2UserService 주입
 
 
