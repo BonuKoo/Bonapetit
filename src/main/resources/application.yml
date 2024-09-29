@@ -34,10 +34,10 @@ spring:
     secret: jIxcYARLKbjsUFEPksAcekGXpubvTVL+UxuNL68nqpE=
   logging:
     level:
-      root: ERROR                #모든 로그의 기본 레벨을 ERROR로 설정
-      org.springframework: ERROR # 스프링 관련 로그도 ERROR로 제한
-      org.hibernate: ERROR       # Hibernate 로그도 ERROR만 기록
-
+      root: DEBUG                #모든 로그의 기본 레벨을 ERROR로 설정
+      org.springframework: DEBUG # 스프링 관련 로그도 ERROR로 제한
+      org.hibernate: DEBUG       # Hibernate 로그도 ERROR만 기록
+      org.springframework.security: DEBUG
       org.springframework.cache: trace
       org.springframework.cache.interceptor.CacheInterceptor: trace
 
@@ -261,10 +261,25 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect     
+  #Redis 세션 설정
+  session:
+    store-type: redis #Redis를 세션 저장소로 설정
+    redis:
+      flush-mode: immediate  # 세션이 변경될 때마다 Redis에 즉시 반영
+    servlet:
+      session:
+        timeout: 30m #세션 타임아웃 (30분)
+
   #redis
   redis:
-    host: localhost
+    host: 13.209.114.158
     port: 6379
+    lettuce:
+      pool:
+        max-active: 50     # 동시에 사용할 수 있는 최대 연결 수
+        max-idle: 40       # 유지할 수 있는 최대 유휴 연결 수
+        min-idle: 1        # 유지할 최소 유휴 연결 수
+
   #jwt 토큰
   jwt:
     secret: jIxcYARLKbjsUFEPksAcekGXpubvTVL+UxuNL68nqpE=
