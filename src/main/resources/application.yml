@@ -4,8 +4,8 @@ spring:
   #  driver-class-name: com.mysql.cj.jdbc.Driver
   #  username: root
   #  password: 1234
-  #jpa
-  jpa:
+
+  #jpa:
   #  hibernate:
   #    ddl-auto: update
   #  properties:
@@ -15,14 +15,14 @@ spring:
   #      order_inserts: true
   #      order_updates: true
 
-  #datasource:
+  datasource:
     jdbc-url: jdbc:h2:tcp://localhost/~/eatmate
     driver-class-name: org.h2.Driver
     username: sa
     password:
-  #jpa:
+  jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -34,6 +34,10 @@ spring:
     secret: jIxcYARLKbjsUFEPksAcekGXpubvTVL+UxuNL68nqpE=
   logging:
     level:
+      root: ERROR                #모든 로그의 기본 레벨을 ERROR로 설정
+      org.springframework: ERROR # 스프링 관련 로그도 ERROR로 제한
+      org.hibernate: ERROR       # Hibernate 로그도 ERROR만 기록
+
       org.springframework.cache: trace
       org.springframework.cache.interceptor.CacheInterceptor: trace
 
@@ -253,7 +257,7 @@ spring:
   #jpa
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect     
@@ -264,12 +268,20 @@ spring:
   #jwt 토큰
   jwt:
     secret: jIxcYARLKbjsUFEPksAcekGXpubvTVL+UxuNL68nqpE=
+  # 로깅 설정 - 최소화
+  logging:
+    level:
+      root: ERROR   # 기본 로그 레벨을 ERROR로 설정하여 로그를 최소화
+      org.springframework: ERROR
+      org.hibernate.SQL: WARN  # Hibernate SQL 로그는 경고 수준으로 설정
+
   #devTools
   devtools:
     livereload:
-      enabled: true
+      enabled: false
     restart:
       enabled: false
+
   #Security 및 Oauth 설정
   security:
     oauth2:
@@ -346,3 +358,15 @@ file:
     team: C:/TeamProject/eatmate/img/teamimg
     teamPost: C:/TeamProject/eatmate/img/teampostimg
 
+#액츄에이터 기능 웹 노출
+# Micrometer와 Prometheus 연동 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # Prometheus 메트릭 노출"
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true  # Prometheus 활성화
