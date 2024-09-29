@@ -370,3 +370,6 @@ management:
     export:
       prometheus:
         enabled: true  # Prometheus 활성화
+logging:
+  file:
+    name: /var/log/bonappetit/application.log  # 로그 파일 경로 설정
