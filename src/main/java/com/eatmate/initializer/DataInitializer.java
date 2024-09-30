@@ -17,18 +17,18 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class DataInitializer
-        implements CommandLineRunner
+        //implements CommandLineRunner
 {
     private final PostJpaService teamService;
     private final AccountRepository accountRepository;
 
     private final NoticeRepository noticeRepository;
 
-    @Override
+    //@Override
     public void run(String... args) throws Exception {
         // 초기화 로직 실행
-        createTeamsAndChatRooms();
-        createNoticeData();
+        //createTeamsAndChatRooms();
+        //createNoticeData();
     }
     // 이 메서드는 ApplicationReadyEvent나 필요한 시점에서 호출 가능
     private void createTeamsAndChatRooms() {
