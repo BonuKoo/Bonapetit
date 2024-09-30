@@ -9,9 +9,12 @@ import com.eatmate.notice.vo.NoticePageForm;
 import com.eatmate.notice.vo.NoticeSearchCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -65,4 +68,19 @@ public class NoticeService {
                 .orElseThrow();
         noticeRepository.delete(notice);
     }
+
+    public Page<Notice> findAllWithPage(Pageable pageable){
+
+        List<Notice> allNotices = noticeRepository.findAll();
+        int start = (int) pageable.getOffset();
+
+        int end = Math.min((start + pageable.getPageSize()), allNotices.size());
+
+        List<Notice> paginatedNotices = allNotices.subList(start, end);
+
+        // Page 객체로 반환
+        return new PageImpl<>(paginatedNotices, pageable, allNotices.size());
+
+    }
+
 }
