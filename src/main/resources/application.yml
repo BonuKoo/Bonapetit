@@ -286,7 +286,7 @@ spring:
   # 로깅 설정 - 최소화
   logging:
     level:
-      root: DEBUG   # 기본 로그 레벨을 ERROR로 설정하여 로그를 최소화
+      root: ERROR   # 기본 로그 레벨을 ERROR로 설정하여 로그를 최소화
       org.springframework: ERROR
       org.hibernate.SQL: WARN  # Hibernate SQL 로그는 경고 수준으로 설정
 
