@@ -18,20 +18,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DataInitializer
         //implements CommandLineRunner
-{
+{   /*
     private final PostJpaService teamService;
     private final AccountRepository accountRepository;
 
     private final NoticeRepository noticeRepository;
-
+*/  
+    /*
     //@Override
     public void run(String... args) throws Exception {
         // 초기화 로직 실행
+
         //createTeamsAndChatRooms();
         //createNoticeData();
-    }
-    // 이 메서드는 ApplicationReadyEvent나 필요한 시점에서 호출 가능
+    }*/
+    
+        
     private void createTeamsAndChatRooms() {
+
         List<PostForm> postForms = generatePostForms();  // 팀 정보가 담긴 리스트
         List<MapVo> mapVos = generateMapVos();  // 장소 정보가 담긴 리스트
 
@@ -48,7 +52,6 @@ public class DataInitializer
     }
 
     // PostForm을 생성하는 예시 (원하는 데이터로 교체 가능)
-
     private List<PostForm> generatePostForms() {
         //Account account = accountRepository.findByOauth2id("3683546464");
         List<PostForm> postForms = new ArrayList<>();
@@ -63,7 +66,6 @@ public class DataInitializer
     }
 
     // MapVo를 생성하는 예시 (원하는 데이터로 교체 가능)
-
     private List<MapVo> generateMapVos() {
         List<MapVo> mapVos = new ArrayList<>();
         for (int i = 1; i <= 300; i++) {
@@ -81,36 +83,5 @@ public class DataInitializer
         }
         return mapVos;
     }
-
-
-    private void createNoticeData() {
-        List<Notice> notices = new ArrayList<>();
-
-        // ID가 1인 계정 찾기 (데모용)
-        Account account = accountRepository.findById(1L).orElseThrow(() ->
-                new RuntimeException("Account not found"));
-
-        // 6만 건의 데이터를 생성하여 리스트에 추가
-        for (int i = 1; i <= 300; i++) {
-            Notice notice = Notice.builder()
-                    .title("Title " + i)
-                    .content("Content " + i)
-                    .account(account)
-                    .build();
-            notices.add(notice);
-
-            // 100건씩 Batch 처리로 저장
-            if (i % 100 == 0) {
-                noticeRepository.saveAll(notices);
-                notices.clear();  // 리스트 비우기
-            }
-        }
-
-        // 남은 데이터 저장
-        if (!notices.isEmpty()) {
-            noticeRepository.saveAll(notices);
-        }
-
-        System.out.println("6만 건의 데이터가 성공적으로 저장되었습니다.");
-    }
+  
 }

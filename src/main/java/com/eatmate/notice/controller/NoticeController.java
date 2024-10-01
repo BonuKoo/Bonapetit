@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ public class NoticeController {
      * Create
      */
     @GetMapping("/create")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String createPost(Model model){
         NoticeForm noticeForm = new NoticeForm();
         model.addAttribute("noticeForm",noticeForm);
@@ -35,6 +37,7 @@ public class NoticeController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String createNotice(RedirectAttributes redirectAttributes,
             Principal principal,
             NoticeForm noticeForm){
@@ -80,6 +83,7 @@ public class NoticeController {
 
     //수정 페이지
     @GetMapping("/update/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String modifyNotice(@PathVariable Long id, Model model){
         NoticeForm noticeForm = noticeService.findDetailById(id);
         model.addAttribute("notice",noticeForm);
@@ -87,6 +91,7 @@ public class NoticeController {
     }
     //수정
     @PostMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String modifyNotice(@PathVariable Long id,
                                @RequestParam String title,
                                @RequestParam String content){
@@ -94,7 +99,8 @@ public class NoticeController {
         return "redirect:/notice/detail/" + id;
     }
     //삭제
-    @PostMapping("/delete/{id}")
+    @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String deleteNotice(@PathVariable Long id){
         noticeService.removeNotice(id);
         return "redirect:/notice";

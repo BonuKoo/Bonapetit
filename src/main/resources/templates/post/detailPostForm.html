@@ -37,7 +37,7 @@
         <div>
             <!-- Thymeleaf 표현식을 사용하여 onclick 속성에 함수 호출 설정 -->
             <button type="button" class="btn btn-primary"
-                    th:attr="onclick='joinTeam(' + ${team.id} + ')'">채팅방 입장</button>
+                    th:attr="onclick='joinTeam(' + ${team.id} + ')'">팀 가입</button>
         </div>
     </div>
 
@@ -45,8 +45,6 @@
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <script th:src="@{/js/post/detailPostForm.js}"></script>
 
-
 </div>
-
 </body>
 </html>
