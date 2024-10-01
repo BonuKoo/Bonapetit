@@ -1,8 +1,10 @@
 package com.eatmate.account.service;
 
+import com.eatmate.dao.mybatis.NoticeDao;
 import com.eatmate.dao.mybatis.account.AccountDao;
 import com.eatmate.dao.mybatis.account.AccountTeamDao;
 import com.eatmate.dao.repository.account.AccountRepository;
+import com.eatmate.dao.repository.notice.NoticeRepository;
 import com.eatmate.domain.constant.UserRole;
 import com.eatmate.domain.dto.AccountDto;
 import com.eatmate.domain.dto.AccountTeamDto;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,9 +25,10 @@ import java.util.List;
 public class AccountMyBatisService {
 
     private final AccountDao accountDao;
-    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccountTeamDao accountTeamDao;
+
+    private final NoticeDao noticeDao;
 
     public void join(AccountDto dto) {
         // 회원가입
@@ -92,7 +96,10 @@ public class AccountMyBatisService {
     }
 
     // OAuth2 ID를 기반으로 회원 탈퇴 처리
+    @Transactional
     public void deleteUserByOauth2Id(String oauth2Id,String accountId) {
+        // Notice 삭제 (Account와 연관된 모든 Notice 삭제)
+        noticeDao.deleteByAccountId(accountId);
         // 참조 테이블에서 먼저 삭제
         accountTeamDao.deleteByAccountId(accountId);
         // Account 테이블에서 계정 삭제
