@@ -1,7 +1,6 @@
 package com.eatmate.account.controller;
 
 import com.eatmate.account.service.AccountMyBatisService;
-import com.eatmate.account.service.AccountService;
 import com.eatmate.dao.mybatis.account.AccountDao;
 import com.eatmate.domain.dto.AccountDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AccountController {
 
     private final AccountMyBatisService myBatisService;
-    private final AccountService accountService;
 
     @Autowired
     private AccountDao dao;

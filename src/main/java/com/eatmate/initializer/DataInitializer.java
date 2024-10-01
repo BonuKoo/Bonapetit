@@ -23,7 +23,8 @@ public class DataInitializer
     private final AccountRepository accountRepository;
 
     private final NoticeRepository noticeRepository;
-*/  
+    */
+
     /*
     //@Override
     public void run(String... args) throws Exception {
@@ -33,7 +34,7 @@ public class DataInitializer
         //createNoticeData();
     }*/
     
-        
+    /*
     private void createTeamsAndChatRooms() {
 
         List<PostForm> postForms = generatePostForms();  // 팀 정보가 담긴 리스트
@@ -83,5 +84,5 @@ public class DataInitializer
         }
         return mapVos;
     }
-  
+    */
 }
