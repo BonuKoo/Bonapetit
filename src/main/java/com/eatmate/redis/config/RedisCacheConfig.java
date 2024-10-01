@@ -26,9 +26,9 @@ public class RedisCacheConfig {
 
     @Bean
     public CacheManager noticeCacheManager(RedisConnectionFactory redisConnectionFactory) {
-
+        /*
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10)) // 캐시 TTL 설정
+                .entryTtl(Duration.ofMinutes(30)) // 캐시 TTL 설정
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
                                 new GenericJackson2JsonRedisSerializer() // 직렬화 설정
@@ -38,8 +38,8 @@ public class RedisCacheConfig {
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(config)
                 .build();
+        */
 
-        /*
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration
                 .defaultCacheConfig()
                 // Redis에 Key를 저장할 때 String으로 직렬화(변환)해서 저장
@@ -59,6 +59,6 @@ public class RedisCacheConfig {
                 .RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration)
-                .build();*/
+                .build();
     }
 }
