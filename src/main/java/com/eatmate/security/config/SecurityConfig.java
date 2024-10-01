@@ -45,6 +45,10 @@ public class SecurityConfig {
                         .requestMatchers("/naver/logout").permitAll()
                         .requestMatchers("/google/logout").permitAll()
 
+                        .requestMatchers("/google/logout").permitAll()
+
+                        .requestMatchers("/chat/**").permitAll()
+
                         .requestMatchers("/noticecompare/**").permitAll()
 
                         .requestMatchers("/actuator/**").permitAll()
