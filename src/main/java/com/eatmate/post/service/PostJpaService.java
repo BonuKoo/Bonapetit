@@ -39,7 +39,8 @@ public class PostJpaService {
     @Transactional
      public void createChatRoomAndTeamWhenWriteThePost(PostForm form, MapVo mapVo){
 
-        Account account = accountRepository.findByOauth2id(form.getAuthor());
+        Account account = accountRepository.findByOauth2id(form.getAuthor())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다: " + form.getAuthor()));
 
         //팀 만들기
          Team team = Team.builder()
