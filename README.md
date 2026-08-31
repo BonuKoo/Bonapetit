@@ -1,4 +1,4 @@
-# EatMate — 실시간 채팅·지도 기반 식사 모임 매칭 서비스
+# Bon Appetit — 실시간 채팅·지도 기반 식사 모임 매칭 서비스
 
 <p align="center">
   <img src="src/main/resources/static/img/logo.png" alt="EatMate Logo" width="180"/>
