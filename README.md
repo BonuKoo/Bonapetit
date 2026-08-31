@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/Java-17-orange" alt="Java 17"/>
   <img src="https://img.shields.io/badge/Spring%20Boot-3.3.3-6DB33F" alt="Spring Boot 3.3.3"/>
   <img src="https://img.shields.io/badge/Redis-Pub%2FSub-DC382D" alt="Redis"/>
-  <img src="https://img.shields.io/badge/tests-28%20passing-0F6E63" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-46%20passing-0F6E63" alt="tests"/>
 </p>
 
 ---
@@ -30,14 +30,14 @@ OAuth 소셜 로그인으로 진입한 사용자가 **식사 모임을 만들고
 |---|---|---|
 | **Language / Framework** | Java 17, Spring Boot 3.3.3 | 단일 모놀리식 서버 (계층형 아키텍처) |
 | **Real-time** | Spring WebSocket + STOMP, Redis Pub/Sub | 채팅 메시지 전달. Pub/Sub은 **다중 인스턴스 간 전파** 담당 |
-| **In-Memory** | Redis (Lettuce) | ① 세션 스토어(운영) ② 채팅방 메타데이터 ③ 세션↔방 매핑 ④ 접속자 수 ⑤ Pub/Sub 채널 |
+| **In-Memory** | Redis (Lettuce) | ① 세션 스토어(운영) ② **방 진입 캐시**(최신 메시지·멤버십) ③ 채팅방 메타데이터 ④ 세션↔방 매핑 ⑤ 접속자 수 ⑥ Pub/Sub 채널 |
 | **Database** | MySQL 8 (AWS RDS) / H2 (로컬 TCP) | 계정 · 모임 · 채팅방 · **대화 내역** · 공지 |
 | **ORM / Query** | Spring Data JPA, QueryDSL 5.0, MyBatis 3.0 | JPA 주력 + 동적 검색(QueryDSL) + 계정 도메인 MyBatis 병행 |
 | **Auth** | Spring Security, OAuth2 Client, JWT (jjwt 0.11.5) | 소셜 로그인 3종 후 JWT 발급, STOMP CONNECT 시 검증 |
 | **Map** | Kakao Maps JS SDK | 키워드 장소 검색 · 마커 렌더링 · 좌표 수집 |
 | **View** | Thymeleaf (+Layout Dialect) + Vue 2 | 서버 사이드 렌더링(MPA) + 채팅 화면 Vue |
 | **Monitoring** | Actuator, Micrometer, Prometheus | 헬스체크 및 메트릭 노출 |
-| **Test** | JUnit 5, Mockito, Spring Security Test | **28건** — 저장소 · 서비스 · 컨트롤러 슬라이스 |
+| **Test** | JUnit 5, Mockito, Spring Security Test | **46건** — 저장소 · 서비스 · 컨트롤러 슬라이스 |
 
 ---
 
@@ -209,7 +209,7 @@ Account ──< AccountTeam >── Team ──1:1── ChatRoom ──< ChatMe
 
 ## 테스트
 
-외부 의존(H2 서버 · Redis · 환경변수) 없이 실행되는 슬라이스 테스트 **28건**입니다.
+외부 의존(H2 서버 · Redis · 환경변수) 없이 실행되는 슬라이스 테스트 **46건**입니다.
 
 ```bash
 ./gradlew test
@@ -218,8 +218,9 @@ Account ──< AccountTeam >── Team ──1:1── ChatRoom ──< ChatMe
 | 계층 | 방식 | 건수 | 중점 |
 |---|---|---|---|
 | 저장소 | `@DataJpaTest` | 6 | 커서 경계(중복·누락), 방 격리, `hasMore` 판정 |
-| `ChatService` | Mockito | 6 | TALK만 저장, 저장 실패 시 발행 차단 |
-| `ChatHistoryService` | Mockito | 11 | 커서 · 정렬 반전 · size 클램프 · 인가 |
+| `ChatCacheRepository` | Mockito | 10 | **Redis 장애 격리**, LPUSHX 조건부 갱신, 통째 교체 |
+| `ChatService` | Mockito | 8 | TALK만 저장, 저장 실패 시 발행 차단, 캐시 반영 |
+| `ChatHistoryService` | Mockito | 17 | 커서 · 정렬 반전 · size 클램프 · 인가 · 캐시 히트/미스 |
 | 컨트롤러 | `@WebMvcTest` | 4 | 응답 JSON, 파라미터 바인딩, 403 |
 | 컨텍스트 | `@SpringBootTest` | 1 | 기동 |
 
