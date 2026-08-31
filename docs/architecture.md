@@ -2,11 +2,13 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | 2.0 |
-| 작성 기준일 | 2026-08-31 |
-| 기준 커밋 | `master` · `7ebe9b0` |
+| 문서 버전 | 2.1 |
+| 작성 기준일 | 2026-09-01 |
+| 기준 커밋 | `master` · `c10f708` |
 
 시스템의 구조, 구성 요소, 데이터 모델, 외부 연동, 비기능 특성을 기술합니다.
+
+> 2.1에서 README에 있던 **도메인 패키지 · 계층 구조 · 도메인 관계도 · 연관 시스템**을 이 문서로 옮겨 왔습니다. README는 처음 보는 사람이 훑는 문서이고, 구조 상세는 여기 한곳에 모으는 편이 찾기 쉽기 때문입니다.
 
 ---
 
@@ -40,6 +42,39 @@
 
 > **영속성 기술 혼용** — 같은 `Account` 데이터에 JPA(`AccountRepository`)와 MyBatis(`AccountDao`) 두 경로가 병존합니다. 계정 조회·수정·삭제는 MyBatis, 모임/공지/채팅에서의 계정 참조는 JPA를 사용합니다. 학습 목적의 의도적 구성이나, **동일 데이터에 두 개의 진입점이 존재**하므로 변경 시 양쪽 정합성을 함께 검토해야 합니다.
 
+### 도메인 패키지
+
+`src/main/java/com/eatmate` 아래 도메인 패키지로 나뉩니다. 위 표가 **계층별 책임**이라면, 이 표는 **도메인별 책임**입니다.
+
+| 패키지 | 역할 | 주요 구성 |
+|---|---|---|
+| **`chat`** | 실시간 채팅과 대화 내역. 이 저장소에서 가장 밀도가 높은 도메인 | `ChatService`(발행·영속화) / `ChatHistoryService`(조회) / `ChatRoomMembershipVerifier`(인가) / `ChatCacheRepository`(Redis 캐시) / `StompHandler`(JWT 검증·구독 인가) / `RedisSubscriber`(Pub/Sub 수신) |
+| **`post` · `team`** | 모임 게시글과 팀 멤버십. 게시글 작성이 곧 모임·채팅방 생성 | `PostJpaService`(모임+채팅방 동시 생성) / `TeamJpaService`(참여·목록) / `TeamAccessService`(개설자·멤버 인가) / `PostTeamService`(강퇴·탈퇴) |
+| **`account`** | 계정 CRUD와 프로필. 유일하게 MyBatis를 주로 쓰는 도메인 | `AccountMyBatisService` / `AccountProfileController` |
+| **`oauth` · `security` · `jwt`** | 인증/인가 전반 | `CustomOAuth2UserService`(provider별 응답 정규화) / `SecurityConfig` / `JwtTokenProvider` |
+| **`notice`** | 관리자 공지 CRUD와 검색 | `NoticeService` / QueryDSL 동적 검색 |
+| **`map`** | 카카오맵 장소 검색 화면 | `MapVo`(좌표·주소를 모임에 매핑) |
+| **`dao`** | 데이터 접근. JPA와 MyBatis가 공존 | `dao/repository`(JPA + QueryDSL) / `dao/mybatis`(`@Mapper`) |
+| **`db` · `redis`** | 인프라 설정 | `DBConfig`(DataSource·JPA·MyBatis 동시 구성) / `RedisConfig`(Pub/Sub·템플릿) |
+
+### 계층 구조
+
+```
+Config (Security / DB / WebSocket / Redis / QueryDSL)
+   │
+Security · OAuth2 · JWT ── 인증/인가 필터 체인
+   │
+Controller (Account · Post · Team · Chat · Notice · Map)
+   │
+Service ── ChatService(쓰기) / ChatHistoryService(읽기) 분리
+   │        TeamAccessService · ChatRoomMembershipVerifier(도메인 인가)
+   │        JPA 주력 + 계정 도메인 MyBatis 병행
+DAO ── ┌ JPA Repository (+ QueryDSL: Team · Notice · ChatMessage)
+        └ MyBatis @Mapper (Account · AccountTeam)
+   │
+DataSource ── H2(로컬 TCP) / MySQL(운영 RDS)  ·  Redis
+```
+
 ## 3. 메시지 전달 구조
 
 ```
@@ -63,6 +98,12 @@
 > **참고** — Redis와 WebSocket은 대체 관계가 아닙니다. WebSocket은 브라우저↔서버 전송 구간, Redis Pub/Sub은 서버 인스턴스 간 전파 구간을 담당하며 직렬로 연결됩니다. 브라우저는 Redis에 직접 연결할 수 없습니다.
 
 ## 4. 데이터 모델
+
+```
+Account ──< AccountTeam >── Team ──1:1── ChatRoom ──< ChatMessage
+   │                                       (UUID PK)      (커서 페이징)
+   └──< Notice
+```
 
 | 엔티티 | 테이블 | 주요 컬럼 | 관계 · 제약 |
 |---|---|---|---|
@@ -178,11 +219,15 @@ H2 결과만 봤을 때는 "첫 페이지가 방 크기에 비례해 느려진�
 
 ## 7. 외부 연동
 
+**별도 저장소로 분리된 하위 프로젝트는 없습니다.** 단일 저장소에 도메인별 패키지([구성 요소](#2-구성-요소))로 구성되며, 아래 외부 시스템과 연동합니다.
+
 | 대상 | 용도 | 실패 시 영향 |
 |---|---|---|
 | 카카오·네이버·구글 OAuth | 로그인, 연동 해제 | 로그인 불가. 서비스 전면 이용 불가 |
-| 카카오 지도 JS SDK | 장소 검색, 지도 표시 | 모임 개설 불가(장소 선택 단계에서 중단) |
+| 카카오 지도 JS SDK | 키워드 장소 검색, 마커 렌더링, 좌표 수집 | 모임 개설 불가(장소 선택 단계에서 중단) |
 | 카카오·네이버 로그아웃 API | 탈퇴 시 연동 해제 | 연동이 남아 재로그인 시 기존 계정으로 붙음 |
+| Redis | 세션 스토어 · 방 진입 캐시 · 인스턴스 간 메시지 전파 · 접속자 수 | 세션 소실. 채팅 조회는 DB 폴백으로 동작 |
+| MySQL / H2 | 계정 · 모임 · 대화 내역 · 공지 영속화 | 서비스 중단 |
 
 ## 8. 실행 환경 및 구성
 
@@ -207,7 +252,7 @@ H2 결과만 봤을 때는 "첫 페이지가 방 크기에 비례해 느려진�
 | NFR-03 | 과다 조회 방어 | 내역 조회 `size` 상한 100 | ✅ 충족 |
 | NFR-04 | 데이터 보존 | 대화는 RDBMS에 동기 저장. 저장 실패 시 발행도 중단(정합성 우선) | ✅ 충족 |
 | NFR-05 | 비밀정보 관리 | 구조는 환경변수 기반. 소스에 하드코딩된 키 잔존 → [ISS-03](known-issues.md#iss-03) | ⚠️ 부분 |
-| NFR-06 | 테스트 자동화 | 외부 의존 없는 슬라이스 테스트 28건. **채팅 도메인 한정** | ⚠️ 부분 |
+| NFR-06 | 테스트 자동화 | 외부 의존 없는 슬라이스 테스트 85건. 채팅 도메인 + 계정·모임의 **인가 경로**. 그 밖의 계정·모임 동작과 공지 도메인은 미검증 | ⚠️ 부분 |
 | NFR-07 | 배포 재현성 | Dockerfile·CI·배포 스크립트 부재. 서버 수동 구성 | ❌ 미충족 |
 | NFR-08 | 관측성 | Actuator + Prometheus 노출. 구조화 로깅 미적용 | ⚠️ 부분 |
 | NFR-09 | 오류 처리 일관성 | 전역 예외 처리기 없음. 도메인 오류가 500으로 노출 | ❌ 미충족 |

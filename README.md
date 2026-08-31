@@ -1,19 +1,35 @@
 # Bon Appetit — 실시간 채팅·지도 기반 식사 모임 매칭 서비스
 
 <p align="center">
-  <img src="src/main/resources/static/img/logo.png" alt="EatMate Logo" width="180"/>
+  <img src="src/main/resources/static/img/logo.png" alt="Bon Appetit Logo" width="180"/>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-17-orange" alt="Java 17"/>
   <img src="https://img.shields.io/badge/Spring%20Boot-3.3.3-6DB33F" alt="Spring Boot 3.3.3"/>
   <img src="https://img.shields.io/badge/Redis-Pub%2FSub%20%C2%B7%20Cache-DC382D" alt="Redis"/>
-  <img src="https://img.shields.io/badge/tests-50%20passing-0F6E63" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-85%20passing-0F6E63" alt="tests"/>
 </p>
 
 ---
 
 ## 개요
+
+같은 지역 사람들이 함께 밥 먹을 모임을 만들고, 참여하고, 전용 채팅방에서 실시간으로 대화하는 서비스입니다.
+
+| 섹션 | 내용 |
+|---|---|
+| [프로젝트 소개](#프로젝트-소개) | 무엇을 만든 서비스인가 |
+| [전체 아키텍처](#전체-아키텍처) | 구성 요소와 데이터 흐름 |
+| [서비스 소개](#서비스-소개) | 기술 스택 · 디렉토리 구조 · 주요 기능 · 실행 방법 |
+| [문서](#문서) | 요구사항 · 시스템 · API · 의사결정 · 테스트 · 알려진 이슈 |
+| [팀원 소개](#팀원-소개) | 만든 사람들 |
+
+> 구조 상세 — **도메인 패키지 · 계층 구조 · 도메인 모델 · 연관 시스템**은 [시스템 명세](docs/architecture.md)에 있습니다.
+
+---
+
+## 프로젝트 소개
 
 혼밥이 싫은 사람들을 위한 **식사 모임 매칭 서비스**입니다.
 
@@ -66,98 +82,11 @@ flowchart TB
     SEC -->|인가 코드 교환| OAUTH
 ```
 
-### 연관 시스템
-
-별도 저장소로 분리된 하위 프로젝트는 없습니다. 단일 저장소에 도메인별 패키지로 구성되며, 아래 외부 시스템과 연동합니다.
-
-| 시스템 | 역할 | 장애 시 영향 |
-|---|---|---|
-| **카카오 · 네이버 · 구글 OAuth** | 소셜 로그인, 탈퇴 시 연동 해제 | 로그인 불가 → 서비스 전면 이용 불가 |
-| **Kakao Maps JS SDK** | 키워드 장소 검색, 마커 렌더링, 좌표 수집 | 모임 개설 불가 (장소 선택 단계에서 중단) |
-| **Redis** | 세션 스토어 · 방 진입 캐시 · 인스턴스 간 메시지 전파 · 접속자 수 | 세션 소실. 채팅 조회는 DB 폴백으로 동작 |
-| **MySQL / H2** | 계정 · 모임 · 대화 내역 · 공지 영속화 | 서비스 중단 |
-
 ---
 
-## 도메인별 상세 역할
+## 서비스 소개
 
-`src/main/java/com/eatmate` 아래 도메인 패키지로 나뉩니다.
-
-| 패키지 | 역할 | 주요 구성 |
-|---|---|---|
-| **`chat`** | 실시간 채팅과 대화 내역. 이 저장소에서 가장 밀도가 높은 도메인 | `ChatService`(발행·영속화) / `ChatHistoryService`(조회) / `ChatRoomMembershipVerifier`(인가) / `ChatCacheRepository`(Redis 캐시) / `StompHandler`(JWT 검증·구독 인가) / `RedisSubscriber`(Pub/Sub 수신) |
-| **`post` · `team`** | 모임 게시글과 팀 멤버십. 게시글 작성이 곧 모임·채팅방 생성 | `PostJpaService`(모임+채팅방 동시 생성) / `TeamJpaService`(참여·목록) / `PostTeamService`(강퇴·탈퇴) |
-| **`account`** | 계정 CRUD와 프로필. 유일하게 MyBatis를 주로 쓰는 도메인 | `AccountMyBatisService` / `AccountProfileController` |
-| **`oauth` · `security` · `jwt`** | 인증/인가 전반 | `CustomOAuth2UserService`(provider별 응답 정규화) / `SecurityConfig` / `JwtTokenProvider` |
-| **`notice`** | 관리자 공지 CRUD와 검색 | `NoticeService` / QueryDSL 동적 검색 |
-| **`map`** | 카카오맵 장소 검색 화면 | `MapVo`(좌표·주소를 모임에 매핑) |
-| **`dao`** | 데이터 접근. JPA와 MyBatis가 공존 | `dao/repository`(JPA + QueryDSL) / `dao/mybatis`(`@Mapper`) |
-| **`db` · `redis`** | 인프라 설정 | `DBConfig`(DataSource·JPA·MyBatis 동시 구성) / `RedisConfig`(Pub/Sub·템플릿) |
-
-### 계층 구조
-
-```
-Config (Security / DB / WebSocket / Redis / QueryDSL)
-   │
-Security · OAuth2 · JWT ── 인증/인가 필터 체인
-   │
-Controller (Account · Post · Team · Chat · Notice · Map)
-   │
-Service ── ChatService(쓰기) / ChatHistoryService(읽기) 분리
-   │        JPA 주력 + 계정 도메인 MyBatis 병행
-DAO ── ┌ JPA Repository (+ QueryDSL: Team · Notice · ChatMessage)
-        └ MyBatis @Mapper (Account · AccountTeam)
-   │
-DataSource ── H2(로컬 TCP) / MySQL(운영 RDS)  ·  Redis
-```
-
-### 도메인 모델
-
-```
-Account ──< AccountTeam >── Team ──1:1── ChatRoom ──< ChatMessage
-   │                                       (UUID PK)      (커서 페이징)
-   └──< Notice
-```
-
-| 엔티티 | 설명 |
-|---|---|
-| `Account` | 사용자 계정 (`email` · `oauth2_id` unique, `provider` · `roles`) |
-| `Team` | 식사 모임. 지도 필드(`placeName` · `addressName` · `x` · `y` 등), `BaseTimeEntity` 상속 |
-| `AccountTeam` | 계정↔모임 조인 엔티티 (`isLeader` 개설자 여부) |
-| `ChatRoom` | 모임과 1:1, UUID 문자열 PK |
-| `ChatMessage` | 대화 내역. `sender_name` 스냅샷, 인덱스 `(room_id, chat_message_id)` |
-| `Notice` | 관리자 공지 (`title` 인덱스, `content` TEXT) |
-
----
-
-## 주요 기능
-
-### 인증 및 보안
-- **OAuth 2.0 소셜 로그인 3종** (카카오 · 네이버 · 구글). provider별 응답 구조를 정규화하고 최초 로그인 시 계정 자동 생성
-- **WebSocket 구간 JWT 인증** — STOMP CONNECT 시 토큰 검증, 발행 시 토큰에서 발신자를 확정. 클라이언트가 보낸 발신자 정보는 신뢰하지 않음
-
-### 모임
-- **게시글 작성 = 모임 + 채팅방 동시 생성.** 작성자가 개설자로 등록
-- **지도 기반 장소 지정** — 키워드 검색으로 고른 장소의 이름 · 주소 · 좌표 · 전화번호를 모임에 저장
-- **참여 / 탈퇴 / 강퇴** — 중복 참여는 서비스 계층에서 차단
-- **검색** — 모임명 · 장소명 · 주소로 페이징 검색
-
-### 실시간 채팅
-- 모임 전용 채팅방에서 실시간 대화. **다중 서버 인스턴스에서도 메시지 누락 없음**
-- 입장 · 퇴장 알림과 현재 접속자 수 표시
-
-### 대화 내역
-- 대화가 **RDBMS에 영구 보관**되어 재접속 · 새로고침 · 서버 재시작 후에도 유지
-- 진입 시 최근 50건 로드, **위로 스크롤하면 커서 기반으로 이전 대화를 이어서** 로드
-- 입장 · 퇴장 알림은 실시간으로만 표시하고 내역에는 남기지 않음
-- **해당 모임의 참여자만** 내역 조회 가능
-
-### 공지
-- 관리자(`ROLE_ADMIN`) 전용 CRUD, QueryDSL 동적 검색 + DTO 프로젝션 페이징
-
----
-
-## 기술 스택
+### 기술 스택
 
 | 구분 | 기술 | 역할 |
 |---|---|---|
@@ -173,9 +102,7 @@ Account ──< AccountTeam >── Team ──1:1── ChatRoom ──< ChatMe
 | **Test** | JUnit 5, Mockito, Spring Security Test | 85건 — 저장소 · 서비스 · 컨트롤러 슬라이스 · 인가 |
 | **Build** | Gradle | 의존성 관리 및 빌드 |
 
----
-
-## 디렉토리 구조
+### 디렉토리 구조
 
 ```
 eatmate/
@@ -230,11 +157,34 @@ eatmate/
             └── application-test.yml     테스트 프로필 (오버레이)
 ```
 
----
+### 주요 기능
 
-## 개발 환경 세팅 & 실행
+#### 인증 및 보안
+- **OAuth 2.0 소셜 로그인 3종** (카카오 · 네이버 · 구글). provider별 응답 구조를 정규화하고 최초 로그인 시 계정 자동 생성
+- **WebSocket 구간 JWT 인증** — STOMP CONNECT 시 토큰 검증, 발행 시 토큰에서 발신자를 확정. 클라이언트가 보낸 발신자 정보는 신뢰하지 않음
 
-### 사전 요구사항
+#### 모임
+- **게시글 작성 = 모임 + 채팅방 동시 생성.** 작성자가 개설자로 등록
+- **지도 기반 장소 지정** — 키워드 검색으로 고른 장소의 이름 · 주소 · 좌표 · 전화번호를 모임에 저장
+- **참여 / 탈퇴 / 강퇴** — 중복 참여는 서비스 계층에서 차단
+- **검색** — 모임명 · 장소명 · 주소로 페이징 검색
+
+#### 실시간 채팅
+- 모임 전용 채팅방에서 실시간 대화. **다중 서버 인스턴스에서도 메시지 누락 없음**
+- 입장 · 퇴장 알림과 현재 접속자 수 표시
+
+#### 대화 내역
+- 대화가 **RDBMS에 영구 보관**되어 재접속 · 새로고침 · 서버 재시작 후에도 유지
+- 진입 시 최근 50건 로드, **위로 스크롤하면 커서 기반으로 이전 대화를 이어서** 로드
+- 입장 · 퇴장 알림은 실시간으로만 표시하고 내역에는 남기지 않음
+- **해당 모임의 참여자만** 내역 조회 가능
+
+#### 공지
+- 관리자(`ROLE_ADMIN`) 전용 CRUD, QueryDSL 동적 검색 + DTO 프로젝션 페이징
+
+### 개발 환경 세팅
+
+#### 사전 요구사항
 
 | 항목 | 버전 · 비고 |
 |---|---|
@@ -242,7 +192,7 @@ eatmate/
 | Docker | Redis 실행용 (직접 설치한 Redis도 무방) |
 | H2 | 실행 파일. 애플리케이션이 쓰는 버전(2.2.224)과 맞출 것 |
 
-### 실행
+#### 실행
 
 ```bash
 # 1) Redis
@@ -256,20 +206,6 @@ java -cp <h2.jar> org.h2.tools.Server -tcp -ifNotExists -web
 ```
 
 **환경변수 없이 `dev` 프로필로 기동합니다.** 접속은 http://localhost:8080 입니다.
-
-### 실제 OAuth 키 설정
-
-소셜 로그인과 지도를 쓰려면 실제 키가 필요합니다. **`config/application.yml`** 에 넣으면 됩니다. 이 파일은 gitignore 대상이며, Spring Boot가 클래스패스 설정보다 높은 우선순위로 자동 로드하므로 IDE에서 그냥 Run 해도 적용됩니다.
-
-```yaml
-# config/application.yml — 커밋되지 않습니다
-kakao:
-  client:
-    id: 발급받은_REST_API_키
-    secret: 발급받은_Client_Secret
-```
-
-카카오 콘솔에서 **플랫폼 Web 사이트 도메인**(`http://localhost:8080`)과 **Redirect URI**(`http://localhost:8080/login/oauth2/code/kakao`)를 등록해야 하고, 로그인 **동의항목에 닉네임**이 켜져 있어야 합니다.
 
 ### 테스트
 
@@ -287,22 +223,25 @@ kakao:
 | H2 콘솔에서 한글이 깨져 보임 | H2 Shell 출력이 cp949라 그렇고 **DB 저장은 정상**입니다. `SELECT RAWTOHEX(STRINGTOUTF8(col))` 로 확인 |
 | H2 연결 실패 | TCP 서버에 `-ifNotExists` 를 붙였는지 확인 |
 
----
+#### 실제 OAuth 키 설정
 
-## 빌드 및 배포
+소셜 로그인과 지도를 쓰려면 실제 키가 필요합니다. **`config/application.yml`** 에 넣으면 됩니다. 이 파일은 gitignore 대상이며, Spring Boot가 클래스패스 설정보다 높은 우선순위로 자동 로드하므로 IDE에서 그냥 Run 해도 적용됩니다.
 
-### 빌드
-
-```bash
-./gradlew clean build          # 테스트 포함
-./gradlew bootJar              # 실행 가능한 JAR 생성
+```yaml
+# config/application.yml — 커밋되지 않습니다
+kakao:
+  client:
+    id: 발급받은_REST_API_키
+    secret: 발급받은_Client_Secret
 ```
 
-산출물은 `build/libs/` 아래 생성됩니다.
+카카오 콘솔에서 **플랫폼 Web 사이트 도메인**(`http://localhost:8080`)과 **Redirect URI**(`http://localhost:8080/login/oauth2/code/kakao`)를 등록해야 하고, 로그인 **동의항목에 닉네임**이 켜져 있어야 합니다.
 
-### 운영 실행
+#### 요구되는 환경 변수
 
-`prod` 프로필은 아래 환경변수를 **모두** 요구합니다. 하나라도 빠지면 기동에 실패합니다(fallback 없음).
+로컬 개발(`dev`)은 환경변수가 필요 없습니다. 아래는 **운영(`prod`) 프로필**에 해당합니다.
+
+`prod`는 아래 환경변수를 **모두** 요구합니다. 하나라도 빠지면 기동에 실패합니다(fallback 없음).
 
 | 환경변수 | 용도 |
 |---|---|
@@ -314,20 +253,21 @@ kakao:
 | `NAVER_CLIENT_ID` · `NAVER_CLIENT_SECRET` | 네이버 OAuth |
 | `GOOGLE_CLIENT_ID` · `GOOGLE_CLIENT_SECRET` | 구글 OAuth |
 
+빌드하고 실행하는 방법입니다. 산출물은 `build/libs/` 아래 생성됩니다.
+
 ```bash
+./gradlew clean build          # 테스트 포함
+./gradlew bootJar              # 실행 가능한 JAR 생성
+
 SPRING_PROFILES_ACTIVE=prod \
 DB_URL=... DB_USERNAME=... DB_PASSWORD=... \
 REDIS_HOST=... JWT_SECRET=... \
 java -jar build/libs/eatmate-0.0.1-SNAPSHOT.jar
 ```
 
-### 운영 구성
+운영은 AWS EC2 위에서 Nginx 리버스 프록시를 두고 단일 인스턴스로 동작합니다. `prod` 프로필에 `server.forward-headers-strategy: framework` 가 설정되어 `X-Forwarded-*` 헤더를 신뢰하며, Actuator가 `health` · `info` · `prometheus` 를 노출합니다.
 
-AWS EC2 위에서 Nginx 리버스 프록시를 두고 단일 인스턴스로 동작합니다. `prod` 프로필에 `server.forward-headers-strategy: framework` 가 설정되어 `X-Forwarded-*` 헤더를 신뢰합니다.
-
-Actuator가 `health` · `info` · `prometheus` 를 노출합니다.
-
-> ⚠️ **배포 자동화가 없습니다.** Dockerfile · CI 워크플로 · 배포 스크립트가 저장소에 없어 서버 구성이 재현되지 않습니다. 스키마도 마이그레이션 도구 없이 `ddl-auto: update` 에 의존합니다. → [알려진 이슈](docs/known-issues.md)
+> ⚠️ **배포 자동화가 없습니다.** Dockerfile · CI 워크플로 · 배포 스크립트가 저장소에 없어 서버 구성이 재현되지 않습니다. 스키마도 마이그레이션 도구 없이 `ddl-auto: update` 에 의존합니다. → [알려진 이슈](docs/known-issues.md#iss-10)
 
 ---
 
@@ -346,8 +286,9 @@ Actuator가 `health` · `info` · `prometheus` 를 노출합니다.
 
 ---
 
-## 개발자
+## 팀원 소개
 
-| 이름 | GitHub |
-|---|---|
-| 구본우 | [@BonuKoo](https://github.com/BonuKoo) |
+| Leader | Member | Member |
+|:---:|:---:|:---:|
+| **BE 구본우** | **FE 조현정** | **FE 장유석** |
+| [@BonuKoo](https://github.com/BonuKoo) | [@jhj6879](https://github.com/jhj6879) | [@Yooboong](https://github.com/Yooboong) |
