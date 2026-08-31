@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/Java-17-orange" alt="Java 17"/>
   <img src="https://img.shields.io/badge/Spring%20Boot-3.3.3-6DB33F" alt="Spring Boot 3.3.3"/>
   <img src="https://img.shields.io/badge/Redis-Pub%2FSub-DC382D" alt="Redis"/>
-  <img src="https://img.shields.io/badge/tests-46%20passing-0F6E63" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-50%20passing-0F6E63" alt="tests"/>
 </p>
 
 ---
@@ -37,7 +37,7 @@ OAuth 소셜 로그인으로 진입한 사용자가 **식사 모임을 만들고
 | **Map** | Kakao Maps JS SDK | 키워드 장소 검색 · 마커 렌더링 · 좌표 수집 |
 | **View** | Thymeleaf (+Layout Dialect) + Vue 2 | 서버 사이드 렌더링(MPA) + 채팅 화면 Vue |
 | **Monitoring** | Actuator, Micrometer, Prometheus | 헬스체크 및 메트릭 노출 |
-| **Test** | JUnit 5, Mockito, Spring Security Test | **46건** — 저장소 · 서비스 · 컨트롤러 슬라이스 |
+| **Test** | JUnit 5, Mockito, Spring Security Test | **50건** — 저장소 · 서비스 · 컨트롤러 슬라이스 |
 
 ---
 
@@ -108,7 +108,7 @@ List<ChatMessage> findByRoomIdBefore(...);
 ```
 
 - **정렬 키는 `id`** — `createdAt`은 같은 밀리초에 여러 건이 들어올 수 있어 커서로 부적합합니다.
-- **`(room_id, chat_message_id)` 복합 인덱스** — 커서 쿼리가 인덱스만으로 처리됩니다.
+- **`(room_id, chat_message_id)` 복합 인덱스** — 스크롤 구간에서 범위 조건으로 활용됩니다.
 - **`Page` 대신 `List` + `Pageable`** — `Page`는 매 요청마다 `count(*)`를 추가로 실행합니다. 채팅 내역에 전체 건수는 필요 없고, `size+1`건을 조회해 다음 페이지 존재 여부를 판정하면 충분합니다.
 - **경계는 배타적(`<`)** — `<=`로 두면 페이지마다 1건씩 중복됩니다.
 
@@ -119,6 +119,36 @@ page1: ID 234..185  50건  hasMore=true   page4: ID 84..35  50건  hasMore=true
 page2: ID 184..135  50건  hasMore=true   page5: ID 34..1   34건  hasMore=false
 page3: ID 134..85   50건  hasMore=true   합계 234건 — 중복·누락 0
 ```
+
+### 방 진입 캐시 — 측정하고 넣었습니다
+
+캐시를 넣기 전에 실제 비용을 쟀습니다. Hibernate `Statistics`로 쿼리 수를, `EXPLAIN ANALYZE`로 실행 계획을 확인했습니다.
+
+**쿼리 개수** — `ChatHistoryQueryCountTest`가 회귀 테스트로 고정합니다.
+
+| 상황 | 쿼리 수 |
+|---|---|
+| 캐시 없음 | **4** (방 조회 · 계정 조회 · 멤버십 조회 · 메시지 조회) |
+| 멤버십만 캐시 | **1** |
+| 둘 다 캐시 | **0** |
+
+**4건 중 3건이 인가 검증**이었습니다. 메시지만 캐싱하면 4 → 3으로 줄 뿐이라, 멤버십까지 캐싱했습니다.
+
+**실행 계획** — 여기서 예상과 다른 결과가 나왔습니다.
+
+```
+-- 스크롤 구간: 인덱스가 범위를 좁힌다
+/* IDX_CHAT_MESSAGE_ROOM_ID: ROOM_ID = '...' AND CHAT_MESSAGE_ID < 100 */
+/* scanCount: 101 */
+
+-- 첫 페이지: WHERE가 ROOM_ID뿐이라 방 전체를 읽고 정렬한다
+/* IDX_CHAT_MESSAGE_ROOM_ID: ROOM_ID = '...' */
+/* scanCount: 235 */    ← 방의 메시지 234건 전부
+```
+
+첫 페이지 쿼리는 인덱스로 방을 찾는 데까지는 쓰이지만, `ORDER BY id DESC LIMIT 51`을 만족시키려 **방의 메시지를 전부 읽습니다.** 즉 방이 커질수록 선형으로 느려지고, 하필 이게 **방 진입 시 실행되는 쿼리**입니다. 캐싱 대상으로 적절한 근거가 여기서 나왔습니다.
+
+> 위 계획은 H2 기준입니다. MySQL은 역방향 인덱스 스캔으로 조기 종료할 수 있어 결과가 다를 수 있으며, 운영 환경 재측정이 필요합니다.
 
 ### 설정 프로필 분리
 
@@ -209,7 +239,7 @@ Account ──< AccountTeam >── Team ──1:1── ChatRoom ──< ChatMe
 
 ## 테스트
 
-외부 의존(H2 서버 · Redis · 환경변수) 없이 실행되는 슬라이스 테스트 **46건**입니다.
+외부 의존(H2 서버 · Redis · 환경변수) 없이 실행되는 슬라이스 테스트 **50건**입니다.
 
 ```bash
 ./gradlew test
@@ -221,6 +251,7 @@ Account ──< AccountTeam >── Team ──1:1── ChatRoom ──< ChatMe
 | `ChatCacheRepository` | Mockito | 10 | **Redis 장애 격리**, LPUSHX 조건부 갱신, 통째 교체 |
 | `ChatService` | Mockito | 8 | TALK만 저장, 저장 실패 시 발행 차단, 캐시 반영 |
 | `ChatHistoryService` | Mockito | 17 | 커서 · 정렬 반전 · size 클램프 · 인가 · 캐시 히트/미스 |
+| **쿼리 수 측정** | `@DataJpaTest` + Hibernate `Statistics` | 4 | 방 진입 쿼리 4 → 1 → 0 회귀 방지 |
 | 컨트롤러 | `@WebMvcTest` | 4 | 응답 JSON, 파라미터 바인딩, 403 |
 | 컨텍스트 | `@SpringBootTest` | 1 | 기동 |
 
