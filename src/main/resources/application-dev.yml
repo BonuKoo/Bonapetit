@@ -52,6 +52,32 @@ spring:
           google:
             redirect-uri: "{baseUrl}/login/oauth2/code/google"
 
+# OAuth 키 - 로컬 개발 편의를 위한 더미 fallback.
+#
+# 공통(application.yml)은 fallback 없이 환경변수를 요구한다. 그대로 두면 로컬에서
+# 앱을 띄울 때마다 환경변수 6개를 챙겨야 하고, IDE 실행 구성에 빠뜨리면
+# "Could not resolve placeholder 'KAKAO_CLIENT_ID'"로 부팅이 실패한다.
+#
+# 여기 fallback은 dev 프로필에만 있으므로 운영은 영향받지 않는다. prod는 공통의
+# ${KAKAO_CLIENT_ID}(fallback 없음)를 그대로 상속하므로 키를 빠뜨리면 여전히 부팅에 실패한다.
+#
+# 주의: 이 더미값으로는 소셜 로그인이 되지 않는다. 실제 로그인을 테스트하려면
+# 해당 제공자 콘솔에서 키를 발급받아 환경변수로 주입할 것(하나만 발급해도 그 제공자로는 로그인된다).
+# 과거 이 자리에 실제 키가 fallback으로 박혀 있다가 git 이력에 노출된 적이 있다.
+# 절대 실제 키를 여기에 적지 말 것.
+kakao:
+  client:
+    id: ${KAKAO_CLIENT_ID:dummy-kakao-client-id}
+    secret: ${KAKAO_CLIENT_SECRET:dummy-kakao-client-secret}
+naver:
+  client:
+    id: ${NAVER_CLIENT_ID:dummy-naver-client-id}
+    secret: ${NAVER_CLIENT_SECRET:dummy-naver-client-secret}
+google:
+  client:
+    id: ${GOOGLE_CLIENT_ID:dummy-google-client-id}
+    secret: ${GOOGLE_CLIENT_SECRET:dummy-google-client-secret}
+
 # 파일 업로드 경로
 file:
   dir:

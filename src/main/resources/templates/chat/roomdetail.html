@@ -108,6 +108,14 @@ h2 {
     background-color: #f1f9ff;
 }
 
+/* 이전 대화 로딩 상태 표시 */
+.history-status {
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+    padding: 8px 0;
+}
+
   </style>
 
 </head>
@@ -125,9 +133,14 @@ h2 {
 
   <!-- 중간: 메시지 리스트 -->
   <div class="row mt-3">
-    <div class="col-md-12 message-container" ref="messageContainer">
+    <div class="col-md-12 message-container" ref="messageContainer" @scroll="onScroll">
+      <div class="history-status" v-if="loadingHistory">이전 대화를 불러오는 중...</div>
+      <div class="history-status" v-else-if="!hasMore && messages.length">대화의 시작입니다</div>
       <ul class="list-group">
-        <li class="list-group-item" v-for="message in messages" :key="message.id">
+        <!-- 저장된 메시지는 id로 구분한다. 입퇴장 알림은 저장하지 않아 id가 없으므로
+             인덱스로 대체해야 키가 중복되지 않는다. -->
+        <li class="list-group-item" v-for="(message, index) in messages"
+            :key="message.id != null ? 'm-' + message.id : 'local-' + index">
           {{ message.sender }} - {{ message.message }}
         </li>
       </ul>
