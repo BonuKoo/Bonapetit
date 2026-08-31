@@ -1,8 +1,10 @@
 package com.eatmate.chat.controller;
 
+import com.eatmate.chat.dto.ChatHistoryResponse;
 import com.eatmate.chat.dto.ChatRoomDTO;
 
 import com.eatmate.chat.redisDao.ChatRoomRedisRepository;
+import com.eatmate.chat.service.ChatHistoryService;
 import com.eatmate.dao.repository.chatroom.ChatRoomRepository;
 import com.eatmate.domain.entity.chat.ChatRoom;
 import com.eatmate.jwt.JwtTokenProvider;
@@ -22,6 +24,26 @@ public class ChatRoomController {
     private final ChatRoomRedisRepository chatRoomRedisRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatHistoryService chatHistoryService;
+
+    /**
+     * 채팅 내역 조회 (커서 기반).
+     *
+     * 최초 진입 시에는 before 없이 호출해 최신 size건을 받고, 위로 스크롤할 때
+     * 직전 응답의 nextCursor를 before로 넘겨 그 이전 구간을 받는다.
+     *
+     * principal.getName()이 곧 oauth2Id다. CustomOAuth2UserService가
+     * userNameAttributeKey(kakao/naver는 id, google은 sub)를 oauth2Id와
+     * 같은 값으로 맞춰 두었다.
+     */
+    @GetMapping("/room/{roomId}/messages")
+    @ResponseBody
+    public ChatHistoryResponse messages(@PathVariable String roomId,
+                                        @RequestParam(required = false) Long before,
+                                        @RequestParam(required = false) Integer size,
+                                        Principal principal) {
+        return chatHistoryService.getHistory(roomId, before, size, principal.getName());
+    }
 
     //채팅방 입장 화면
     @GetMapping("/room/enter/{roomId}")
