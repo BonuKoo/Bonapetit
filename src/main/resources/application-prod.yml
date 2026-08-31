@@ -1,0 +1,116 @@
+# ============================================================
+# 운영 프로필 — SPRING_PROFILES_ACTIVE=prod 로 활성화한다.
+# 공통 설정은 application.yml 참조.
+#
+# 필수 환경변수: DB_URL, DB_USERNAME, DB_PASSWORD, REDIS_HOST, JWT_SECRET,
+#                KAKAO_CLIENT_ID/SECRET, NAVER_CLIENT_ID/SECRET, GOOGLE_CLIENT_ID/SECRET
+# ============================================================
+spring:
+  # NOTE: 아래 server 는 spring 하위에 있어 바인딩되지 않는다(포트 80이 실제로 적용되지 않음).
+  #       분리 작업에서는 동작을 바꾸지 않기 위해 원본 위치를 그대로 유지했다.
+  #       실제로 적용하려면 파일 하단의 최상위 server: 블록으로 옮겨야 한다.
+  server:
+    port: 80
+
+  #DB
+  datasource:
+    jdbc-url: ${DB_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 20   # 시작값 — 기존엔 설정이 없어 기본값(10)으로 돌고 있었다. k6 재측정 후 조정할 것
+
+  #jpa
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  #Redis 세션 설정
+  session:
+    store-type: redis #Redis를 세션 저장소로 설정
+    redis:
+      flush-mode: immediate  # 세션이 변경될 때마다 Redis에 즉시 반영
+    # NOTE: 아래 servlet.session.timeout 은 spring.session 하위에 있어 바인딩되지 않는다.
+    #       실제 세션 타임아웃은 최상위 server.servlet.session.timeout 이어야 한다.
+    #       분리 작업에서는 동작을 바꾸지 않기 위해 원본 위치를 그대로 유지했다.
+    servlet:
+      session:
+        timeout: 30m #세션 타임아웃 (30분)
+
+  #redis
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      lettuce:
+        pool:
+          max-active: 50     # 동시에 사용할 수 있는 최대 연결 수
+          max-idle: 40       # 유지할 수 있는 최대 유휴 연결 수
+          min-idle: 1        # 유지할 최소 유휴 연결 수
+
+  #jwt 토큰
+  jwt:
+    secret: ${JWT_SECRET}
+
+  # NOTE: 아래 logging 은 spring 하위에 있어 바인딩되지 않는다(무시됨).
+  #       분리 작업에서는 동작을 바꾸지 않기 위해 원본 위치를 그대로 유지했다.
+  # 로깅 설정 - 최소화
+  logging:
+    level:
+      root: ERROR
+      org.springframework: ERROR
+      org.hibernate.SQL: WARN
+
+  #devTools
+  devtools:
+    livereload:
+      enabled: false
+
+  #Security 및 Oauth 설정
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            redirect-uri: "https://api.bonappetit.p-e.kr/login/oauth2/code/kakao"
+          naver:
+            redirect-uri: "https://api.bonappetit.p-e.kr/login/oauth2/code/naver"
+          google:
+            redirect-uri: "https://api.bonappetit.p-e.kr/login/oauth2/code/google"
+
+# 파일 업로드 경로
+file:
+  dir:
+    account: ${FILE_DIR:/home/ubuntu/img}/profileimg
+    team: ${FILE_DIR:/home/ubuntu/img}/teamimg
+    teamPost: ${FILE_DIR:/home/ubuntu/img}/teampostimg
+
+app:
+  websocket:
+    allowed-origins: ${WEBSOCKET_ALLOWED_ORIGINS:https://api.bonappetit.p-e.kr}
+
+# Nginx 리버스 프록시 뒤에서 X-Forwarded-* 헤더를 신뢰하도록 설정
+# (스킴/호스트가 https://api.bonappetit.p-e.kr 로 정확히 반영되도록)
+server:
+  forward-headers-strategy: framework
+  tomcat:
+    threads:
+      max: 50   # 시작값 — 기존엔 설정이 없어 기본값(200)으로 돌고 있었다. k6 재측정 후 조정할 것
+
+# 액츄에이터 기능 웹 노출
+# Micrometer와 Prometheus 연동 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true  # Prometheus 활성화
+
+logging:
+  file:
+    name: /home/ubuntu/app.log  #로그 파일 경로

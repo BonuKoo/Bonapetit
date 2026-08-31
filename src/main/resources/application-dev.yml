@@ -1,0 +1,64 @@
+# ============================================================
+# 개발(로컬) 프로필 — 기본으로 활성화된다.
+# 공통 설정은 application.yml 참조.
+# ============================================================
+spring:
+  datasource:
+    # DBConfig 가 @ConfigurationProperties(prefix="spring.datasource") + DataSourceBuilder 로
+    # HikariDataSource 를 만들기 때문에 키가 url 이 아니라 jdbc-url 이어야 한다.
+    jdbc-url: jdbc:h2:tcp://localhost/~/eatmate
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+
+  jwt:
+    # 반드시 환경변수 JWT_SECRET으로 주입. 로컬 개발 기본값은 개발 전용이며 운영에 사용 금지.
+    secret: ${JWT_SECRET:jIxcYARLKbjsUFEPksAcekGXpubvTVL+UxuNL68nqpE=}
+
+  # NOTE: 아래 logging 은 spring 하위에 있어 실제로는 바인딩되지 않는다(무시됨).
+  #       분리 작업에서는 동작을 바꾸지 않기 위해 원본 위치를 그대로 유지했다.
+  #       실제로 적용하려면 최상위 logging: 으로 한 단계 올려야 한다.
+  logging:
+    level:
+      root: DEBUG
+      org.springframework: DEBUG
+      org.hibernate: DEBUG
+      org.springframework.security: DEBUG
+      org.springframework.cache: trace
+      org.springframework.cache.interceptor.CacheInterceptor: trace
+
+  # STATIC 파일 자동 반영
+  devtools:
+    livereload:
+      enabled: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+          naver:
+            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+          google:
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+
+# 파일 업로드 경로
+file:
+  dir:
+    account: ${FILE_DIR:C:/TeamProject/eatmate/img}/profileimg
+    team: ${FILE_DIR:C:/TeamProject/eatmate/img}/teamimg
+    teamPost: ${FILE_DIR:C:/TeamProject/eatmate/img}/teampostimg
+
+app:
+  websocket:
+    allowed-origins: ${WEBSOCKET_ALLOWED_ORIGINS:http://localhost:8080,https://api.bonappetit.p-e.kr}

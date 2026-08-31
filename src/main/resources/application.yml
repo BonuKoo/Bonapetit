@@ -1,57 +1,38 @@
+# ============================================================
+# 공통 설정 — 모든 프로필에서 동일하게 적용된다.
+# 환경별 설정은 application-dev.yml / application-prod.yml 을 참조.
+#
+# 프로필 선택 우선순위(높은 쪽이 이김):
+#   1) 실행 인자   --spring.profiles.active=prod
+#   2) 환경변수    SPRING_PROFILES_ACTIVE=prod
+#   3) 아래 기본값 dev
+# 따라서 로컬은 아무 설정 없이 dev로 뜨고, 운영은 환경변수만 주면 된다.
+# ============================================================
 spring:
-  #datasource:
-  #  jdbc-url: jdbc:mysql://localhost:3306/eatmate?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
-  #  driver-class-name: com.mysql.cj.jdbc.Driver
-  #  username: root
-  #  password: 1234
-  #jpa
-#  jpa:
-  #  hibernate:
-  #    ddl-auto: update
-  #  properties:
-  #    hibernate:
-  #      dialect: org.hibernate.dialect.MySQL8Dialect
-  #      jdbc.batch_size: 1000
-  #      order_inserts: true
-  #      order_updates: true
+  profiles:
+    active: dev
 
-  datasource:
-    jdbc-url: jdbc:h2:tcp://localhost/~/eatmate
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
+        # 원본(다중 문서) 구조에서 기본 문서의 이 값이 prod 문서에도 그대로 적용되고 있었다.
+        # 동작을 바꾸지 않기 위해 공통으로 올린다. dialect 는 환경마다 달라 각 프로필에서 지정.
         format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
-  redis:
-    host: localhost
-    port: 6379
-  jwt:
-    secret: jIxcYARLKbjsUFEPksAcekGXpubvTVL+UxuNL68nqpE=
-  logging:
-    level:
-      org.springframework.cache: trace
-      org.springframework.cache.interceptor.CacheInterceptor: trace
 
-  #STATIC 파일 자동 반영
+  data:
+    redis:
+      port: 6379
+
   devtools:
-    livereload:
-      enabled: true
     restart:
       enabled: false
-  #FTL 템플릿 파일도 반영
-#    freemarker:
-#      template-loader-path: classpath:/template/chat/
-#      suffix: .ftl
-#      cache: false
 
   security:
     oauth2:
       client:
+        # redirect-uri 는 환경마다 다르므로 각 프로필 파일에서 지정한다.
         registration:
           #카카오
           kakao:
@@ -60,7 +41,6 @@ spring:
             client-name: Kakao
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
 
           #네이버
           naver:
@@ -68,7 +48,6 @@ spring:
             client-secret: ${naver.client.secret}
             client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
             scope:
               - name
 
@@ -78,7 +57,6 @@ spring:
             client-secret: ${google.client.secret}
             client-name: Google
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/google"
             scope:
               - email
               - profile
@@ -103,246 +81,23 @@ spring:
             user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
             user-name-attribute: sub
 
-#파일 업로드 경로
-file:
-  dir:
-    account: C:/TeamProject/eatmate/img/profileimg
-    team: C:/TeamProject/eatmate/img/teamimg
-    teamPost: C:/TeamProject/eatmate/img/teampostimg
-
-#OPEN API 설정
+# OPEN API 설정 - 키는 환경변수로 주입한다.
+# fallback 없이 환경변수 필수. 과거 fallback 기본값은 실제 키였고 이미 git 이력에 노출됐다 —
+# 각 콘솔에서 재발급 후 교체할 것 (2026-08-14, GitHub push protection이 Google 키를 감지해 fallback 제거).
 kakao:
   client:
-    id: e14cb05b33510d6d6fb59bc77f202156
-    secret: jBgKKQxp5icYdE8NdbWWP7wbJjTFMhcJ
+    id: ${KAKAO_CLIENT_ID}
+    secret: ${KAKAO_CLIENT_SECRET}
 naver:
   client:
-    id: vxzSX7hpBWdUiZGim9aX
-    secret: STysDb2fkw
+    id: ${NAVER_CLIENT_ID}
+    secret: ${NAVER_CLIENT_SECRET}
 google:
   client:
-    id: 22110496570-9okorgjcubqkb5qvfthfu398k6et0gg0.apps.googleusercontent.com
-    secret: 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
+    id: ${GOOGLE_CLIENT_ID}
+    secret: ${GOOGLE_CLIENT_SECRET}
 
-
----
-# 운영
-spring:
-  config:
-    activate:
-      on-profile: prod
-  server:
-    port: 80
-  #DB - 1
-  datasource:
-    jdbc-url: jdbc:mysql://bonapetit.cnucyg8w8tyu.ap-northeast-2.rds.amazonaws.com:3306/bonapetit?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: admin
-    password: bonapetit0902
-  #jpa
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect     
-  #redis
-  redis:
-    host: localhost
-    port: 6379
-  #jwt 토큰
-  jwt:
-    secret: jIxcYARLKbjsUFEPksAcekGXpubvTVL+UxuNL68nqpE=
-  #devTools
-  devtools:
-    livereload:
-      enabled: true
-    restart:
-      enabled: false
-  #Security 및 Oauth 설정
-  security:
-    oauth2:
-      client:
-        registration:
-          #카카오
-          kakao:
-            client-id: ${kakao.client.id}
-            client-secret: ${kakao.client.secret}
-            client-name: Kakao
-            client-authentication-method: client_secret_post
-            authorization-grant-type: authorization_code
-            redirect-uri: "https://api.bonappetit.p-e.kr/login/oauth2/code/kakao"
-
-          #네이버
-          naver:
-            client-id: ${naver.client.id}
-            client-secret: ${naver.client.secret}
-            client-name: Naver
-            authorization-grant-type: authorization_code
-            redirect-uri: "https://api.bonappetit.p-e.kr/login/oauth2/code/naver"
-            scope:
-              - name
-
-          # 구글
-          google:
-            client-id: ${google.client.id}
-            client-secret: ${google.client.secret}
-            client-name: Google
-            authorization-grant-type: authorization_code
-            redirect-uri: "https://api.bonappetit.p-e.kr/login/oauth2/code/google"
-            scope:
-              - email
-              - profile
-
-        provider:
-          kakao:
-            authorization-uri: https://kauth.kakao.com/oauth/authorize
-            token-uri: https://kauth.kakao.com/oauth/token
-            user-info-uri: https://kapi.kakao.com/v2/user/me
-            user-name-attribute: id
-
-          #네이버
-          naver:
-            authorization-uri: https://nid.naver.com/oauth2.0/authorize
-            token-uri: https://nid.naver.com/oauth2.0/token
-            user-info-uri: https://openapi.naver.com/v1/nid/me
-            user-name-attribute: response
-
-          google:
-            authorization-uri: https://accounts.google.com/o/oauth2/auth
-            token-uri: https://oauth2.googleapis.com/token
-            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
-            user-name-attribute: sub
-
-#OPEN API 설정
-kakao:
-  client:
-    id: fde79d1d4d914a0bafc33c44c782740b
-    secret: QnDQdaUkBbH4zoppp9t42xTVzSnHNjKL
-naver:
-  client:
-    id: vxzSX7hpBWdUiZGim9aX
-    secret: STysDb2fkw
-google:
-  client:
-    id: 22110496570-9okorgjcubqkb5qvfthfu398k6et0gg0.apps.googleusercontent.com
-    secret: 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
-
-#파일 업로드 경로
-file:
-  dir:
-    account: C:/TeamProject/eatmate/img/profileimg
-    team: C:/TeamProject/eatmate/img/teamimg
-    teamPost: C:/TeamProject/eatmate/img/teampostimg
-
-
----
-# 운영
-spring:
-  config:
-    activate:
-      on-profile: prod
-  server:
-    port: 80
-  #DB - 1
-  datasource:
-    jdbc-url: jdbc:mysql://bonapetit.cnucyg8w8tyu.ap-northeast-2.rds.amazonaws.com:3306/bonapetit?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: admin
-    password: bonapetit0902
-  #jpa
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect     
-  #redis
-  redis:
-    host: localhost
-    port: 6379
-  #jwt 토큰
-  jwt:
-    secret: jIxcYARLKbjsUFEPksAcekGXpubvTVL+UxuNL68nqpE=
-  #devTools
-  devtools:
-    livereload:
-      enabled: true
-    restart:
-      enabled: false
-  #Security 및 Oauth 설정
-  security:
-    oauth2:
-      client:
-        registration:
-          #카카오
-          kakao:
-            client-id: ${kakao.client.id}
-            client-secret: ${kakao.client.secret}
-            client-name: Kakao
-            client-authentication-method: client_secret_post
-            authorization-grant-type: authorization_code
-            redirect-uri: "https://api.bonappetit.p-e.kr/login/oauth2/code/kakao"
-
-          #네이버
-          naver:
-            client-id: ${naver.client.id}
-            client-secret: ${naver.client.secret}
-            client-name: Naver
-            authorization-grant-type: authorization_code
-            redirect-uri: "https://api.bonappetit.p-e.kr/login/oauth2/code/naver"
-            scope:
-              - name
-
-          # 구글
-          google:
-            client-id: ${google.client.id}
-            client-secret: ${google.client.secret}
-            client-name: Google
-            authorization-grant-type: authorization_code
-            redirect-uri: "https://api.bonappetit.p-e.kr/login/oauth2/code/google"
-            scope:
-              - email
-              - profile
-
-        provider:
-          kakao:
-            authorization-uri: https://kauth.kakao.com/oauth/authorize
-            token-uri: https://kauth.kakao.com/oauth/token
-            user-info-uri: https://kapi.kakao.com/v2/user/me
-            user-name-attribute: id
-
-          #네이버
-          naver:
-            authorization-uri: https://nid.naver.com/oauth2.0/authorize
-            token-uri: https://nid.naver.com/oauth2.0/token
-            user-info-uri: https://openapi.naver.com/v1/nid/me
-            user-name-attribute: response
-
-          google:
-            authorization-uri: https://accounts.google.com/o/oauth2/auth
-            token-uri: https://oauth2.googleapis.com/token
-            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
-            user-name-attribute: sub
-
-#OPEN API 설정
-kakao:
-  client:
-    id: fde79d1d4d914a0bafc33c44c782740b
-    secret: QnDQdaUkBbH4zoppp9t42xTVzSnHNjKL
-naver:
-  client:
-    id: lAdfDOROdRGWjU95bKiI
-    secret: dt4nxfpYqd
-google:
-  client:
-    id: 96886339757-jqmnr3cf8715lqjujmmfjubnjcablnor.apps.googleusercontent.com
-    secret: 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
-
-#파일 업로드 경로
-file:
-  dir:
-    account: C:/TeamProject/eatmate/img/profileimg
-    team: C:/TeamProject/eatmate/img/teamimg
-    teamPost: C:/TeamProject/eatmate/img/teampostimg
-
+# 애플리케이션 설정
+app:
+  # 최초 소셜 로그인 시 관리자 권한을 부여할 oauth2_id 목록 (콤마 구분)
+  admin-oauth2-ids: ${ADMIN_OAUTH2_IDS:}
