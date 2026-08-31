@@ -214,4 +214,4 @@ H2 결과만 봤을 때는 "첫 페이지가 방 크기에 비례해 느려진�
 
 ---
 
-관련 문서: [요구사항 명세](requirements.md) · [API 명세](api.md) · [알려진 이슈](known-issues.md)
+관련 문서: [요구사항 명세](requirements.md) · [API 명세](api.md) · [의사결정 기록](decisions.md) · [테스트 전략](testing.md) · [알려진 이슈](known-issues.md)
