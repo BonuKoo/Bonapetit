@@ -23,7 +23,7 @@
 | [전체 아키텍처](#전체-아키텍처) | 구성 요소와 데이터 흐름 |
 | [서비스 소개](#서비스-소개) | 기술 스택 · 디렉토리 구조 · 주요 기능 · 실행 방법 |
 | [문서](#문서) | 요구사항 · 시스템 · API · 의사결정 · 테스트 · 알려진 이슈 |
-| [참여 개발자](#참여-개발자) | |
+| [팀원 소개](#팀원-소개) | 만든 사람들 |
 
 > 구조 상세 — **도메인 패키지 · 계층 구조 · 도메인 모델 · 연관 시스템**은 [시스템 명세](docs/architecture.md)에 있습니다.
 
@@ -286,8 +286,9 @@ java -jar build/libs/eatmate-0.0.1-SNAPSHOT.jar
 
 ---
 
-## 참여 개발자
+## 팀원 소개
 
-| 이름 | 구본우 | 조현정 | 장유석 |
-|---|---|---|---|
-| GitHub | [@BonuKoo](https://github.com/BonuKoo) | [@jhj6879](https://github.com/jhj6879) | [@Yooboong](https://github.com/Yooboong) |
+| Leader | Member | Member |
+|:---:|:---:|:---:|
+| **BE 구본우** | **FE 조현정** | **FE 장유석** |
+| [@BonuKoo](https://github.com/BonuKoo) | [@jhj6879](https://github.com/jhj6879) | [@Yooboong](https://github.com/Yooboong) |
