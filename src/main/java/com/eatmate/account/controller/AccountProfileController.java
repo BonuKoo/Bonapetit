@@ -5,12 +5,15 @@ import com.eatmate.domain.dto.AccountDto;
 import com.eatmate.domain.dto.AccountTeamDto;
 import com.eatmate.domain.dto.TeamDto;
 import com.eatmate.post.service.PostTeamService;
+import com.eatmate.team.service.TeamAccessService;
+import com.eatmate.team.vo.TeamMembership;
 import com.eatmate.weblogout.service.LogoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +27,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +47,9 @@ public class AccountProfileController {
 
     @Autowired
     private PostTeamService postTeamService;
+
+    @Autowired
+    private TeamAccessService teamAccessService;
 
     // 로그인한 유저 프로필 불러오기
     @GetMapping("/list")
@@ -149,15 +156,26 @@ public class AccountProfileController {
         throw new IllegalArgumentException("Unknown provider");
     }
 
-    // 회원 탈퇴
+    /**
+     * 회원 탈퇴.
+     *
+     * 삭제 대상은 <b>반드시 세션 주체</b>다. 예전에는 oauth2_id·account_id를 요청
+     * 파라미터로 받아 그대로 삭제했다. 화면이 자기 값을 채워 보낼 뿐 서버는 대조하지
+     * 않았으므로, 로그인한 누구든 남의 식별자를 실어 보내면 그 계정을 지울 수 있었다.
+     * ISS-01과 같은 결함이라 함께 고친다.
+     */
     @PostMapping("/delete")
-    public String deleteAccount(@RequestParam("oauth2_id") String oauth2Id,
-                                @RequestParam("account_id") String accountId,
-                                RedirectAttributes redirectAttributes,
+    public String deleteAccount(RedirectAttributes redirectAttributes,
                                 HttpServletRequest request,
-                                HttpServletResponse response) {
+                                HttpServletResponse response,
+                                Principal principal) {
+        AccountDto me = accountMyBatisService.findByOauth2Id(principal.getName());
+        if (me == null) {
+            throw new AccessDeniedException("계정을 찾을 수 없습니다.");
+        }
+
         // 계정 삭제
-        accountMyBatisService.deleteUserByOauth2Id(oauth2Id,accountId);
+        accountMyBatisService.deleteUserByOauth2Id(me.getOauth2_id(), String.valueOf(me.getAccount_id()));
         redirectAttributes.addFlashAttribute("message", "회원 탈퇴가 완료되었습니다.");
 
         // 세션에서 provider 정보 가져오기
@@ -200,13 +218,27 @@ public class AccountProfileController {
         return "redirect:/";
     }
 
-    // 팀 탈퇴 처리
+    /**
+     * 팀 탈퇴 처리.
+     *
+     * 탈퇴시킬 대상은 요청이 아니라 세션에서 정한다. 예전에는 account_id를 파라미터로
+     * 받아 그대로 넘겼기 때문에, 남의 account_id를 실어 보내면 그 사람을 팀에서
+     * 빼낼 수 있었다. 화면이 보내는 account_id는 이제 쓰지 않는다.
+     */
     @PostMapping("/leaveTeam")
-    public String leaveTeam(@RequestParam("account_id") String accountId,
-                            @RequestParam("team_id") String teamId,
-                            RedirectAttributes redirectAttributes) {
+    public String leaveTeam(@RequestParam("team_id") String teamId,
+                            RedirectAttributes redirectAttributes,
+                            Principal principal) {
+        TeamMembership membership = teamAccessService.requireMember(Long.parseLong(teamId), principal.getName());
+
+        // 개설자가 나가면 리더 없는 팀이 남는다. 모임 목록에서 사라지고 수정·삭제할
+        // 사람도 없어지므로, 개설자는 탈퇴가 아니라 모임 삭제를 해야 한다.
+        if (membership.leader()) {
+            throw new AccessDeniedException("개설자는 탈퇴할 수 없습니다. 모임을 삭제하세요.");
+        }
+
         // 팀에서 탈퇴 처리 (AccountTeam 관계 삭제)
-        postTeamService.kickMember(accountId, teamId);
+        postTeamService.kickMember(String.valueOf(membership.accountId()), teamId);
 
         // 탈퇴 성공 메시지 추가
         redirectAttributes.addFlashAttribute("message", "팀에서 성공적으로 탈퇴하였습니다.");

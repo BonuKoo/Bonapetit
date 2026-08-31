@@ -66,8 +66,9 @@ class ChatHistoryQueryCountTest {
     @BeforeEach
     void setUp() {
         chatHistoryService = new ChatHistoryService(
-                chatMessageRepository, chatRoomRepository, accountRepository,
-                accountTeamRepository, chatCacheRepository);
+                chatMessageRepository, chatCacheRepository,
+                new ChatRoomMembershipVerifier(chatRoomRepository, accountRepository,
+                        accountTeamRepository, chatCacheRepository));
 
         Account account = em.persist(Account.builder()
                 .email("tester@eatmate.com").nickname("테스터").password("x").build());

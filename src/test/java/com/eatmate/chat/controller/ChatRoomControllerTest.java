@@ -7,6 +7,7 @@ import com.eatmate.chat.service.ChatHistoryService;
 import com.eatmate.dao.repository.chatroom.ChatRoomRepository;
 import com.eatmate.domain.entity.chat.ChatMessage;
 import com.eatmate.jwt.JwtTokenProvider;
+import com.eatmate.team.service.TeamAccessService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ class ChatRoomControllerTest {
     @MockBean private ChatRoomRedisRepository chatRoomRedisRepository;
     @MockBean private ChatRoomRepository chatRoomRepository;
     @MockBean private JwtTokenProvider jwtTokenProvider;
+    @MockBean private TeamAccessService teamAccessService;
 
     @Test
     @WithMockUser(username = "oauth-1")

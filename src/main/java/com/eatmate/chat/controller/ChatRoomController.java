@@ -8,6 +8,7 @@ import com.eatmate.chat.service.ChatHistoryService;
 import com.eatmate.dao.repository.chatroom.ChatRoomRepository;
 import com.eatmate.domain.entity.chat.ChatRoom;
 import com.eatmate.jwt.JwtTokenProvider;
+import com.eatmate.team.service.TeamAccessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +26,7 @@ public class ChatRoomController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatHistoryService chatHistoryService;
+    private final TeamAccessService teamAccessService;
 
     /**
      * 채팅 내역 조회 (커서 기반).
@@ -72,12 +74,19 @@ public class ChatRoomController {
         return chatRoomRedisRepository.findAllRoom();
     }
 
-    //profileListForm에서 채팅방 정보를 불러온다.
+    /**
+     * profileListForm에서 채팅방 정보를 불러온다.
+     *
+     * teamId만 받고 멤버십을 확인하지 않아 남의 팀 채팅방 정보(roomId·방 이름)를
+     * 그대로 내주고 있었다. roomId는 구독과 내역 조회의 입력이므로 넘겨주지 않는다.
+     */
     @PostMapping("/enter/{teamId}")
     @ResponseBody
     public ChatRoomDTO enterRoom(
             @PathVariable Long teamId,
             Principal principal){
+
+        teamAccessService.requireMember(teamId, principal.getName());
 
         ChatRoom chatRoom = chatRoomRepository.findByTeam(teamId);
 

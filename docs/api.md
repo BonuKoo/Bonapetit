@@ -19,9 +19,11 @@ HTTP 엔드포인트와 STOMP 채널. 응답 유형이 **뷰**인 것은 Thymele
 | WebSocket 인증 | STOMP CONNECT 헤더 `token`에 JWT |
 | 인코딩 | UTF-8 |
 | CSRF | **비활성**. 상태 변경 요청에 토큰 불필요 → [ISS-11](known-issues.md#iss-11) |
-| 오류 응답 | 전역 예외 처리기 부재. 도메인 예외는 대부분 `500`으로 노출됨. 채팅 내역 조회만 `403`/`404`를 명시적으로 반환 |
+| 오류 응답 | 전역 예외 처리기 부재. 도메인 예외는 대부분 `500`으로 노출됨. 인가 실패는 `403`, 없는 채팅방은 `404` |
 
-**접근 권한 표기** — 🟢 공개(인증 불요) · 🔵 인증(로그인 필요) · 🟣 멤버(해당 모임 참여자) · 🔴 관리자(`ROLE_ADMIN`)
+**접근 권한 표기** — 🟢 공개(인증 불요) · 🔵 인증(로그인 필요) · 🟣 멤버(해당 모임 참여자) · 🟠 개설자(해당 모임을 만든 사람) · 🔴 관리자(`ROLE_ADMIN`)
+
+표기된 권한은 **서버에서 검증**됩니다. 화면에 버튼이 없다는 것은 인가가 아닙니다.
 
 ---
 
@@ -46,14 +48,16 @@ HTTP 엔드포인트와 STOMP 채널. 응답 유형이 **뷰**인 것은 Thymele
 |---|---|---|---|---|---|
 | API-09 | GET | `/profile/list` | — | 뷰 · 프로필, 소속/개설/참여 모임 | 🔵 |
 | API-10 | POST | `/profile/detail` | `oauth2_id`, `nick_name`, `password`(선택) | 리다이렉트 · 세션 갱신 | 🔵 |
-| API-11 | POST | `/profile/delete` | `oauth2_id`, `account_id` | 리다이렉트 · 계정+참여+공지 삭제, 연동 해제 | 🔵 |
-| API-12 | POST | `/profile/leaveTeam` | `account_id`, `team_id` | 리다이렉트 | 🔵 |
+| API-11 | POST | `/profile/delete` | — | 리다이렉트 · 계정+참여+공지 삭제, 연동 해제 | 🔵 |
+| API-12 | POST | `/profile/leaveTeam` | `team_id` | 리다이렉트 | 🟣 |
 | API-13 | GET | `/profile/appliedTeam` | — | 뷰 (**데이터 미제공**) | 🔵 |
 | API-14 | GET | `/profile/chatRoom` | — | 뷰 (**데이터 미제공**) | 🔵 |
 
 > ⚠️ **API-10 부작용** — 표시 이름 수정 시 인증 객체를 재구성하면서 권한을 `ROLE_USER`로 **하드코딩**합니다. 따라서 관리자가 표시 이름을 바꾸면 그 세션에서 관리자 권한을 잃습니다. → [ISS-02](known-issues.md#iss-02)
 >
-> ⚠️ **API-11·12 인가** — `account_id`를 요청 파라미터로 받고 세션 주체와 대조하지 않습니다. 타인의 식별자를 넣으면 타인의 참여를 해제할 수 있습니다. → [ISS-01](known-issues.md#iss-01)
+> **API-11·12 대상은 세션 주체입니다.** 예전에는 `oauth2_id`·`account_id`를 요청에서 받아 그대로 처리해, 타인의 식별자를 넣으면 타인의 참여를 해제하거나 계정을 삭제할 수 있었습니다. 지금은 두 파라미터를 받지 않고 세션에서 대상을 정합니다. → [ISS-01](known-issues.md#iss-01) 해소, [ADR-008](decisions.md#adr-008-인가-검사를-한곳에-모으고-필요한-두-값만-프로젝션한다)
+>
+> API-12는 개설자가 호출하면 `403`입니다. 개설자가 나가면 리더 없는 모임이 남아 목록에서 사라지고 아무도 관리할 수 없게 되므로, 개설자는 탈퇴가 아니라 모임 삭제(API-21)를 해야 합니다.
 
 ## 4. 모임
 
@@ -63,25 +67,29 @@ HTTP 엔드포인트와 STOMP 채널. 응답 유형이 **뷰**인 것은 Thymele
 | API-16 | POST | `/post/createPost` | `teamName`, `description`, `mapId`, `placeName`, `addressName`, `roadAddressName`, `phone`, `placeUrl`, `x`, `y` | 리다이렉트 → `/post/list`<br>모임 + 채팅방 + 개설자 참여 생성 | 🔵 |
 | API-17 | GET | `/post/list` | `page`=1, `keyword`="" | 뷰 · 10건 단위. 이름·장소·주소 검색 | 🟢 |
 | API-18 | GET | `/post/detail/{teamId}` | — | 뷰 | 🟢 |
-| API-19 | GET | `/post/update/{teamId}` | — | 뷰 | 🔵 |
-| API-20 | POST | `/post/updateTeam` | `teamId`, `teamName`, `description`, 장소 정보 | 리다이렉트 | 🔵 |
-| API-21 | POST | `/post/deleteTeam` | `teamId` | 리다이렉트 → `/` | 🔵 |
-| API-22 | GET | `/post/members/{teamId}` | — | 뷰 · 참여자 목록 | 🔵 |
-| API-23 | POST | `/post/kickMember` | `account_id`, `team_id` | 리다이렉트 | 🔵 |
+| API-19 | GET | `/post/update/{teamId}` | — | 뷰 | 🟠 |
+| API-20 | POST | `/post/updateTeam` | `teamId`, `teamName`, `description`, 장소 정보 | 리다이렉트 | 🟠 |
+| API-21 | POST | `/post/deleteTeam` | `teamId` | 리다이렉트 → `/` | 🟠 |
+| API-22 | GET | `/post/members/{teamId}` | — | 뷰 · 참여자 목록 | 🟠 |
+| API-23 | POST | `/post/kickMember` | `account_id`, `team_id` | 리다이렉트 | 🟠 |
 | API-24 | POST | `/team/join/{teamId}` | — | `200 OK` (본문 없음) | 🔵 |
 
-> ⚠️ **API-20·21·23은 개설자 여부를 검증하지 않습니다.** 로그인한 사용자면 임의의 `teamId`로 타인의 모임을 수정·삭제하거나 참여자를 강퇴할 수 있습니다. → [ISS-01](known-issues.md#iss-01)
+> **API-19·20·21·22·23은 개설자만 호출할 수 있습니다.** 예전에는 검증이 없어 로그인한 사용자면 임의의 `teamId`로 타인의 모임을 수정·삭제하거나 참여자를 강퇴할 수 있었습니다. → [ISS-01](known-issues.md#iss-01) 해소, [ADR-008](decisions.md#adr-008-인가-검사를-한곳에-모으고-필요한-두-값만-프로젝션한다)
+>
+> API-23의 `account_id`는 **강퇴 대상**이며 요청자가 아닙니다. 요청자는 세션에서 정합니다. 개설자가 자신을 강퇴하려 하면 `403`입니다(리더 없는 모임이 남습니다).
 
 ## 5. 채팅
 
 | ID | 메서드 | 경로 | 요청 | 응답 | 권한 |
 |---|---|---|---|---|---|
 | API-25 | GET | `/chat/room/{roomId}/messages` | `before` 커서(선택), `size` 기본 50 · 최대 100 | JSON `ChatHistoryResponse` | 🟣 |
-| API-26 | POST | `/chat/enter/{teamId}` | — | JSON `{ roomId, roomName }` | 🔵 |
+| API-26 | POST | `/chat/enter/{teamId}` | — | JSON `{ roomId, roomName }` | 🟣 |
 | API-27 | GET | `/chat/room/{roomId}` | — | JSON `ChatRoomDTO` (Redis 캐시) | 🔵 |
 | API-28 | GET | `/chat/rooms` | — | JSON `ChatRoomDTO[]` · **전체 방** | 🔵 |
 | API-29 | GET | `/chat/room` | — | 뷰 · 방 목록 | 🔵 |
 | API-30 | GET | `/chat/room/enter/{roomId}` | — | 뷰 · 채팅 화면 | 🔵 |
+
+> ⚠️ **API-27·28은 여전히 멤버십을 확인하지 않습니다.** 방 이름과 접속자 수 수준의 정보가 노출됩니다. `roomId`를 알아도 구독(WS-03)과 내역 조회(API-25)는 막히므로 대화 자체는 볼 수 없습니다. → [ISS-13](known-issues.md#iss-13)
 
 ### API-25 상세 — 대화 내역 조회
 
@@ -151,11 +159,15 @@ Redis 장애 시 모든 경로가 DB로 폴백하며 응답은 동일합니다. 
 |---|---|---|---|---|
 | WS-01 | ENDPOINT | `/ws-stomp` | — | SockJS. raw WebSocket은 `/ws-stomp/websocket`. CONNECT 시 `token` 검증 |
 | WS-02 | SEND | `/pub/chat/message` | `{ type, roomId, message }`<br>헤더 `token` | 발신자는 서버가 JWT에서 확정(클라이언트 값 불신). `TALK`만 영속화 |
-| WS-03 | SUBSCRIBE | `/sub/chat/room/{roomId}` | `{ id, type, roomId, sender, message, userCount }` | 구독 시 접속자 +1 및 입장 알림 발행. `id`는 `TALK`에만 존재 |
+| WS-03 | SUBSCRIBE | `/sub/chat/room/{roomId}` | `{ id, type, roomId, sender, message, userCount }` | 🟣 멤버만 구독 가능. 통과 시 접속자 +1 및 입장 알림 발행. `id`는 `TALK`에만 존재 |
 
 `type`은 `ENTER` · `QUIT` · `TALK`입니다. `ENTER`/`QUIT`은 서버가 발신자를 `[알림]`으로 치환하고 문구를 생성하며, 저장하지 않으므로 `id`가 `null`입니다.
 
-> ⚠️ **WS-03 인가 없음** — 구독 시 해당 방의 참여자인지 검증하지 않습니다. `roomId`를 알면 타 모임의 실시간 대화를 구독할 수 있습니다. → [ISS-01](known-issues.md#iss-01)
+> **WS-03은 구독 시 멤버십을 검증합니다.** 예전에는 검증이 없어 `roomId`만 알면 타 모임의 실시간 대화를 구독할 수 있었습니다. 지금은 비멤버의 SUBSCRIBE가 STOMP `ERROR` 프레임으로 거부되고, 접속자 수 증가·입장 알림 같은 부수효과도 일어나지 않습니다. → [ISS-01](known-issues.md#iss-01) 해소
+>
+> 인가 판단은 핸드셰이크 때 넘어온 세션 인증 객체(`simpUser`)로 합니다. CONNECT 헤더의 JWT는 클라이언트가 직접 담는 값이라 쓰지 않습니다.
+>
+> `/sub/chat/room/`으로 시작하지 않는 destination은 방 진입 처리 없이 통과합니다.
 
 ## 6. 공지
 

@@ -30,17 +30,6 @@ public class ChatService {
     private final ChatCacheRepository chatCacheRepository;
 
     /**
-     * destination정보에서 roomId 추출
-     */
-    public String getRoomId(String destination) {
-        int lastIndex = destination.lastIndexOf('/');
-        if (lastIndex != -1)
-            return destination.substring(lastIndex + 1);
-        else
-            return "";
-    }
-
-    /**
      * 채팅방에 메시지 발송. TALK이면 발송 전에 RDBMS에 영속화한다.
      *
      * 저장을 여기(publish 지점)에서 하는 이유: RedisSubscriber에 두면 Pub/Sub이
