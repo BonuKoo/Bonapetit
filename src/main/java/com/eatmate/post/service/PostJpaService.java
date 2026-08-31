@@ -24,7 +24,6 @@ import java.util.UUID;
 @Slf4j
 public class PostJpaService {
 
-    private final AccountDao accountDao;
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
 

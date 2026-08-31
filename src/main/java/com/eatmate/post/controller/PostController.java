@@ -32,7 +32,6 @@ public class PostController {
     private final PostJpaService postJpaService;
     private final TeamJpaService teamJpaService;
     private final TeamRepository teamRepository;
-    private final AccountTeamRepository accountTeamRepository;
 
     private final PostTeamService postTeamService;
 
@@ -106,16 +105,6 @@ public class PostController {
                              MapVo mapVo,
                              Model model) {
         postJpaService.updateTeam(teamId, teamName, description, mapVo);
-
-//        Team team = teamRepository.findById(teamId)
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: " + teamId));
-//
-//        // 수정된 값을 팀 객체에 설정
-//        team.setTeamName(teamName);
-//        team.setDescription(description);
-//
-//        // 변경 사항을 저장
-//        teamRepository.save(team);
 
         // 수정 후 해당 페이지로 리다이렉트
         return "redirect:/post/detail/" + teamId;

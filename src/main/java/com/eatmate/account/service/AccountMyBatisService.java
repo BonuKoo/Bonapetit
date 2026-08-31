@@ -25,7 +25,6 @@ import java.util.List;
 public class AccountMyBatisService {
 
     private final AccountDao accountDao;
-    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccountTeamDao accountTeamDao;
 

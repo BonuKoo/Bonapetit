@@ -3,8 +3,10 @@ package com.eatmate.notice.vo;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class NoticePageForm {
+public class NoticePageForm implements Serializable {
 
     private Long id;
     private String title;
