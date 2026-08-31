@@ -27,7 +27,8 @@ public class NoticeService {
     //생성
     @Transactional
     public void createNotice(NoticeForm noticeForm){
-        Account account = accountRepository.findByOauth2id(noticeForm.getAuthor());
+        Account account = accountRepository.findByOauth2id(noticeForm.getAuthor())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다: " + noticeForm.getAuthor()));
 
         Notice notice = Notice.builder()
                 .title(noticeForm.getTitle())

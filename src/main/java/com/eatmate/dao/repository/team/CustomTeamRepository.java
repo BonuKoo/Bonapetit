@@ -4,6 +4,7 @@ import com.eatmate.chat.dto.ChatRoomDTO;
 import com.eatmate.domain.entity.chat.ChatRoom;
 import com.eatmate.domain.entity.user.Team;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,8 +40,9 @@ public class CustomTeamRepository {
             // ChatRoom을 Redis용 DTO로 변환 후 반환
             return chatRoom.toRedisDTO();
 
-        } catch (Exception e) {
-            // 예외 처리 (Spring의 트랜잭션 관리가 롤백 처리해 줌)
+        } catch (PersistenceException e) {
+            // persist/flush/조회 실패(제약 위반, ChatRoom 미존재 등). Spring의 트랜잭션
+            // 관리가 롤백을 처리해 주므로 여기서는 원인 예외를 감싸 다시 던지기만 한다.
             throw new RuntimeException("Failed to create team and chat room", e);
         }
     }

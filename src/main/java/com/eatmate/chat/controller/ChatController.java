@@ -54,6 +54,5 @@ public class ChatController {
  * 여기서, /sub/chat/room/{roomId} 는 채팅룸을 구분하는 값이므로,
  * pub/sub에서 Topic의 역할이다.
  *
- * -> WebSocketChatHandler의 역항를 대체하므로,
- * WebSocketChatHandler는 삭제한다.
+ * -> WebSocketChatHandler의 역할을 대체하므로 삭제됨.
  */

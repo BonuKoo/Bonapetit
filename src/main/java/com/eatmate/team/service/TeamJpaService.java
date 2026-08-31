@@ -64,7 +64,8 @@ public class TeamJpaService {
     @Transactional
     public TeamForm joinTeam(TeamForm teamForm){
 
-        Account account = accountRepository.findByOauth2id(teamForm.getUserName());
+        Account account = accountRepository.findByOauth2id(teamForm.getUserName())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다: " + teamForm.getUserName()));
         Team team = teamRepository.findById(teamForm.getTeamId()).orElseThrow(() -> new IllegalArgumentException("Invalid team ID"));
 
         // 사용자가 이미 팀에 속해있는지 확인
