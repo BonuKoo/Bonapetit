@@ -20,7 +20,7 @@
 
 **⚠️ 리포 이름 주의** — `git remote`는 `BonuKoo/eatMate.git`인데 GitHub에서 `Bonapetit`으로 이름이 바뀌었습니다. **같은 리포**이며 구 URL은 리다이렉트됩니다. 별개 리포로 착각하지 마세요.
 
-**⚠️ 기본 브랜치 주의** — GitHub 기본 브랜치가 `main`인데, 이건 `master`와 **공통 조상이 없는 고아 히스토리**입니다(README 커밋 4개뿐). **PR을 만들 때 base는 반드시 `master`로 명시**해야 합니다. 기본값(`main`)으로 두면 PR이 성립하지 않습니다.
+**⚠️ 브랜치 주의** — 기본 브랜치는 `master`입니다(2026-08-31에 `main`에서 변경). `main` 브랜치는 아직 남아 있지만 `master`와 **공통 조상이 없는 고아 히스토리**(README 커밋 4개뿐)이므로 **PR base로 쓰면 안 됩니다.** 지금은 기본값이 `master`라 그냥 두면 되지만, 혹시 base가 `main`으로 잡히면 잘못된 것입니다.
 
 ---
 
@@ -73,6 +73,7 @@ java -cp <h2.jar> org.h2.tools.Server -tcp -ifNotExists -web
 | 7 | **H2와 MySQL의 실행 계획이 다르다** | 성능 판단은 반드시 MySQL에서. H2만 보고 결론 내면 틀린다 (→ [작업 기록 6.3](worklog-2026-08.md)) |
 | 8 | Gradle 홈이 기본 위치가 아니다 | `GRADLE_USER_HOME=F:\gradle` |
 | 9 | 운영 설정 중 **바인딩되지 않는 키 3종**이 있다 | `spring.server.port`, `spring.logging.level.*`, `spring.session.servlet.session.timeout` → [ISS-08](known-issues.md#iss-08) |
+| 10 | 문서 제목에 가운뎃점(`·`)을 넣으면 **GitHub 앵커에 하이픈이 2개** 생겨 링크가 깨진다 | 제목 구분자는 마침표를 쓴다. 문서를 고쳤으면 링크를 반드시 재검사할 것 |
 
 ---
 
@@ -86,13 +87,16 @@ java -cp <h2.jar> org.h2.tools.Server -tcp -ifNotExists -web
 | [#70](https://github.com/BonuKoo/Bonapetit/pull/70) | 채팅 메시지 RDBMS 영속화 + 커서 기반 내역 조회 API + 프론트 무한 스크롤 |
 | [#71](https://github.com/BonuKoo/Bonapetit/pull/71) | README 정정·보강, `docs/` 명세서 체계 신설 |
 | [#72](https://github.com/BonuKoo/Bonapetit/pull/72) | 방 진입 캐시(최신 메시지 + 멤버십) + 쿼리 분석 + MySQL 재측정 |
+| [#73](https://github.com/BonuKoo/Bonapetit/pull/73) | 인수인계 문서 신설, 캐시 작업을 각 명세에 반영 |
+| [#74](https://github.com/BonuKoo/Bonapetit/pull/74) | README를 표준 구성으로 재편, 판단 기록을 ADR로 분리 |
 
 | 영역 | 시작 | 현재 |
 |---|---|---|
 | 애플리케이션 | 부팅 불가 | 정상 기동 |
 | 채팅 메시지 | 어디에도 저장 안 됨 | RDBMS 영속화 + 커서 조회 + Redis 캐시 |
 | 테스트 | `contextLoads()` 조차 실패 | **50건 통과**, 외부 의존 없이 실행 |
-| 문서 | 없음(커밋 안 된 README 하나) | 명세 4종 + 작업 기록 |
+| 문서 | 없음(커밋 안 된 README 하나) | 명세 4종 + ADR + 테스트 전략 + 작업 기록 + 인수인계 |
+| 저장소 첫 화면 | 코드 없는 `main` 브랜치 | `master` 기본 브랜치 — README와 코드가 함께 보임 |
 
 ---
 
@@ -121,7 +125,7 @@ java -cp <h2.jar> org.h2.tools.Server -tcp -ifNotExists -web
 - [ISS-08](known-issues.md#iss-08) 바인딩 안 되는 설정 키 3종 교정 (수정 비용 낮음. 단 로그 레벨 적용 시 dev가 `root: DEBUG` 라 출력량 급증 주의)
 - [ISS-12](known-issues.md#iss-12) 모임 목록 N+1 (10건 페이지당 최대 21회 쿼리)
 - [ISS-05](known-issues.md#iss-05) 프로필의 빈 화면 2개에 데이터 연결
-- **브랜치 정리** — 기본 브랜치를 `main` → `master` 로 변경, 머지된 브랜치 삭제, 방치된 개인 브랜치 정리
+- **브랜치 정리** — 기본 브랜치 변경은 완료. 머지된 브랜치 6개가 원격에 남아 있고(`delete_branch_on_merge`가 꺼져 있음), `deploy`가 `master`보다 3커밋 앞서 있으며, 2024년 개인 브랜치 2개가 방치돼 있다
 - **부하 테스트** — `application-prod.yml` 의 Tomcat 스레드 50 · Hikari 20 은 **잠정값**이며 "k6 재측정 후 조정" 주석이 달려 있습니다. STOMP를 기본 지원하는 부하 도구가 없으므로 `WebSocketStompClient` 기반 JVM 부하 생성기가 현실적입니다
 - **계정·모임·공지 도메인 테스트** — 자동 테스트 50건이 전부 채팅 도메인에 있어 나머지는 회귀 안전망이 없습니다
 
@@ -140,16 +144,49 @@ java -cp <h2.jar> org.h2.tools.Server -tcp -ifNotExists -web
 
 ---
 
-## 8. 새 세션에 전달할 요약
+## 8. 다음 에이전트에게 전달할 프롬프트
 
-위 내용을 다 읽기 어렵다면 아래 문단만 전달해도 됩니다.
+아래 블록을 **그대로 복사해 새 세션 첫 메시지로** 붙여넣으면 됩니다. 이 파일 전체를 읽히기 어려운 상황에서도 스스로 문서를 찾아 읽고 시작하도록 구성했습니다.
 
-> `F:\TeamProject\eatmate` 의 Spring Boot 프로젝트(GitHub: BonuKoo/Bonapetit)를 이어서 작업해 주세요.
-> 먼저 `docs/handoff.md` 와 `docs/known-issues.md` 를 읽고 시작하세요.
-> PR을 만들 때 base는 반드시 `master` 로 지정해야 합니다(기본 브랜치 `main` 은 코드와 무관한 고아 브랜치입니다).
-> 다음 작업은 ISS-01(인가 검증 누락)이며, `ChatHistoryService.verifyMembership` 의 패턴을 재사용하면 됩니다.
-> 로컬 실행은 Redis + H2 TCP 서버(`-ifNotExists` 필수) 를 띄운 뒤 `./gradlew bootRun` 이며 환경변수는 필요 없습니다.
-> 성능 판단은 H2가 아니라 MySQL에서 해야 합니다. 두 DB의 실행 계획이 다릅니다.
+```
+F:\TeamProject\eatmate 의 Spring Boot 프로젝트를 이어서 작업해 주세요.
+GitHub: https://github.com/BonuKoo/Bonapetit  (git remote는 eatMate.git이지만 리다이렉트되는 같은 저장소입니다)
+
+■ 시작하기 전에 읽을 것
+  docs/handoff.md       인수인계 — 함정 10가지가 여기 있습니다. 먼저 읽으세요
+  docs/known-issues.md  결함 12건과 조치 우선순위 — 다음 작업은 여기서 고릅니다
+  docs/decisions.md     ADR 7건 — 왜 그렇게 만들었는지
+
+■ 다음 작업 (우선순위 순)
+  1. ISS-01 인가 검증 누락 (치명)
+     PostController의 모임 수정/삭제/강퇴, AccountProfileController.leaveTeam,
+     StompHandler의 SUBSCRIBE에 소유자·멤버십 검증이 없습니다.
+     ChatHistoryService.verifyMembership 에 이미 같은 패턴이 있으니 재사용하세요.
+  2. ISS-03 하드코딩된 카카오·네이버 키 재발급 및 분리
+  3. ISS-02 권한 문자열 3갈래 통일
+
+■ 작업 규칙
+  - PR base는 master 입니다. main 브랜치는 코드와 공통 조상이 없는 고아 히스토리라 쓰면 안 됩니다
+  - 작업은 브랜치를 새로 파서 PR로 올립니다
+  - 추정하지 말고 측정하세요. 쿼리 수는 Hibernate Statistics, 실행 계획은 EXPLAIN ANALYZE
+  - 성능 판단은 H2가 아니라 MySQL에서 하세요. 두 DB의 실행 계획이 다르고,
+    이 프로젝트에서 실제로 그 때문에 결론이 한 번 뒤집혔습니다
+  - 구조에 영향을 주는 결정을 했으면 docs/decisions.md 에 ADR로 남기세요
+  - 문서를 고쳤으면 내부 링크를 재검사하세요
+
+■ 로컬 실행
+  1) docker run -d --name eatmate-redis -p 6379:6379 redis
+  2) java -cp <h2.jar> org.h2.tools.Server -tcp -ifNotExists -web
+     (-ifNotExists 없으면 H2 2.x가 원격 DB 생성을 거부합니다)
+  3) ./gradlew bootRun      환경변수 불필요
+  테스트: ./gradlew test    현재 50건, 외부 의존 없이 실행됩니다
+
+■ 현재 상태
+  1년 방치돼 부팅조차 안 되던 상태에서 복구를 마쳤습니다.
+  채팅 메시지 영속화 + 커서 기반 내역 조회 + Redis 방 진입 캐시가 구현돼 있고,
+  테스트 50건은 전부 채팅 도메인에 있습니다.
+  계정·모임·공지 도메인은 자동 검증이 없어 회귀 위험이 높습니다.
+```
 
 ---
 
