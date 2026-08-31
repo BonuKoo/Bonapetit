@@ -29,6 +29,11 @@ out/
 ## Database ##
 /src/main/resources/application.yml
 
+## 로컬 전용 설정 (실제 키를 담는 곳) ##
+# Spring Boot가 ./config/ 를 클래스패스 설정보다 높은 우선순위로 자동 로드한다.
+# 여기에 실제 OAuth 키를 넣으면 커밋되지 않으면서 IDE에서 그냥 Run 하면 적용된다.
+/config/
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
