@@ -1,0 +1,70 @@
+# ============================================================
+# 테스트 프로필. @ActiveProfiles("test") 로 활성화한다.
+#
+# main/application.yml 을 대체하지 않고 그 위에 얹는 방식이다.
+#   - 공통 설정(OAuth registration/provider 구조)은 main 것을 그대로 재사용
+#   - @ActiveProfiles("test") 가 main 의 profiles.active: dev 를 덮으므로
+#     application-dev.yml(H2 TCP 서버 접속)은 로드되지 않는다
+#   - main 이 환경변수를 요구하는 키(kakao.client.id 등)는 여기서 값을 덮어써서
+#     ${KAKAO_CLIENT_ID} 플레이스홀더가 아예 평가되지 않게 한다
+#
+# 목적: H2 TCP 서버·Redis·OAuth 환경변수 없이 테스트가 돌게 하는 것.
+# ============================================================
+spring:
+  datasource:
+    # DBConfig가 DataSourceBuilder를 쓰므로 키는 url이 아니라 jdbc-url이어야 한다.
+    jdbc-url: jdbc:h2:mem:eatmate-test;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  jwt:
+    # 테스트 전용. 어떤 실제 환경에서도 쓰이지 않는 값이다.
+    secret: dGVzdC1vbmx5LXNlY3JldC1uZXZlci11c2VkLWluLXJlYWwtZW52aXJvbm1lbnQ=
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+          naver:
+            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+          google:
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+
+# main 설정은 fallback 없이 환경변수를 요구하므로 테스트용 더미로 덮어쓴다.
+kakao:
+  client:
+    id: test-kakao-id
+    secret: test-kakao-secret
+naver:
+  client:
+    id: test-naver-id
+    secret: test-naver-secret
+google:
+  client:
+    id: test-google-id
+    secret: test-google-secret
+
+file:
+  dir:
+    account: ${java.io.tmpdir}/eatmate-test/profileimg
+    team: ${java.io.tmpdir}/eatmate-test/teamimg
+    teamPost: ${java.io.tmpdir}/eatmate-test/teampostimg
+
+app:
+  websocket:
+    allowed-origins: http://localhost
