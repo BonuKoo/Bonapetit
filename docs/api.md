@@ -135,6 +135,16 @@ GET /chat/room/{roomId}/messages?before={id}&size=50
 - 정렬 키는 `id`. `createdAt`은 동일 밀리초 충돌 가능성이 있어 부적합합니다
 - 전체 건수는 반환하지 않습니다(`count` 쿼리 미실행)
 
+**캐시 동작** (응답 형식에는 영향 없음)
+
+| 요청 | 경로 |
+|---|---|
+| `before` 없음 (방 진입) | Redis `CHAT_RECENT:{roomId}` 우선. 미스면 DB에서 101건을 읽어 캐시를 채운 뒤 응답 |
+| `before` 있음 (스크롤) | 항상 DB |
+| 인가 검증 | Redis `CHAT_AUTH:{roomId}:{oauth2Id}` 우선. 미스면 DB 3쿼리 후 캐시 기록 |
+
+Redis 장애 시 모든 경로가 DB로 폴백하며 응답은 동일합니다. 자세한 설계는 [시스템 명세](architecture.md#방-진입-캐시) 참조.
+
 ### STOMP 채널
 
 | ID | 구분 | 경로 | 페이로드 | 비고 |

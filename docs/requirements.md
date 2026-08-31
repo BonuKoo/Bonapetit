@@ -175,13 +175,13 @@
 | UR-07 | API-20, 21, 23 | `PostJpaService`, `PostTeamService` | 미검증 · 인가 결함 |
 | UR-08 | API-09, 12 | `AccountTeamDao.findTeamsByAccountId` 외 | 미검증 |
 | UR-09 | WS-01~03 | `ChatController`, `StompHandler`, `RedisSubscriber` | **단위 6건** + 수동 |
-| UR-10 | API-25 | `ChatMessageRepository`, `ChatHistoryService`, `roomdetail.js` | **단위 17 · 통합 4 · 실사용 234건** |
-| UR-11 | API-25 | `ChatHistoryService.verifyMembership` | **단위 3건** |
+| UR-10 | API-25 | `ChatMessageRepository`, `ChatHistoryService`, `ChatCacheRepository`, `roomdetail.js` | **단위 39 · 통합 4 · 실사용 234건 · 쿼리 수 측정 4** |
+| UR-11 | API-25 | `ChatHistoryService.verifyMembership` (+ 멤버십 캐시) | **단위 5건** |
 | UR-12 | API-25 | `ChatMessage.senderName` | **단위 2건** |
 | UR-13 | API-31~37 | `NoticeService`, `@PreAuthorize` | 미검증 |
 | UR-14 | API-13, 14 | — | 미구현 |
 
-> **검증 편중** — 자동 테스트 28건이 전부 채팅 도메인(UR-09~12)에 있습니다. 계정 · 모임 · 공지 도메인은 자동 검증이 없으며, 해당 영역의 회귀 위험이 높습니다.
+> **검증 편중** — 자동 테스트 50건이 전부 채팅 도메인(UR-09~12)에 있습니다. 계정 · 모임 · 공지 도메인은 자동 검증이 없으며, 해당 영역의 회귀 위험이 높습니다.
 
 ---
 
