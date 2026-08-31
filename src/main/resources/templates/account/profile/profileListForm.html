@@ -82,9 +82,9 @@
                 </td>
                 <td>
                   <!-- 리더가 아닌 팀에만 탈퇴 버튼 표시 -->
+                  <!-- account_id는 보내지 않는다. 탈퇴 대상은 서버가 세션에서 정한다 -->
                   <form th:action="@{/profile/leaveTeam}" method="post">
                     <input type="hidden" name="team_id" th:value="${team.team_id}">
-                    <input type="hidden" name="account_id" th:value="${dto.account_id}">
                     <button type="submit" class="btn btn-danger" onclick="return confirm('정말로 팀에서 탈퇴하시겠습니까?')">팀 탈퇴</button>
                   </form>
                 </td>
@@ -175,9 +175,8 @@
         </div>
         <div class="modal-body">
           <p>정말로 계정을 삭제하시겠습니까?</p>
+          <!-- 식별자를 보내지 않는다. 삭제 대상은 서버가 세션에서 정한다 -->
           <form th:action="@{/profile/delete}" method="post" id="deleteForm">
-            <input type="hidden" th:field="${dto.account_id}">
-            <input type="hidden" th:field="${dto.oauth2_id}">
             <button id="logoutButton" type="submit" class="btn btn-danger" href="javascript:void(0)">삭제</button>
           </form>
         </div>

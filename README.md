@@ -85,7 +85,7 @@ flowchart TB
 
 | 패키지 | 역할 | 주요 구성 |
 |---|---|---|
-| **`chat`** | 실시간 채팅과 대화 내역. 이 저장소에서 가장 밀도가 높은 도메인 | `ChatService`(발행·영속화) / `ChatHistoryService`(조회·인가) / `ChatCacheRepository`(Redis 캐시) / `StompHandler`(JWT 검증) / `RedisSubscriber`(Pub/Sub 수신) |
+| **`chat`** | 실시간 채팅과 대화 내역. 이 저장소에서 가장 밀도가 높은 도메인 | `ChatService`(발행·영속화) / `ChatHistoryService`(조회) / `ChatRoomMembershipVerifier`(인가) / `ChatCacheRepository`(Redis 캐시) / `StompHandler`(JWT 검증·구독 인가) / `RedisSubscriber`(Pub/Sub 수신) |
 | **`post` · `team`** | 모임 게시글과 팀 멤버십. 게시글 작성이 곧 모임·채팅방 생성 | `PostJpaService`(모임+채팅방 동시 생성) / `TeamJpaService`(참여·목록) / `PostTeamService`(강퇴·탈퇴) |
 | **`account`** | 계정 CRUD와 프로필. 유일하게 MyBatis를 주로 쓰는 도메인 | `AccountMyBatisService` / `AccountProfileController` |
 | **`oauth` · `security` · `jwt`** | 인증/인가 전반 | `CustomOAuth2UserService`(provider별 응답 정규화) / `SecurityConfig` / `JwtTokenProvider` |
@@ -170,7 +170,7 @@ Account ──< AccountTeam >── Team ──1:1── ChatRoom ──< ChatMe
 | **Map** | Kakao Maps JS SDK | 장소 검색 · 마커 · 좌표 수집 |
 | **View** | Thymeleaf (+Layout Dialect), Vue 2, Bootstrap 4 | 서버 렌더링(MPA) + 채팅 화면 Vue |
 | **Monitoring** | Actuator, Micrometer, Prometheus | 헬스체크 및 메트릭 |
-| **Test** | JUnit 5, Mockito, Spring Security Test | 50건 — 저장소 · 서비스 · 컨트롤러 슬라이스 |
+| **Test** | JUnit 5, Mockito, Spring Security Test | 85건 — 저장소 · 서비스 · 컨트롤러 슬라이스 · 인가 |
 | **Build** | Gradle | 의존성 관리 및 빌드 |
 
 ---
@@ -225,7 +225,7 @@ eatmate/
     │       ├── static/                  JS · CSS · 이미지
     │       └── templates/               Thymeleaf (account · chat · map · notice · post)
     └── test/
-        ├── java/com/eatmate/            테스트 50건
+        ├── java/com/eatmate/            테스트 85건
         └── resources/
             └── application-test.yml     테스트 프로필 (오버레이)
 ```
@@ -338,9 +338,9 @@ Actuator가 `health` · `info` · `prometheus` 를 노출합니다.
 | [요구사항 명세](docs/requirements.md) | 사용자 요구사항 14건, 인수 기준, 추적성 매트릭스 |
 | [시스템 명세](docs/architecture.md) | 구성 요소 · 데이터 모델 · Redis 사용 · 쿼리 분석 |
 | [API 명세](docs/api.md) | HTTP 엔드포인트 41건 + STOMP 채널 3건 |
-| [의사결정 기록](docs/decisions.md) | 구조에 영향을 준 결정 7건과 그 근거 |
+| [의사결정 기록](docs/decisions.md) | 구조에 영향을 준 결정 8건과 그 근거 |
 | [테스트 전략](docs/testing.md) | 테스트 구성 · 인프라 · 실환경 검증 |
-| [알려진 이슈](docs/known-issues.md) | 식별된 결함 12건과 조치 우선순위 |
+| [알려진 이슈](docs/known-issues.md) | 식별된 결함 14건(해소 1건)과 조치 우선순위 |
 | [작업 기록](docs/worklog-2026-08.md) | 작업 이력과 검증 데이터 |
 | [인수인계](docs/handoff.md) | 새 작업자가 바로 이어받을 수 있는 문서 |
 

@@ -3,17 +3,19 @@ package com.eatmate.post.controller;
 import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.dao.repository.team.AccountTeamRepository;
 import com.eatmate.dao.repository.team.TeamRepository;
-import com.eatmate.domain.entity.user.AccountTeam;
 import com.eatmate.domain.entity.user.Team;
 import com.eatmate.map.vo.MapVo;
 import com.eatmate.post.service.PostTeamService;
 import com.eatmate.post.vo.PostForm;
 import com.eatmate.post.service.PostJpaService;
+import com.eatmate.team.service.TeamAccessService;
+import com.eatmate.team.vo.TeamMembership;
 import com.eatmate.team.service.TeamJpaService;
 import com.eatmate.team.vo.TeamVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,7 @@ public class PostController {
     private final TeamRepository teamRepository;
 
     private final PostTeamService postTeamService;
+    private final TeamAccessService teamAccessService;
 
     // Create Post 페이지
     @GetMapping("/create")
@@ -90,7 +93,9 @@ public class PostController {
 
     // 팀 수정 페이지
     @GetMapping("/update/{teamId}")
-    public String crystals(@PathVariable Long teamId, Model model) {
+    public String crystals(@PathVariable Long teamId, Model model, Principal principal) {
+        teamAccessService.requireLeader(teamId, principal.getName());
+
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: " + teamId));
         model.addAttribute("team", team);
@@ -103,7 +108,11 @@ public class PostController {
                              @RequestParam String teamName,
                              @RequestParam String description,
                              MapVo mapVo,
-                             Model model) {
+                             Model model,
+                             Principal principal) {
+        // teamId는 요청이 주는 값이라 그대로 믿을 수 없다. 개설자인지 먼저 확인한다.
+        teamAccessService.requireLeader(teamId, principal.getName());
+
         postJpaService.updateTeam(teamId, teamName, description, mapVo);
 
         // 수정 후 해당 페이지로 리다이렉트
@@ -112,7 +121,9 @@ public class PostController {
 
     // 팀 삭제 처리
     @PostMapping("/deleteTeam")
-    public String deleteTeam(@RequestParam Long teamId) {
+    public String deleteTeam(@RequestParam Long teamId, Principal principal) {
+        teamAccessService.requireLeader(teamId, principal.getName());
+
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: " + teamId));
 
@@ -125,7 +136,10 @@ public class PostController {
 
     // 팀원 목록 페이지
     @GetMapping("/members/{teamId}")
-    public String viewTeamMembers(@PathVariable Long teamId, Model model) {
+    public String viewTeamMembers(@PathVariable Long teamId, Model model, Principal principal) {
+        // 강퇴 버튼이 달린 관리 화면이다. 명단 자체가 개설자용 정보이므로 조회도 막는다.
+        teamAccessService.requireLeader(teamId, principal.getName());
+
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: " + teamId));
 
@@ -139,7 +153,17 @@ public class PostController {
     @PostMapping("/kickMember")
     public String kickMember(@RequestParam String account_id,
                              @RequestParam String team_id,
-                             RedirectAttributes redirectAttributes) {
+                             RedirectAttributes redirectAttributes,
+                             Principal principal) {
+        TeamMembership leader = teamAccessService.requireLeader(Long.parseLong(team_id), principal.getName());
+
+        // 개설자가 자신을 강퇴하면 리더 없는 팀이 남는다. 그러면 모임 목록에서 사라지고
+        // (TeamJpaService.getList가 리더 없는 팀을 건너뛴다) 수정·삭제할 사람도 없어진다.
+        // 화면에는 자기 강퇴 버튼이 없지만 요청은 직접 만들 수 있으므로 서버에서 막는다.
+        if (String.valueOf(leader.accountId()).equals(account_id)) {
+            throw new AccessDeniedException("개설자는 강퇴할 수 없습니다. 모임을 삭제하세요.");
+        }
+
         // 서비스 호출하여 팀원 강퇴
         postTeamService.kickMember(account_id, team_id);
 

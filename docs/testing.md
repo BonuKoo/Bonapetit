@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | 1.0 |
-| 작성 기준일 | 2026-08-31 |
-| 기준 커밋 | `master` · `cd0c976` |
+| 문서 버전 | 1.1 |
+| 작성 기준일 | 2026-09-01 |
+| 기준 커밋 | `master` · `c10f708` |
 
 ---
 
@@ -49,17 +49,22 @@ main/application.yml        공통 설정 (OAuth registration/provider 구조)
 
 ---
 
-## 계층별 구성 — 50건
+## 계층별 구성 — 85건
 
 | 계층 | 방식 | 건수 | 중점 |
 |---|---|---|---|
 | 저장소 | `@DataJpaTest` | 6 | 커서 경계(중복·누락), 방 격리, `hasMore` 판정 |
 | `ChatCacheRepository` | Mockito | 10 | **Redis 장애 격리**, LPUSHX 조건부 갱신, 통째 교체 |
 | `ChatService` | Mockito | 8 | TALK만 저장, 저장 실패 시 발행 차단, 캐시 반영 |
-| `ChatHistoryService` | Mockito | 17 | 커서 · 정렬 반전 · size 클램프 · 인가 · 캐시 히트/미스 |
-| 쿼리 수 측정 | `@DataJpaTest` + Hibernate `Statistics` | 4 | 방 진입 쿼리 4 → 1 → 0 회귀 방지 |
-| 컨트롤러 | `@WebMvcTest` | 4 | 응답 JSON, 파라미터 바인딩, 403 |
+| `ChatHistoryService` | Mockito | 12 | 커서 · 정렬 반전 · size 클램프 · 캐시 히트/미스 |
+| `ChatRoomMembershipVerifier` | Mockito | 9 | 채팅방 멤버십 · 멤버십 캐시 계약 |
+| `TeamAccessService` | Mockito | 5 | 멤버 · 개설자 판정 |
+| `StompHandler` | Mockito | 6 | **구독 인가**, 부수효과 차단, destination 화이트리스트 |
+| 쿼리 수 측정 | `@DataJpaTest` + Hibernate `Statistics` | 9 | 방 진입 4 → 1 → 0, 인가 검사 1 회귀 방지 |
+| 컨트롤러 | `@WebMvcTest` | 19 | 응답 JSON, 파라미터 바인딩, **403 · 대상이 세션 주체인지** |
 | 컨텍스트 | `@SpringBootTest` | 1 | 기동 |
+
+2026-09-01 [ISS-01](known-issues.md#iss-01) 조치로 50 → 85건이 되었습니다. 늘어난 35건은 전부 인가 검증이며, **계정 · 모임 도메인에 처음 생긴 자동 검증**입니다.
 
 ### 무엇에 무게를 뒀나
 
@@ -68,6 +73,10 @@ main/application.yml        공통 설정 (OAuth registration/provider 구조)
 **Redis 장애 격리** — `ChatCacheRepository` 10건 중 **6건이 장애 격리**입니다. 캐시의 핵심 계약이 "Redis가 죽어도 서비스는 살아있다"이기 때문입니다([ADR-006](decisions.md#adr-006-캐시는-가용성-영속화는-정합성을-우선한다)). 특히 멤버십 조회 실패가 `false` 를 반환하는지 검증합니다 — `true` 면 Redis 장애가 인가 우회로 이어집니다.
 
 **쿼리 수** — 성능 수치가 아니라 **쿼리 개수의 회귀를 막는 장치**입니다. 연관관계 페치 전략이나 인가 로직이 바뀌어 쿼리가 늘면 여기서 걸립니다. 코드를 읽어 세는 것과 실제 실행은 다를 수 있어 Hibernate `Statistics` 로 측정합니다.
+
+실제로 갈렸습니다. 인가 검사를 "쿼리 1건"으로 적어 두고 재어 보니 **4건**이었습니다. `@ManyToOne` 기본값이 EAGER라 연관을 채우는 SELECT가 따라붙었기 때문입니다. 필요한 두 값만 프로젝션해 1건으로 만들었습니다 → [ADR-008](decisions.md#adr-008-인가-검사를-한곳에-모으고-필요한-두-값만-프로젝션한다)
+
+**인가는 거부만이 아니라 부수효과까지 봅니다.** 구독을 거부하면서 접속자 수를 올리거나 입장 알림을 발행하면, 막았어도 방에 흔적이 남습니다. `StompHandlerTest`는 거부 시 `ChatRoomRedisRepository`·`ChatService`에 **아무 상호작용도 없어야** 함을 검증합니다.
 
 ---
 
@@ -109,7 +118,9 @@ main/application.yml        공통 설정 (OAuth registration/provider 구조)
 
 ## 한계
 
-**자동 테스트가 채팅 도메인에 집중되어 있습니다.** 50건 전부 채팅 관련이며, 계정 · 모임 · 공지 도메인은 자동 검증이 없습니다. 해당 영역을 수정할 때 회귀를 잡아줄 안전망이 없다는 뜻입니다. → [알려진 이슈 NFR-06](known-issues.md)
+**공지 도메인에 자동 검증이 없습니다.** 계정 · 모임 도메인은 [ISS-01](known-issues.md#iss-01) 조치로 인가 경로에 한해 생겼지만, 그 밖의 동작(프로필 조회, 모임 생성·참여, 검색·페이징)은 여전히 수동 확인입니다.
+
+**인가 테스트는 계약을 고정할 뿐 실제 기동을 확인하지 않습니다.** `@WebMvcTest`는 서비스를 목으로 대체하므로 "컨트롤러가 인가 서비스를 호출하고 거부를 403으로 옮긴다"까지만 봅니다. 인가 쿼리가 실제 스키마에서 도는지는 `TeamAccessQueryCountTest`(`@DataJpaTest`)가, 빈 배선은 `contextLoads()`가 각각 확인합니다.
 
 **브라우저 동작은 수동 확인입니다.** 프론트의 무한 스크롤과 스크롤 위치 보정은 자동 테스트가 없고 실사용으로만 확인했습니다.
 

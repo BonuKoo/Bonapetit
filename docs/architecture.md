@@ -170,9 +170,9 @@ H2 결과만 봤을 때는 "첫 페이지가 방 크기에 비례해 느려진�
 |---|---|---|
 | HTTP | OAuth 2.0 로그인 + 서버 세션 | `CustomOAuth2UserService`가 provider별 응답을 정규화하고 계정을 생성·갱신 |
 | HTTP (폼) | 이메일 + 비밀번호 | `CustomAuthenticationProvider` + BCrypt. 진입 경로 제한적 → [ISS-09](known-issues.md#iss-09) |
-| WebSocket | JWT (HS256, 1시간) | STOMP CONNECT 시 `StompHandler`가 검증. 발행 시 토큰에서 발신자 확정 |
+| WebSocket | JWT (HS256, 1시간) | STOMP CONNECT 시 `StompHandler`가 검증. 발행 시 토큰에서 발신자 확정. **구독 인가는 JWT가 아니라 핸드셰이크 세션(`simpUser`) 기준** — 토큰은 클라이언트가 담는 값이라 인가 근거로 쓰지 않는다 |
 | 메서드 수준 | `@PreAuthorize` | 공지 쓰기 작업에 `hasRole('ROLE_ADMIN')` |
-| 도메인 수준 | 멤버십 검증 | 채팅 내역 조회만 구현. 모임 관리 작업에는 없음 → [ISS-01](known-issues.md#iss-01) |
+| 도메인 수준 | 멤버십 · 개설자 검증 | `TeamAccessService`(모임 관리·탈퇴) · `ChatRoomMembershipVerifier`(내역 조회·STOMP 구독). 판단 주체는 언제나 세션 주체 → [ADR-008](decisions.md#adr-008-인가-검사를-한곳에-모으고-필요한-두-값만-프로젝션한다) |
 
 > ⚠️ **권한 문자열이 세 갈래로 갈려 있습니다.** 소셜 로그인은 `ROLE_USER`/`ROLE_ADMIN`을 부여하고 인가 검사도 이를 기준으로 하지만, 폼 회원가입은 `UserRole.USER_ROLE`(문자열 `"USER_ROLE"`)을 저장합니다. `UserRole` enum 자체도 `USER_ROLE, USER_ADMIN`으로 정의돼 어느 쪽과도 일치하지 않습니다. → [ISS-02](known-issues.md#iss-02)
 

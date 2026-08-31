@@ -3,16 +3,8 @@ package com.eatmate.chat.service;
 import com.eatmate.chat.dto.ChatHistoryResponse;
 import com.eatmate.chat.dto.ChatMessageResponse;
 import com.eatmate.chat.redisDao.ChatCacheRepository;
-import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.dao.repository.chat.ChatMessageRepository;
-import com.eatmate.dao.repository.chatroom.ChatRoomRepository;
-import com.eatmate.dao.repository.team.AccountTeamRepository;
 import com.eatmate.domain.entity.chat.ChatMessage;
-import com.eatmate.domain.entity.chat.ChatRoom;
-import com.eatmate.domain.entity.user.Account;
-import com.eatmate.domain.entity.user.AccountTeam;
-import com.eatmate.domain.entity.user.Team;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,10 +12,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.BDDMockito.willThrow;
 
 @ExtendWith(MockitoExtension.class)
 class ChatHistoryServiceTest {
@@ -43,29 +33,19 @@ class ChatHistoryServiceTest {
     private static final String OAUTH_ID = "oauth-1";
 
     @Mock private ChatMessageRepository chatMessageRepository;
-    @Mock private ChatRoomRepository chatRoomRepository;
-    @Mock private AccountRepository accountRepository;
-    @Mock private AccountTeamRepository accountTeamRepository;
     @Mock private ChatCacheRepository chatCacheRepository;
+    @Mock private ChatRoomMembershipVerifier membershipVerifier;
 
     @InjectMocks private ChatHistoryService chatHistoryService;
 
-    private Team team;
-    private Account account;
-
-    @BeforeEach
-    void setUp() {
-        team = Team.builder().id(1L).teamName("A팀").build();
-        account = Account.builder().email("a@b.com").nickname("테스터").password("x").build();
-    }
-
-    /** 멤버십 검증을 통과시키는 기본 스텁 */
+    /**
+     * 멤버십 검증을 통과시킨다.
+     *
+     * 검증 자체는 ChatRoomMembershipVerifierTest가 다룬다. 여기서는 통과한 뒤의
+     * 커서·캐시 동작만 본다.
+     */
     private void givenMember() {
-        ChatRoom room = ChatRoom.builder().roomId(ROOM_ID).roomName("A팀 채팅방").team(team).build();
-        lenient().when(chatRoomRepository.findById(ROOM_ID)).thenReturn(Optional.of(room));
-        lenient().when(accountRepository.findByOauth2id(OAUTH_ID)).thenReturn(Optional.of(account));
-        lenient().when(accountTeamRepository.findByAccountAndTeam(account, team))
-                .thenReturn(Optional.of(AccountTeam.builder().account(account).team(team).build()));
+        // 목 기본 동작이 곧 "통과"(void, 예외 없음)라 별도 스텁이 필요 없다.
     }
 
     private List<ChatMessage> messages(int count) {
@@ -215,41 +195,16 @@ class ChatHistoryServiceTest {
     }
 
     @Test
-    @DisplayName("팀 멤버가 아니면 조회할 수 없다")
-    void nonMemberIsDenied() {
-        ChatRoom room = ChatRoom.builder().roomId(ROOM_ID).roomName("A팀 채팅방").team(team).build();
-        given(chatRoomRepository.findById(ROOM_ID)).willReturn(Optional.of(room));
-        given(accountRepository.findByOauth2id(OAUTH_ID)).willReturn(Optional.of(account));
-        given(accountTeamRepository.findByAccountAndTeam(account, team)).willReturn(Optional.empty());
+    @DisplayName("멤버십 검증에 실패하면 메시지를 조회하지 않는다")
+    void deniedRequestNeverTouchesMessages() {
+        willThrow(new AccessDeniedException("이 채팅방의 멤버가 아닙니다."))
+                .given(membershipVerifier).verify(ROOM_ID, OAUTH_ID);
 
         assertThatThrownBy(() -> chatHistoryService.getHistory(ROOM_ID, null, 10, OAUTH_ID))
                 .isInstanceOf(AccessDeniedException.class);
 
         org.mockito.Mockito.verifyNoInteractions(chatMessageRepository);
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 방은 404다")
-    void unknownRoomIsNotFound() {
-        given(chatRoomRepository.findById(ROOM_ID)).willReturn(Optional.empty());
-
-        assertThatThrownBy(() -> chatHistoryService.getHistory(ROOM_ID, null, 10, OAUTH_ID))
-                .isInstanceOf(ResponseStatusException.class);
-
-        org.mockito.Mockito.verifyNoInteractions(chatMessageRepository);
-    }
-
-    @Test
-    @DisplayName("계정을 찾을 수 없으면 조회할 수 없다")
-    void unknownAccountIsDenied() {
-        ChatRoom room = ChatRoom.builder().roomId(ROOM_ID).roomName("A팀 채팅방").team(team).build();
-        given(chatRoomRepository.findById(ROOM_ID)).willReturn(Optional.of(room));
-        given(accountRepository.findByOauth2id(OAUTH_ID)).willReturn(Optional.empty());
-
-        assertThatThrownBy(() -> chatHistoryService.getHistory(ROOM_ID, null, 10, OAUTH_ID))
-                .isInstanceOf(AccessDeniedException.class);
-
-        org.mockito.Mockito.verifyNoInteractions(chatMessageRepository);
+        org.mockito.Mockito.verifyNoInteractions(chatCacheRepository);
     }
 
     // ────────────────────────────── 캐시 ──────────────────────────────
@@ -309,46 +264,5 @@ class ChatHistoryServiceTest {
         // 캐시와 DB에 걸친 커서 계산을 피하기 위해, 첫 페이지만 캐시를 탄다.
         org.mockito.Mockito.verify(chatCacheRepository, org.mockito.Mockito.never())
                 .getRecent(anyString(), anyInt());
-    }
-
-    @Test
-    @DisplayName("멤버십이 캐시돼 있으면 인가 쿼리를 하지 않는다")
-    void membershipCacheHitSkipsAuthQueries() {
-        given(chatCacheRepository.isMemberVerified(ROOM_ID, OAUTH_ID)).willReturn(true);
-        given(chatCacheRepository.getRecent(ROOM_ID, 11)).willReturn(Optional.of(cachedMessages(1)));
-
-        chatHistoryService.getHistory(ROOM_ID, null, 10, OAUTH_ID);
-
-        // 방 조회 · 계정 조회 · 멤버십 조회 3건이 모두 생략되어야 한다.
-        org.mockito.Mockito.verifyNoInteractions(chatRoomRepository);
-        org.mockito.Mockito.verifyNoInteractions(accountRepository);
-        org.mockito.Mockito.verifyNoInteractions(accountTeamRepository);
-    }
-
-    @Test
-    @DisplayName("멤버십 검증을 통과하면 캐시에 기록한다")
-    void membershipIsCachedAfterVerification() {
-        givenMember();
-        given(chatCacheRepository.getRecent(ROOM_ID, 11)).willReturn(Optional.of(cachedMessages(1)));
-
-        chatHistoryService.getHistory(ROOM_ID, null, 10, OAUTH_ID);
-
-        org.mockito.Mockito.verify(chatCacheRepository).markMemberVerified(ROOM_ID, OAUTH_ID);
-    }
-
-    @Test
-    @DisplayName("멤버가 아니면 멤버십을 캐시하지 않는다")
-    void nonMemberIsNotCached() {
-        ChatRoom room = ChatRoom.builder().roomId(ROOM_ID).roomName("A팀 채팅방").team(team).build();
-        given(chatRoomRepository.findById(ROOM_ID)).willReturn(Optional.of(room));
-        given(accountRepository.findByOauth2id(OAUTH_ID)).willReturn(Optional.of(account));
-        given(accountTeamRepository.findByAccountAndTeam(account, team)).willReturn(Optional.empty());
-
-        assertThatThrownBy(() -> chatHistoryService.getHistory(ROOM_ID, null, 10, OAUTH_ID))
-                .isInstanceOf(AccessDeniedException.class);
-
-        // 비멤버까지 캐싱하면 방금 참여한 사용자가 TTL 동안 차단된다.
-        org.mockito.Mockito.verify(chatCacheRepository, org.mockito.Mockito.never())
-                .markMemberVerified(anyString(), anyString());
     }
 }

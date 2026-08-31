@@ -3,20 +3,12 @@ package com.eatmate.chat.service;
 import com.eatmate.chat.dto.ChatHistoryResponse;
 import com.eatmate.chat.dto.ChatMessageResponse;
 import com.eatmate.chat.redisDao.ChatCacheRepository;
-import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.dao.repository.chat.ChatMessageRepository;
-import com.eatmate.dao.repository.chatroom.ChatRoomRepository;
-import com.eatmate.dao.repository.team.AccountTeamRepository;
 import com.eatmate.domain.entity.chat.ChatMessage;
-import com.eatmate.domain.entity.chat.ChatRoom;
-import com.eatmate.domain.entity.user.Account;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,13 +35,13 @@ public class ChatHistoryService {
     static final int MAX_SIZE = 100;
 
     private final ChatMessageRepository chatMessageRepository;
-    private final ChatRoomRepository chatRoomRepository;
-    private final AccountRepository accountRepository;
-    private final AccountTeamRepository accountTeamRepository;
     private final ChatCacheRepository chatCacheRepository;
+    private final ChatRoomMembershipVerifier membershipVerifier;
 
     public ChatHistoryResponse getHistory(String roomId, Long before, Integer size, String oauth2Id) {
-        verifyMembership(roomId, oauth2Id);
+        // 방이 속한 팀의 멤버만 내역을 볼 수 있다. 같은 검증을 STOMP SUBSCRIBE도 쓰므로
+        // 협력자로 빼 두었다.
+        membershipVerifier.verify(roomId, oauth2Id);
 
         int limit = clampSize(size);
         // 다음 페이지 존재 여부를 판정하려면 보여줄 개수보다 1건 더 필요하다.
@@ -121,38 +113,5 @@ public class ChatHistoryService {
             return DEFAULT_SIZE;
         }
         return Math.min(size, MAX_SIZE);
-    }
-
-    /**
-     * 방이 속한 팀의 멤버만 내역을 볼 수 있다.
-     *
-     * 캐시가 없던 때 이 검증에만 DB 쿼리 3건이 들었다(방 조회, 계정 조회, 멤버십 조회).
-     * 방 진입마다 반복되는 데다 결과가 거의 바뀌지 않아 캐시 효과가 크다.
-     * 멤버로 확인된 경우만 캐싱한다. 비멤버까지 캐싱하면 방금 참여한 사용자가
-     * TTL이 끝날 때까지 차단된다.
-     *
-     * 참고: 기존 ChatRoomController.enterRoom은 teamId만 받고 멤버십을 확인하지 않아
-     * 남의 팀 채팅방 정보를 조회할 수 있다. 그건 이 변경의 범위 밖이라 손대지 않았다.
-     */
-    private void verifyMembership(String roomId, String oauth2Id) {
-        if (chatCacheRepository.isMemberVerified(roomId, oauth2Id)) {
-            return;
-        }
-
-        ChatRoom room = chatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "존재하지 않는 채팅방입니다."));
-
-        if (room.getTeam() == null) {
-            throw new AccessDeniedException("팀이 연결되지 않은 채팅방입니다.");
-        }
-
-        Account account = accountRepository.findByOauth2id(oauth2Id)
-                .orElseThrow(() -> new AccessDeniedException("계정을 찾을 수 없습니다."));
-
-        accountTeamRepository.findByAccountAndTeam(account, room.getTeam())
-                .orElseThrow(() -> new AccessDeniedException("이 채팅방의 멤버가 아닙니다."));
-
-        chatCacheRepository.markMemberVerified(roomId, oauth2Id);
     }
 }
