@@ -1,6 +1,8 @@
 package com.eatmate.chat.service;
 
 import com.eatmate.chat.dto.ChatMessageDTO;
+import com.eatmate.chat.dto.ChatMessageResponse;
+import com.eatmate.chat.redisDao.ChatCacheRepository;
 import com.eatmate.chat.redisDao.ChatRoomRedisRepository;
 import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.dao.repository.chat.ChatMessageRepository;
@@ -36,6 +38,7 @@ class ChatServiceTest {
     @Mock private ChatMessageRepository chatMessageRepository;
     @Mock private ChatRoomRepository chatRoomRepository;
     @Mock private AccountRepository accountRepository;
+    @Mock private ChatCacheRepository chatCacheRepository;
 
     @InjectMocks private ChatService chatService;
 
@@ -144,6 +147,35 @@ class ChatServiceTest {
         verify(chatMessageRepository).save(saved.capture());
         assertThat(saved.getValue().getSender()).isNull();
         assertThat(saved.getValue().getSenderName()).isEqualTo("테스터");
+    }
+
+    @Test
+    @DisplayName("TALK을 저장하면 방 최신목록 캐시에도 반영한다")
+    void talkIsPushedToRecentCache() {
+        given(channelTopic.getTopic()).willReturn("chatroom");
+        given(accountRepository.findByOauth2id(anyString())).willReturn(Optional.empty());
+        given(chatRoomRepository.getReferenceById("room-1"))
+                .willReturn(ChatRoom.builder().roomId("room-1").build());
+        givenSaveAssignsId(11L);
+
+        chatService.sendChatMessage(dto(ChatMessage.MessageType.TALK), "oauth-1");
+
+        ArgumentCaptor<ChatMessageResponse> cached = ArgumentCaptor.forClass(ChatMessageResponse.class);
+        verify(chatCacheRepository).pushRecent(eq("room-1"), cached.capture());
+        assertThat(cached.getValue().id()).isEqualTo(11L);
+        assertThat(cached.getValue().message()).isEqualTo("안녕하세요");
+    }
+
+    @Test
+    @DisplayName("ENTER/QUIT은 캐시에 반영하지 않는다")
+    void noticeMessagesAreNotCached() {
+        given(channelTopic.getTopic()).willReturn("chatroom");
+
+        chatService.sendChatMessage(dto(ChatMessage.MessageType.ENTER), null);
+        chatService.sendChatMessage(dto(ChatMessage.MessageType.QUIT), null);
+
+        // 저장하지 않는 메시지는 내역에도 없어야 하므로 캐시에도 들어가면 안 된다.
+        verify(chatCacheRepository, never()).pushRecent(anyString(), any());
     }
 
     @Test

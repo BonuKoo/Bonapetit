@@ -2,8 +2,10 @@ package com.eatmate.chat.service;
 
 
 import com.eatmate.chat.dto.ChatMessageDTO;
+import com.eatmate.chat.dto.ChatMessageResponse;
 import com.eatmate.domain.entity.chat.ChatMessage;
 
+import com.eatmate.chat.redisDao.ChatCacheRepository;
 import com.eatmate.chat.redisDao.ChatRoomRedisRepository;
 import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.dao.repository.chat.ChatMessageRepository;
@@ -25,6 +27,7 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final AccountRepository accountRepository;
+    private final ChatCacheRepository chatCacheRepository;
 
     /**
      * destination정보에서 roomId 추출
@@ -88,5 +91,9 @@ public class ChatService {
         // 발행되는 DTO에도 id를 실어 보낸다. 프론트가 실시간 수신분과 조회한
         // 내역을 같은 키로 다룰 수 있어야 중복 렌더링을 막을 수 있다.
         dto.setId(saved.getId());
+
+        // 방 진입 시 읽는 최신 목록 캐시를 write-through로 갱신한다.
+        // 캐시가 없는 방이면 무동작이며, 다음 조회에서 통째로 채워진다.
+        chatCacheRepository.pushRecent(dto.getRoomId(), ChatMessageResponse.from(saved));
     }
 }
