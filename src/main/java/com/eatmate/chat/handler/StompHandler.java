@@ -50,7 +50,7 @@ public class StompHandler implements ChannelInterceptor {
                             .get("nickname"))
                     .orElse("UnknownUser");
 
-            chatService.sendChatMessage(ChatMessageDTO.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(nickname).build());
+            chatService.sendChatMessage(ChatMessageDTO.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(nickname).build(), null);
             log.info("SUBSCRIBED {}, {}", nickname, roomId);
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
             // 연결이 종료된 클라이언트 sesssionId로 채팅방 id를 얻는다.
@@ -71,7 +71,7 @@ public class StompHandler implements ChannelInterceptor {
             chatService.sendChatMessage(ChatMessageDTO.builder()
                     .type(ChatMessage.MessageType.QUIT)
                     .roomId(roomId)
-                    .sender(nickname).build());
+                    .sender(nickname).build(), null);
             // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             chatRoomRedisRepository.removeUserEnterInfo(sessionId);
             log.info("DISCONNECTED {}, {}", sessionId, roomId);

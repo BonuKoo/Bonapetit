@@ -27,13 +27,12 @@ public class ChatController {
 
     @MessageMapping("/chat/message")
     public void message(ChatMessageDTO message, @Header("token") String token) {
-        String nickname = jwtTokenProvider.getNicknameFromJwt(token);
         // 로그인 회원 정보로 대화명 설정
-        message.setSender(nickname);
-        // 채팅방 인원수 세팅
-        message.setUserCount(chatRoomRedisRepository.getUserCount(message.getRoomId()));
-        // WebSocket에 발행된 메시지를 redis로 발행 (publish)
-        chatService.sendChatMessage(message);
+        message.setSender(jwtTokenProvider.getNicknameFromJwt(token));
+        // 저장 시 발신 계정을 연결하기 위해 oauth2Id도 함께 넘긴다.
+        // userCount 세팅은 sendChatMessage가 하므로 여기서 하지 않는다
+        // (이전엔 양쪽에서 호출해 메시지당 Redis 왕복이 1회 낭비되고 있었다).
+        chatService.sendChatMessage(message, jwtTokenProvider.getOauthIdFromJwt(token));
 
     }
 
