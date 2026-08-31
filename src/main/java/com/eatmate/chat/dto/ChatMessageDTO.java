@@ -14,6 +14,12 @@ import lombok.*;
 @AllArgsConstructor
 public class ChatMessageDTO {
 
+    /**
+     * 저장된 메시지의 id. TALK을 영속화한 뒤 채워진다(ENTER/QUIT은 저장하지 않으므로 null).
+     * 프론트의 v-for :key로 쓰이고, 실시간 수신분과 조회한 내역의 중복 판별에도 쓴다.
+     */
+    private Long id;
+
     private ChatMessage.MessageType type; //메시지 타입
     private String roomId;    //방번호
     private String sender;    //메시지 보낸 사람

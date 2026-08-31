@@ -75,7 +75,7 @@ public class ChatService {
                 ? null
                 : accountRepository.findByOauth2id(senderOauth2Id).orElse(null);
 
-        chatMessageRepository.save(ChatMessage.builder()
+        ChatMessage saved = chatMessageRepository.save(ChatMessage.builder()
                 // getReferenceById는 프록시만 만들어 메시지당 SELECT 1회를 아낀다.
                 // 존재하지 않는 방이면 INSERT 시 FK 제약으로 걸러진다.
                 .chatRoom(chatRoomRepository.getReferenceById(dto.getRoomId()))
@@ -84,5 +84,9 @@ public class ChatService {
                 .type(ChatMessage.MessageType.TALK)
                 .message(dto.getMessage())
                 .build());
+
+        // 발행되는 DTO에도 id를 실어 보낸다. 프론트가 실시간 수신분과 조회한
+        // 내역을 같은 키로 다룰 수 있어야 중복 렌더링을 막을 수 있다.
+        dto.setId(saved.getId());
     }
 }

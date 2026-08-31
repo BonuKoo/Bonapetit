@@ -48,6 +48,17 @@ class ChatServiceTest {
                 .build();
     }
 
+    /** save()가 id가 채워진 엔티티를 돌려주는 상황을 흉내낸다. */
+    private void givenSaveAssignsId(long id) {
+        given(chatMessageRepository.save(any())).willAnswer(invocation -> {
+            ChatMessage entity = invocation.getArgument(0);
+            var field = ChatMessage.class.getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(entity, id);
+            return entity;
+        });
+    }
+
     @Test
     @DisplayName("TALK은 저장하고 발행한다")
     void talk_isPersistedAndPublished() {
@@ -56,8 +67,10 @@ class ChatServiceTest {
                 .willReturn(Optional.of(Account.builder().nickname("테스터").build()));
         given(chatRoomRepository.getReferenceById("room-1"))
                 .willReturn(ChatRoom.builder().roomId("room-1").build());
+        givenSaveAssignsId(42L);
 
-        chatService.sendChatMessage(dto(ChatMessage.MessageType.TALK), "oauth-1");
+        ChatMessageDTO message = dto(ChatMessage.MessageType.TALK);
+        chatService.sendChatMessage(message, "oauth-1");
 
         ArgumentCaptor<ChatMessage> saved = ArgumentCaptor.forClass(ChatMessage.class);
         verify(chatMessageRepository).save(saved.capture());
@@ -65,6 +78,10 @@ class ChatServiceTest {
         assertThat(saved.getValue().getType()).isEqualTo(ChatMessage.MessageType.TALK);
         // 발신 시점 닉네임이 스냅샷으로 남아야 한다.
         assertThat(saved.getValue().getSenderName()).isEqualTo("테스터");
+
+        // 저장된 id가 발행 DTO에도 실려야 프론트가 실시간 수신분과 조회 내역을
+        // 같은 키로 다룰 수 있다.
+        assertThat(message.getId()).isEqualTo(42L);
 
         verify(redisTemplate).convertAndSend(eq("chatroom"), any(ChatMessageDTO.class));
     }
@@ -119,6 +136,7 @@ class ChatServiceTest {
         given(accountRepository.findByOauth2id(anyString())).willReturn(Optional.empty());
         given(chatRoomRepository.getReferenceById("room-1"))
                 .willReturn(ChatRoom.builder().roomId("room-1").build());
+        givenSaveAssignsId(7L);
 
         chatService.sendChatMessage(dto(ChatMessage.MessageType.TALK), "oauth-unknown");
 
