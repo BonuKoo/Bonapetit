@@ -185,4 +185,4 @@
 
 ---
 
-관련 문서: [시스템 명세](architecture.md) · [API 명세](api.md) · [알려진 이슈](known-issues.md)
+관련 문서: [시스템 명세](architecture.md) · [API 명세](api.md) · [의사결정 기록](decisions.md) · [테스트 전략](testing.md) · [알려진 이슈](known-issues.md)

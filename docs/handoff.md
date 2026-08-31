@@ -32,6 +32,8 @@
 | [요구사항 명세](requirements.md) | 사용자 요구사항 14건, 인수 기준, 추적성 매트릭스 |
 | [시스템 명세](architecture.md) | 구성요소, 데이터 모델, Redis 사용, 쿼리 분석, 캐시 설계 |
 | [API 명세](api.md) | HTTP 41건 + STOMP 3건 |
+| [의사결정 기록](decisions.md) | 구조에 영향을 준 결정 7건과 근거. **왜 그렇게 만들었는지는 여기** |
+| [테스트 전략](testing.md) | 테스트 구성 · 인프라 · 실환경 검증 |
 | [알려진 이슈](known-issues.md) | **결함 12건과 조치 우선순위 — 다음 작업은 여기서 고르면 됩니다** |
 | [작업 기록](worklog-2026-08.md) | 2026-08 작업 전체 이력과 검증 데이터 |
 
@@ -151,4 +153,4 @@ java -cp <h2.jar> org.h2.tools.Server -tcp -ifNotExists -web
 
 ---
 
-관련 문서: [README](../README.md) · [요구사항](requirements.md) · [시스템](architecture.md) · [API](api.md) · [알려진 이슈](known-issues.md) · [작업 기록](worklog-2026-08.md)
+관련 문서: [README](../README.md) · [요구사항](requirements.md) · [시스템](architecture.md) · [API](api.md) · [의사결정](decisions.md) · [테스트](testing.md) · [알려진 이슈](known-issues.md) · [작업 기록](worklog-2026-08.md)

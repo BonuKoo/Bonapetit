@@ -184,4 +184,4 @@ Redis 장애 시 모든 경로가 DB로 폴백하며 응답은 동일합니다. 
 
 ---
 
-관련 문서: [요구사항 명세](requirements.md) · [시스템 명세](architecture.md) · [알려진 이슈](known-issues.md)
+관련 문서: [요구사항 명세](requirements.md) · [시스템 명세](architecture.md) · [의사결정 기록](decisions.md) · [알려진 이슈](known-issues.md)
