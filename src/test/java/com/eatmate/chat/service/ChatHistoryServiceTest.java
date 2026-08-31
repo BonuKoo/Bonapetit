@@ -1,6 +1,8 @@
 package com.eatmate.chat.service;
 
 import com.eatmate.chat.dto.ChatHistoryResponse;
+import com.eatmate.chat.dto.ChatMessageResponse;
+import com.eatmate.chat.redisDao.ChatCacheRepository;
 import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.dao.repository.chat.ChatMessageRepository;
 import com.eatmate.dao.repository.chatroom.ChatRoomRepository;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +46,7 @@ class ChatHistoryServiceTest {
     @Mock private ChatRoomRepository chatRoomRepository;
     @Mock private AccountRepository accountRepository;
     @Mock private AccountTeamRepository accountTeamRepository;
+    @Mock private ChatCacheRepository chatCacheRepository;
 
     @InjectMocks private ChatHistoryService chatHistoryService;
 
@@ -179,14 +183,15 @@ class ChatHistoryServiceTest {
     @DisplayName("size는 상한으로 잘린다")
     void sizeIsClampedToMax() {
         givenMember();
-        given(chatMessageRepository.findLatestByRoomId(eq(ROOM_ID), any(Pageable.class)))
+        given(chatMessageRepository.findByRoomIdBefore(eq(ROOM_ID), eq(500L), any(Pageable.class)))
                 .willReturn(List.of());
 
-        chatHistoryService.getHistory(ROOM_ID, null, 100_000, OAUTH_ID);
+        // 스크롤 구간(before 있음)은 캐시를 타지 않으므로 클램프 결과가 그대로 쿼리에 반영된다.
+        chatHistoryService.getHistory(ROOM_ID, 500L, 100_000, OAUTH_ID);
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
         org.mockito.Mockito.verify(chatMessageRepository)
-                .findLatestByRoomId(eq(ROOM_ID), captor.capture());
+                .findByRoomIdBefore(eq(ROOM_ID), eq(500L), captor.capture());
         // 상한 100 + 판정용 1건
         assertThat(captor.getValue().getPageSize()).isEqualTo(ChatHistoryService.MAX_SIZE + 1);
     }
@@ -195,16 +200,16 @@ class ChatHistoryServiceTest {
     @DisplayName("size가 없거나 0 이하면 기본값을 쓴다")
     void sizeFallsBackToDefault() {
         givenMember();
-        given(chatMessageRepository.findLatestByRoomId(eq(ROOM_ID), any(Pageable.class)))
+        given(chatMessageRepository.findByRoomIdBefore(eq(ROOM_ID), eq(500L), any(Pageable.class)))
                 .willReturn(List.of());
 
-        chatHistoryService.getHistory(ROOM_ID, null, null, OAUTH_ID);
-        chatHistoryService.getHistory(ROOM_ID, null, 0, OAUTH_ID);
-        chatHistoryService.getHistory(ROOM_ID, null, -5, OAUTH_ID);
+        chatHistoryService.getHistory(ROOM_ID, 500L, null, OAUTH_ID);
+        chatHistoryService.getHistory(ROOM_ID, 500L, 0, OAUTH_ID);
+        chatHistoryService.getHistory(ROOM_ID, 500L, -5, OAUTH_ID);
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
         org.mockito.Mockito.verify(chatMessageRepository, org.mockito.Mockito.times(3))
-                .findLatestByRoomId(eq(ROOM_ID), captor.capture());
+                .findByRoomIdBefore(eq(ROOM_ID), eq(500L), captor.capture());
         assertThat(captor.getAllValues()).allSatisfy(p ->
                 assertThat(p.getPageSize()).isEqualTo(ChatHistoryService.DEFAULT_SIZE + 1));
     }
@@ -245,5 +250,105 @@ class ChatHistoryServiceTest {
                 .isInstanceOf(AccessDeniedException.class);
 
         org.mockito.Mockito.verifyNoInteractions(chatMessageRepository);
+    }
+
+    // ────────────────────────────── 캐시 ──────────────────────────────
+
+    private List<ChatMessageResponse> cachedMessages(int count) {
+        List<ChatMessageResponse> list = new ArrayList<>();
+        for (int i = count; i >= 1; i--) {
+            list.add(new ChatMessageResponse((long) i, "테스터", "메시지 " + i,
+                    ChatMessage.MessageType.TALK, LocalDateTime.of(2026, 8, 31, 12, 0)));
+        }
+        return list;
+    }
+
+    @Test
+    @DisplayName("캐시가 있으면 메시지 DB를 조회하지 않는다")
+    void cacheHitSkipsDatabase() {
+        givenMember();
+        given(chatCacheRepository.getRecent(ROOM_ID, 11)).willReturn(Optional.of(cachedMessages(3)));
+
+        ChatHistoryResponse response = chatHistoryService.getHistory(ROOM_ID, null, 10, OAUTH_ID);
+
+        assertThat(response.messages()).extracting("message")
+                .containsExactly("메시지 1", "메시지 2", "메시지 3");
+        org.mockito.Mockito.verifyNoInteractions(chatMessageRepository);
+    }
+
+    @Test
+    @DisplayName("캐시가 없으면 용량만큼 읽어 캐시를 채운다")
+    void cacheMissWarmsWithFullCapacity() {
+        givenMember();
+        given(chatCacheRepository.getRecent(eq(ROOM_ID), anyInt())).willReturn(Optional.empty());
+        given(chatMessageRepository.findLatestByRoomId(eq(ROOM_ID), any(Pageable.class)))
+                .willReturn(messages(3));
+
+        chatHistoryService.getHistory(ROOM_ID, null, 10, OAUTH_ID);
+
+        // 요청분(11건)이 아니라 용량(101건)만큼 읽어야 한다.
+        // 요청분만 채우면 반쪽짜리 캐시가 되어 이후 hasMore 판정이 틀린다.
+        ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+        org.mockito.Mockito.verify(chatMessageRepository)
+                .findLatestByRoomId(eq(ROOM_ID), captor.capture());
+        assertThat(captor.getValue().getPageSize()).isEqualTo(ChatCacheRepository.RECENT_CAPACITY);
+
+        org.mockito.Mockito.verify(chatCacheRepository)
+                .warmRecent(eq(ROOM_ID), org.mockito.ArgumentMatchers.anyList());
+    }
+
+    @Test
+    @DisplayName("위로 스크롤하는 구간은 캐시를 쓰지 않는다")
+    void scrollBackDoesNotUseCache() {
+        givenMember();
+        given(chatMessageRepository.findByRoomIdBefore(eq(ROOM_ID), eq(7L), any(Pageable.class)))
+                .willReturn(messages(2));
+
+        chatHistoryService.getHistory(ROOM_ID, 7L, 10, OAUTH_ID);
+
+        // 캐시와 DB에 걸친 커서 계산을 피하기 위해, 첫 페이지만 캐시를 탄다.
+        org.mockito.Mockito.verify(chatCacheRepository, org.mockito.Mockito.never())
+                .getRecent(anyString(), anyInt());
+    }
+
+    @Test
+    @DisplayName("멤버십이 캐시돼 있으면 인가 쿼리를 하지 않는다")
+    void membershipCacheHitSkipsAuthQueries() {
+        given(chatCacheRepository.isMemberVerified(ROOM_ID, OAUTH_ID)).willReturn(true);
+        given(chatCacheRepository.getRecent(ROOM_ID, 11)).willReturn(Optional.of(cachedMessages(1)));
+
+        chatHistoryService.getHistory(ROOM_ID, null, 10, OAUTH_ID);
+
+        // 방 조회 · 계정 조회 · 멤버십 조회 3건이 모두 생략되어야 한다.
+        org.mockito.Mockito.verifyNoInteractions(chatRoomRepository);
+        org.mockito.Mockito.verifyNoInteractions(accountRepository);
+        org.mockito.Mockito.verifyNoInteractions(accountTeamRepository);
+    }
+
+    @Test
+    @DisplayName("멤버십 검증을 통과하면 캐시에 기록한다")
+    void membershipIsCachedAfterVerification() {
+        givenMember();
+        given(chatCacheRepository.getRecent(ROOM_ID, 11)).willReturn(Optional.of(cachedMessages(1)));
+
+        chatHistoryService.getHistory(ROOM_ID, null, 10, OAUTH_ID);
+
+        org.mockito.Mockito.verify(chatCacheRepository).markMemberVerified(ROOM_ID, OAUTH_ID);
+    }
+
+    @Test
+    @DisplayName("멤버가 아니면 멤버십을 캐시하지 않는다")
+    void nonMemberIsNotCached() {
+        ChatRoom room = ChatRoom.builder().roomId(ROOM_ID).roomName("A팀 채팅방").team(team).build();
+        given(chatRoomRepository.findById(ROOM_ID)).willReturn(Optional.of(room));
+        given(accountRepository.findByOauth2id(OAUTH_ID)).willReturn(Optional.of(account));
+        given(accountTeamRepository.findByAccountAndTeam(account, team)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> chatHistoryService.getHistory(ROOM_ID, null, 10, OAUTH_ID))
+                .isInstanceOf(AccessDeniedException.class);
+
+        // 비멤버까지 캐싱하면 방금 참여한 사용자가 TTL 동안 차단된다.
+        org.mockito.Mockito.verify(chatCacheRepository, org.mockito.Mockito.never())
+                .markMemberVerified(anyString(), anyString());
     }
 }
