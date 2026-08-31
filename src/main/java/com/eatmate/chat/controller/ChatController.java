@@ -1,6 +1,6 @@
 package com.eatmate.chat.controller;
 
-import com.eatmate.chat.dto.ChatMessage;
+import com.eatmate.chat.dto.ChatMessageDTO;
 import com.eatmate.chat.redisDao.ChatRoomRedisRepository;
 import com.eatmate.chat.service.ChatService;
 import com.eatmate.jwt.JwtTokenProvider;
@@ -26,7 +26,7 @@ public class ChatController {
      */
 
     @MessageMapping("/chat/message")
-    public void message(ChatMessage message, @Header("token") String token) {
+    public void message(ChatMessageDTO message, @Header("token") String token) {
         String nickname = jwtTokenProvider.getNicknameFromJwt(token);
         // 로그인 회원 정보로 대화명 설정
         message.setSender(nickname);

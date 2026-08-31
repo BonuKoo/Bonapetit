@@ -1,6 +1,7 @@
 package com.eatmate.chat.handler;
 
-import com.eatmate.chat.dto.ChatMessage;
+import com.eatmate.chat.dto.ChatMessageDTO;
+import com.eatmate.domain.entity.chat.ChatMessage;
 import com.eatmate.chat.redisDao.ChatRoomRedisRepository;
 import com.eatmate.chat.service.ChatService;
 import com.eatmate.jwt.JwtTokenProvider;
@@ -49,7 +50,7 @@ public class StompHandler implements ChannelInterceptor {
                             .get("nickname"))
                     .orElse("UnknownUser");
 
-            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(nickname).build());
+            chatService.sendChatMessage(ChatMessageDTO.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(nickname).build());
             log.info("SUBSCRIBED {}, {}", nickname, roomId);
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
             // 연결이 종료된 클라이언트 sesssionId로 채팅방 id를 얻는다.
@@ -67,7 +68,7 @@ public class StompHandler implements ChannelInterceptor {
                             .get("nickname"))
                     .orElse("UnknownUser");
 
-            chatService.sendChatMessage(ChatMessage.builder()
+            chatService.sendChatMessage(ChatMessageDTO.builder()
                     .type(ChatMessage.MessageType.QUIT)
                     .roomId(roomId)
                     .sender(nickname).build());

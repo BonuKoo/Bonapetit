@@ -1,7 +1,8 @@
 package com.eatmate.chat.service;
 
 
-import com.eatmate.chat.dto.ChatMessage;
+import com.eatmate.chat.dto.ChatMessageDTO;
+import com.eatmate.domain.entity.chat.ChatMessage;
 
 import com.eatmate.chat.redisDao.ChatRoomRedisRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class ChatService {
     /**
      * 채팅방에 메시지 발송
      */
-    public void sendChatMessage(ChatMessage chatMessage) {
+    public void sendChatMessage(ChatMessageDTO chatMessage) {
         chatMessage.setUserCount(chatRoomRedisRepository.getUserCount(chatMessage.getRoomId()));
 
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
