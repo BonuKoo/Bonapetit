@@ -117,7 +117,8 @@ eatmate/
 │   ├── decisions.md            의사결정 기록 (ADR)
 │   ├── testing.md              테스트 전략
 │   ├── known-issues.md         알려진 이슈
-│   ├── worklog-2026-08.md      작업 기록
+│   ├── worklog-2026-08.md      작업 기록 (2026-08)
+│   ├── worklog-2026-09.md      작업 기록 (2026-09)
 │   └── handoff.md              인수인계
 └── src/
     ├── main/
@@ -281,7 +282,8 @@ java -jar build/libs/eatmate-0.0.1-SNAPSHOT.jar
 | [의사결정 기록](docs/decisions.md) | 구조에 영향을 준 결정 8건과 그 근거 |
 | [테스트 전략](docs/testing.md) | 테스트 구성 · 인프라 · 실환경 검증 |
 | [알려진 이슈](docs/known-issues.md) | 식별된 결함 17건(해소 5건)과 조치 우선순위 |
-| [작업 기록](docs/worklog-2026-08.md) | 작업 이력과 검증 데이터 |
+| [작업 기록 2026-08](docs/worklog-2026-08.md) | 복구·채팅 기능·캐시 작업 이력과 검증 데이터 |
+| [작업 기록 2026-09](docs/worklog-2026-09.md) | **문제 해결 3건 · 성능 개선 3건.** 문제 인식 → 해결 과정 → 결과 |
 | [인수인계](docs/handoff.md) | 새 작업자가 바로 이어받을 수 있는 문서 |
 
 ---
