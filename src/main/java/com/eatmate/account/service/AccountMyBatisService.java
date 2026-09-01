@@ -3,6 +3,7 @@ package com.eatmate.account.service;
 import com.eatmate.dao.mybatis.NoticeDao;
 import com.eatmate.dao.mybatis.account.AccountDao;
 import com.eatmate.dao.mybatis.account.AccountTeamDao;
+import com.eatmate.dao.mybatis.chat.ChatMessageDao;
 import com.eatmate.dao.repository.account.AccountRepository;
 import com.eatmate.dao.repository.notice.NoticeRepository;
 import com.eatmate.domain.constant.UserRole;
@@ -27,6 +28,7 @@ public class AccountMyBatisService {
     private final AccountDao accountDao;
     private final PasswordEncoder passwordEncoder;
     private final AccountTeamDao accountTeamDao;
+    private final ChatMessageDao chatMessageDao;
 
     private final NoticeDao noticeDao;
 
@@ -95,12 +97,24 @@ public class AccountMyBatisService {
         accountDao.updateDetailAccount(dto);
     }
 
-    // OAuth2 ID를 기반으로 회원 탈퇴 처리
+    /**
+     * OAuth2 ID를 기반으로 회원 탈퇴 처리.
+     *
+     * account를 참조하는 테이블을 먼저 정리하지 않으면 FK 제약이 삭제를 막는다.
+     * 참조하는 곳은 셋이다 — notice, account_team, chat_message.
+     *
+     * <p>앞의 둘은 지우고 대화만 남긴다. 탈퇴한 사람의 공지·참여 이력은 그 사람의
+     * 것이지만, 대화는 <b>다른 참여자들과 함께 만든 기록</b>이라 한쪽이 나갔다고
+     * 사라지면 남은 사람들의 맥락이 끊긴다. 발신자 연결만 끊고 표시 이름은
+     * sender_name 스냅샷으로 남는다.
+     */
     @Transactional
     public void deleteUserByOauth2Id(String oauth2Id,String accountId) {
+        // 대화는 남기고 발신자 연결만 끊는다
+        chatMessageDao.detachSenderByAccountId(accountId);
         // Notice 삭제 (Account와 연관된 모든 Notice 삭제)
         noticeDao.deleteByAccountId(accountId);
-        // 참조 테이블에서 먼저 삭제
+        // 참여 관계 삭제
         accountTeamDao.deleteByAccountId(accountId);
         // Account 테이블에서 계정 삭제
         accountDao.deleteByOauth2Id(oauth2Id);

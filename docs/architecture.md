@@ -116,7 +116,7 @@ Account ──< AccountTeam >── Team ──1:1── ChatRoom ──< ChatMe
 
 - `Team`만 `BaseTimeEntity`를 상속해 생성·수정 시각을 가집니다. 다른 엔티티에는 시각 정보가 없습니다.
 - `ChatMessage`는 상속 대신 자체 `created_at`과 `@PrePersist`를 사용합니다.
-- `ChatMessage.account_id`가 nullable인 것은 계정 삭제 후에도 메시지를 보존하기 위함이며, 표시 이름은 `sender_name` 스냅샷으로 별도 유지합니다.
+- `ChatMessage.account_id`가 nullable인 것은 계정 삭제 후에도 메시지를 보존하기 위함이며, 표시 이름은 `sender_name` 스냅샷으로 별도 유지합니다. 탈퇴 경로가 이 컬럼을 NULL로 바꾼 뒤 계정을 지웁니다 — 그 단계가 없으면 FK 제약이 탈퇴 자체를 막습니다([ISS-15](known-issues.md#iss-15)).
 
 ## 5. Redis 사용
 
