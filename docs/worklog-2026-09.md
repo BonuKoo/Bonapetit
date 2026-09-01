@@ -247,7 +247,7 @@ select new TeamMembership(a.account.id, a.isLeader) from AccountTeam a where ...
 
 ## 3. 채팅 병목을 특정했다 — DB가 아니라 팬아웃
 
-**PR** [#83](https://github.com/BonuKoo/Bonapetit/pull/83) — 측정 기록 `docs/experiments/2026-09-chat-send-load.md`가 그 PR에 함께 있습니다
+**PR** [#83](https://github.com/BonuKoo/Bonapetit/pull/83) · **측정 기록** [부하 측정](experiments/2026-09-chat-send-load.md)
 
 ### 문제 인식
 
@@ -318,6 +318,4 @@ select new TeamMembership(a.account.id, a.isLeader) from AccountTeam a where ...
 
 ---
 
-관련 문서: [알려진 이슈](known-issues.md) · [의사결정 기록](decisions.md) · [작업 기록 2026-08](worklog-2026-08.md)
-
-> 부하 측정의 배경·과정·한계는 `docs/experiments/2026-09-chat-send-load.md`에 있습니다. 그 파일은 아직 [#83](https://github.com/BonuKoo/Bonapetit/pull/83)에 있어, 병합되면 여기서 링크로 잇겠습니다.
+관련 문서: [알려진 이슈](known-issues.md) · [의사결정 기록](decisions.md) · [부하 측정](experiments/2026-09-chat-send-load.md) · [작업 기록 2026-08](worklog-2026-08.md)

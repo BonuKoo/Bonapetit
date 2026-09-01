@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/Java-17-orange" alt="Java 17"/>
   <img src="https://img.shields.io/badge/Spring%20Boot-3.3.3-6DB33F" alt="Spring Boot 3.3.3"/>
   <img src="https://img.shields.io/badge/Redis-Pub%2FSub%20%C2%B7%20Cache-DC382D" alt="Redis"/>
-  <img src="https://img.shields.io/badge/tests-103%20passing-0F6E63" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-107%20passing-0F6E63" alt="tests"/>
 </p>
 
 ---
@@ -21,6 +21,7 @@
 |---|---|
 | [프로젝트 소개](#프로젝트-소개) | 무엇을 만든 서비스인가 |
 | [전체 아키텍처](#전체-아키텍처) | 구성 요소와 데이터 흐름 |
+| [기술적 판단](#기술적-판단) | 측정으로 뒤집힌 결론들 |
 | [서비스 소개](#서비스-소개) | 기술 스택 · 디렉토리 구조 · 주요 기능 · 실행 방법 |
 | [문서](#문서) | 요구사항 · 시스템 · API · 의사결정 · 테스트 · 알려진 이슈 |
 | [팀원 소개](#팀원-소개) | 만든 사람들 |
@@ -84,6 +85,39 @@ flowchart TB
 
 ---
 
+## 기술적 판단
+
+성능과 구조에 관한 판단은 전부 측정으로 했습니다. 그 과정에서 **코드를 읽어 센 것과 실제가 네 번 갈렸습니다.**
+
+| 대상 | 읽어서 센 것 | 실측 | 결정 |
+|---|---|---|---|
+| 인가 검사 쿼리 | 1건 | **4건** | 프로젝션으로 1건 |
+| 모임 목록 쿼리 | 21건 (문서 기재) | **42건** | 프로젝션으로 2건 |
+| 공지 검색 조인 | 카테시안 곱 의심 | **정상** | 고치지 않음 |
+| 채팅 병목 | 발송 경로의 DB 조회 | **구독자 팬아웃** | 우선순위 재배치 |
+
+앞의 둘은 `@ManyToOne`의 기본값이 EAGER라 연관을 채우는 SELECT가 따라붙은 것이었습니다. 같은 함정에 두 번 걸렸고, 두 번 다 필요한 값만 프로젝션해 해결했습니다.
+
+**뒤의 둘은 "고치지 말라"는 결론이었습니다.** 공지 검색은 조인이 코드에 드러나 있지 않아 카테시안 곱을 의심했지만 실제 SQL을 찍어 보니 정상이었습니다. 채팅은 메시지마다 나가는 계정 조회가 1순위 개선 대상이었는데, 부하를 걸어 보니 병목이 그쪽이 아니었습니다.
+
+### 부하 측정 — 같은 600건인데 지연이 12배
+
+STOMP를 기본 지원하는 부하 도구가 없어 `WebSocketStompClient` 기반 하니스를 직접 만들었습니다. 동시 사용자 10 → 20에서 p50이 256ms → 1,707ms로 뛰었지만, 원인이 팬아웃인지 측정 환경 탓인지 갈리지 않았습니다. **둘 다 전달 건수를 따라 같이 움직이는 교란변수**였기 때문입니다.
+
+보낸 건수를 600으로 고정하고 전달 건수만 바꾸니 갈렸습니다.
+
+| 시나리오 | 보냄 | 전달 | p50 |
+|---|---|---|---|
+| 한 방 20명 | 600 | 12,378 | **277 ms** |
+| 20방 1명씩 | 600 | 622 | **23 ms** |
+| 구독 없음 | 600 | 0 | — |
+
+측정은 무엇을 고칠지뿐 아니라 **무엇을 안 고쳐도 되는지**도 알려줍니다. 지금 수치는 "한 방 20명"이라는 임의의 조건에서 나온 것이라, 실제 모임 인원이 4~6명이라면 팬아웃 최적화는 착수 대상이 아닙니다. 다음에 필요한 것은 코드가 아니라 **실제 모임당 인원 분포**입니다.
+
+> 생성기와 서버가 같은 JVM이라 **절대 수치로 읽으면 안 됩니다.** 상대 비교용입니다. 자세한 배경·과정·한계는 [부하 측정 기록](docs/experiments/2026-09-chat-send-load.md)에 있습니다.
+
+---
+
 ## 서비스 소개
 
 ### 기술 스택
@@ -99,7 +133,7 @@ flowchart TB
 | **Map** | Kakao Maps JS SDK | 장소 검색 · 마커 · 좌표 수집 |
 | **View** | Thymeleaf (+Layout Dialect), Vue 2, Bootstrap 4 | 서버 렌더링(MPA) + 채팅 화면 Vue |
 | **Monitoring** | Actuator, Micrometer, Prometheus | 헬스체크 및 메트릭 |
-| **Test** | JUnit 5, Mockito, Spring Security Test | 103건 — 저장소 · 서비스 · 컨트롤러 슬라이스 · 인가 · 쿼리 수 |
+| **Test** | JUnit 5, Mockito, Spring Security Test | 107건 — 저장소 · 서비스 · 컨트롤러 슬라이스 · 인가 · 쿼리 수 |
 | **Build** | Gradle | 의존성 관리 및 빌드 |
 
 ### 디렉토리 구조
@@ -153,7 +187,7 @@ eatmate/
     │       ├── static/                  JS · CSS · 이미지
     │       └── templates/               Thymeleaf (account · chat · map · notice · post)
     └── test/
-        ├── java/com/eatmate/            테스트 103건
+        ├── java/com/eatmate/            테스트 107건
         └── resources/
             └── application-test.yml     테스트 프로필 (오버레이)
 ```
@@ -284,6 +318,7 @@ java -jar build/libs/eatmate-0.0.1-SNAPSHOT.jar
 | [알려진 이슈](docs/known-issues.md) | 식별된 결함 17건(해소 5건)과 조치 우선순위 |
 | [작업 기록 2026-08](docs/worklog-2026-08.md) | 복구·채팅 기능·캐시 작업 이력과 검증 데이터 |
 | [작업 기록 2026-09](docs/worklog-2026-09.md) | **문제 해결 3건 · 성능 개선 3건.** 문제 인식 → 해결 과정 → 결과 |
+| [부하 측정](docs/experiments/2026-09-chat-send-load.md) | 채팅 발송 경로 첫 부하 수치와 한계 |
 | [인수인계](docs/handoff.md) | 새 작업자가 바로 이어받을 수 있는 문서 |
 
 ---
