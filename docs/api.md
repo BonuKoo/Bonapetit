@@ -69,12 +69,14 @@ HTTP 엔드포인트와 STOMP 채널. 응답 유형이 **뷰**인 것은 Thymele
 | API-18 | GET | `/post/detail/{teamId}` | — | 뷰 | 🟢 |
 | API-19 | GET | `/post/update/{teamId}` | — | 뷰 | 🟠 |
 | API-20 | POST | `/post/updateTeam` | `teamId`, `teamName`, `description`, 장소 정보 | 리다이렉트 | 🟠 |
-| API-21 | POST | `/post/deleteTeam` | `teamId` | 리다이렉트 → `/` | 🟠 |
+| API-21 | POST | `/post/deleteTeam` | `teamId` | 리다이렉트 → `/`<br>모임 + 참여 + 채팅방 + 대화 삭제 | 🟠 |
 | API-22 | GET | `/post/members/{teamId}` | — | 뷰 · 참여자 목록 | 🟠 |
 | API-23 | POST | `/post/kickMember` | `account_id`, `team_id` | 리다이렉트 | 🟠 |
 | API-24 | POST | `/team/join/{teamId}` | — | `200 OK` (본문 없음) | 🔵 |
 
 > **API-19·20·21·22·23은 개설자만 호출할 수 있습니다.** 예전에는 검증이 없어 로그인한 사용자면 임의의 `teamId`로 타인의 모임을 수정·삭제하거나 참여자를 강퇴할 수 있었습니다. → [ISS-01](known-issues.md#iss-01) 해소, [ADR-008](decisions.md#adr-008-인가-검사를-한곳에-모으고-필요한-두-값만-프로젝션한다)
+>
+> **API-21은 대화까지 함께 지웁니다.** 예전에는 `chat_message`가 정리되지 않아 대화가 오간 모임은 FK 제약으로 삭제 자체가 실패했습니다. → [ISS-16](known-issues.md#iss-16) 해소
 >
 > API-23의 `account_id`는 **강퇴 대상**이며 요청자가 아닙니다. 요청자는 세션에서 정합니다. 개설자가 자신을 강퇴하려 하면 `403`입니다(리더 없는 모임이 남습니다).
 

@@ -22,7 +22,7 @@
 | 🟠 높음 | 2 | ISS-02, ISS-03 |
 | 🟡 중간 | 7 | ISS-04, ISS-05, ISS-06, ISS-08, ISS-10, ISS-11, ISS-12 |
 | ⚪ 낮음 | 4 | ISS-07, ISS-09, ISS-13, ISS-14 |
-| ✅ 해소 | 2 | ISS-01, ISS-15 |
+| ✅ 해소 | 3 | ISS-01, ISS-15, ISS-16 |
 
 ---
 
@@ -186,6 +186,37 @@ ConstraintViolationException: Referential integrity constraint violation
 
 `AccountDeletionTest`가 서비스를 직접 호출해 고정합니다. 결함이 SQL이 아니라 **서비스가 한 단계를 빠뜨린 것**이었으므로, SQL만 검증하면 같은 실수를 다시 놓칩니다. 수정을 되돌리면 2건 모두 실패하는 것을 확인했습니다.
 
+## ISS-16
+**정합성 · 🔴 치명 · ✅ 2026-09-01 해소**
+
+대화가 오간 모임은 **삭제([API-21](api.md#4-모임))가 실패**했습니다. [ISS-15](#iss-15)와 같은 계열이며, 같은 조사에서 이어서 찾았습니다.
+
+```
+ConstraintViolationException:
+  CHAT_MESSAGE FOREIGN KEY(ROOM_ID) REFERENCES CHAT_ROOM(ROOM_ID)
+  SQL: delete from chat_room where room_id=?
+```
+
+`Team`은 `cascade = ALL`로 `AccountTeam`과 `ChatRoom`을 함께 지웁니다. 그런데 `ChatRoom`에는 메시지 컬렉션이 없어 **cascade가 `chat_message`까지 닿지 않습니다.**
+
+**ISS-15와 처방이 다릅니다.**
+
+| | ISS-15 (회원 탈퇴) | ISS-16 (모임 삭제) |
+|---|---|---|
+| 끊어야 할 FK | `chat_message.account_id` | `chat_message.room_id` |
+| 컬럼 | nullable | **`nullable = false`** |
+| 처방 | NULL로 연결만 끊고 대화 보존 | 방과 함께 삭제 |
+
+탈퇴는 "남은 참여자들의 대화를 지키는" 문제지만, 모임 삭제는 그 대화의 주인인 모임 자체가 사라지므로 함께 지우는 것이 맞습니다.
+
+**조치**
+
+- `ChatMessageRepository.deleteByRoomId` — DELETE 한 문장. `ChatRoom`에 `@OneToMany(cascade = ALL)`을 다는 방법은 쓰지 않았습니다. 그러면 방 삭제 때 메시지를 전부 영속성 컨텍스트에 올려 한 건씩 지워, 대화가 많은 방일수록 비용이 선형으로 커집니다
+- 삭제 로직을 `PostController`에서 `PostJpaService.deleteTeam`으로 옮기고 `@Transactional`을 걸었습니다. 단계가 여럿이 되면서, 중간에 실패해 메시지만 지워지고 모임이 남는 상태를 막아야 합니다
+- **캐시 무효화** — 모임 삭제는 참여자 전원에게서 권한을 빼앗는 작업이라 강퇴·탈퇴와 같은 이유로 즉시 무효화합니다([ADR-005](decisions.md#adr-005-방-진입-경로를-캐싱한다-첫-페이지--멤버십)). 그러지 않으면 멤버십 캐시가 살아 있는 동안 인가를 통과하고 방 조회를 건너뛰므로, **사라진 모임의 대화가 최대 5분간 계속 읽힙니다.** `CHAT_ROOM` 해시는 TTL이 없어 지우지 않으면 사라진 방이 목록에 영원히 남습니다
+
+> `CHAT_ROOM` 해시를 이 경로에서 지우게 되어, [ISS-04](#iss-04)의 "갱신·복구 경로가 없다" 중 **삭제 경로만** 생겼습니다. 조회 시 cache-aside나 기동 시 warm-up은 여전히 없습니다.
+
 ## ISS-13
 **보안 · 정보 노출 · ⚪ 낮음**
 
@@ -239,6 +270,7 @@ H2는 `ORDER BY id DESC LIMIT`을 인덱스 역방향 스캔으로 처리하지 
 |---|---|---|
 | ~~1~~ | ~~**ISS-01** 인가 검증 추가~~ | ✅ 2026-09-01 해소 |
 | ~~1~~ | ~~**ISS-15** 탈퇴 FK 누락~~ | ✅ 2026-09-01 해소 |
+| ~~1~~ | ~~**ISS-16** 모임 삭제 FK 누락~~ | ✅ 2026-09-01 해소 |
 | 1 | **ISS-03** 키 재발급 및 분리 | 노출이 진행 중인 상태. 코드 수정과 콘솔 재발급을 함께 수행해야 함 |
 | 2 | **ISS-02** 권한 체계 통일 | 관리자 기능이 예측 불가능하게 동작. 문자열 상수 통일 + 인증 객체 재구성 로직 수정. `StompHandler`가 인증 객체 타입이 바뀌는 것에 방어 코드를 두고 있는데, ISS-02를 고치면 그 방어가 필요 없어집니다 |
 | 3 | **ISS-08** 설정 키 위치 교정 | 수정 비용이 낮고 운영 포트·세션 타임아웃이 정상화됨. 로그 레벨 적용 시 출력량 급증에 유의 |

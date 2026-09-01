@@ -110,7 +110,7 @@ Account ──< AccountTeam >── Team ──1:1── ChatRoom ──< ChatMe
 | `Account` | ACCOUNT | `account_id` PK · `email` UQ NN · `nick_name` · `password` NN · `roles` · `oauth2_id` UQ · `access_token` · `provider` | 1:N `AccountTeam` |
 | `Team` | TEAM | `team_id` PK · `team_name` · `description` · `map_id` · `place_name` · `address_name` · `road_address_name` · `phone` · `place_url` · `x` · `y` · `created_at` · `updated_at` | 1:N `AccountTeam` (cascade ALL, orphanRemoval)<br>1:1 `ChatRoom` (cascade ALL) |
 | `AccountTeam` | ACCOUNT_TEAM | `account_team_id` PK · `account_id` NN · `team_id` NN · `is_leader` NN | N:1 Account · N:1 Team |
-| `ChatRoom` | **CHATROOM** | `roomId` PK (UUID, VARCHAR) · `roomName` | 1:1 Team. 테이블명 불일치 → [ISS-07](known-issues.md#iss-07) |
+| `ChatRoom` | **CHATROOM** | `roomId` PK (UUID, VARCHAR) · `roomName` | 1:1 Team. 메시지 컬렉션이 없어 cascade가 `chat_message`까지 닿지 않는다 — 모임 삭제 시 메시지를 먼저 지운다([ISS-16](known-issues.md#iss-16)). 테이블명 불일치 → [ISS-07](known-issues.md#iss-07) |
 | `ChatMessage` | CHAT_MESSAGE | `chat_message_id` PK · `room_id` NN · `account_id` NULL · `sender_name` NN · `type` NN · `message` TEXT NN · `created_at` NN | N:1 ChatRoom · N:1 Account(nullable)<br>IDX `(room_id, chat_message_id)` |
 | `Notice` | NOTICE | `id` PK · `title` NN · `content` TEXT · `account_id` | N:1 Account. IDX `title`, `account_id` |
 
@@ -124,7 +124,7 @@ Account ──< AccountTeam >── Team ──1:1── ChatRoom ──< ChatMe
 |---|---|---|---|
 | `CHAT_RECENT:{roomId}` | List (최대 101) | **방 진입 시 읽는 최신 메시지** | write-through(LPUSHX+LTRIM). TTL 1일, 접근 시 갱신 |
 | `CHAT_AUTH:{roomId}:{oauth2Id}` | String | **멤버십 검증 결과** | TTL 5분. 탈퇴·강퇴 시 즉시 무효화 |
-| `CHAT_ROOM` | Hash (field = roomId) | 방 정보 + 참여자 스냅샷 캐시 | 생성 시 1회 기록. **갱신·복구 경로 없음** → [ISS-04](known-issues.md#iss-04) |
+| `CHAT_ROOM` | Hash (field = roomId) | 방 정보 + 참여자 스냅샷 캐시 | 생성 시 1회 기록, 모임 삭제 시 제거. **갱신·복구 경로 없음** → [ISS-04](known-issues.md#iss-04) |
 | `ENTER_INFO` | Hash (field = sessionId) | WebSocket 세션 ↔ 방 매핑 | 구독 시 생성, 연결 종료 시 삭제 |
 | `USER_COUNT_{roomId}` | String 카운터 | 방 접속자 수 | 입장 +1 / 퇴장 −1. 비정상 종료 시 누락 가능 |
 | `chatroom` | Pub/Sub 채널 | 인스턴스 간 메시지 전파 | 휘발 |
