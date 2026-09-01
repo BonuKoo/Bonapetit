@@ -130,7 +130,16 @@ java -cp <h2.jar> org.h2.tools.Server -tcp -ifNotExists -web
 - [ISS-08](known-issues.md#iss-08) 바인딩 안 되는 설정 키 3종 교정 (수정 비용 낮음. 단 로그 레벨 적용 시 dev가 `root: DEBUG` 라 출력량 급증 주의)
 - [ISS-12](known-issues.md#iss-12) 모임 목록 N+1 (10건 페이지당 최대 21회 쿼리)
 - [ISS-05](known-issues.md#iss-05) 프로필의 빈 화면 2개에 데이터 연결 — [알려진 이슈](known-issues.md)의 ISS-13(채팅방 목록이 전체 방을 노출)과 같은 "내가 속한 방" 쿼리가 필요하므로 함께 처리하는 편이 낫습니다
-- **브랜치 정리** — 기본 브랜치 변경은 완료. 머지된 브랜치 6개가 원격에 남아 있고(`delete_branch_on_merge`가 꺼져 있음), `deploy`가 `master`보다 3커밋 앞서 있으며, 2024년 개인 브랜치 2개가 방치돼 있다
+- **브랜치 정리** — 기본 브랜치 변경(2026-08-31)과 `deploy` 삭제(2026-09-01)는 완료. 머지된 브랜치가 원격에 계속 쌓이고 있고(`delete_branch_on_merge`가 꺼져 있음), 2024년 개인 브랜치 2개(`yooboong`, `조현정`)가 방치돼 있다
+
+  > **`deploy` 삭제 사유** — 이름과 달리 배포 산출물이 아니라 2024-10-01 코드 수정 2건이 병합되지 않고 남은 것이었고, 그 사이 `master`가 43커밋 앞서 갔다. 살릴 이유가 없었다.
+  >
+  > | 커밋 | 내용 | 판단 |
+  > |---|---|---|
+  > | `62cf3fb` | `SecurityConfig`에 `/chat/**` `permitAll` 추가 | **되살리면 안 된다.** [ISS-01](known-issues.md#iss-01)에서 막은 채팅 인가가 상당 부분 무력해지고, `ChatRoomController`가 `principal.getName()`을 쓰므로 미인증 요청이 500으로 터진다 |
+  > | `f17cc1b` | `RedisCacheConfig` 주석 블록을 반대로 뒤집음(TTL 10분 → 30분) | 어차피 [ISS-06](known-issues.md#iss-06)대로 유일한 `@Cacheable`이 주석 처리돼 있어 어느 쪽도 동작하지 않는다. 캐싱을 살릴 때 새로 정하면 된다 |
+  >
+  > 되살리려면 위 SHA로 브랜치를 다시 만들면 된다. 원격에서 지워도 커밋은 SHA로 접근할 수 있다.
 - **부하 테스트** — `application-prod.yml` 의 Tomcat 스레드 50 · Hikari 20 은 **잠정값**이며 "k6 재측정 후 조정" 주석이 달려 있습니다. STOMP를 기본 지원하는 부하 도구가 없으므로 `WebSocketStompClient` 기반 JVM 부하 생성기가 현실적입니다
 - **계정·모임·공지 도메인 테스트** — 테스트 85건 중 계정·모임 몫은 ISS-01 조치로 생긴 인가 경로 19건뿐입니다. 프로필 조회, 모임 생성·참여, 검색·페이징과 공지 도메인 전체는 아직 회귀 안전망이 없습니다
 
