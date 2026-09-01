@@ -99,7 +99,15 @@ public class NoticeController {
         return "redirect:/notice/detail/" + id;
     }
     //삭제
-    @GetMapping("/delete/{id}")
+    /**
+     * 공지 삭제.
+     *
+     * GET이었다가 POST로 바꿨다. 상태를 바꾸는 작업을 GET에 두면 링크 프리페치나
+     * {@code <img src="...">} 같은 것으로도 실행된다. CSRF가 꺼져 있어 더 그렇다.
+     * 관리자 인증이 걸려 있어 아무나 부르지는 못하지만, <b>관리자가</b> 그런 페이지를
+     * 열기만 해도 삭제가 일어난다.
+     */
+    @PostMapping("/delete/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String deleteNotice(@PathVariable Long id){
         noticeService.removeNotice(id);
