@@ -31,7 +31,7 @@
 | 표현 | `*Controller` (10종) | HTTP 요청 처리, 뷰 렌더링 또는 JSON 반환 |
 | 표현 | `ChatController` · `StompHandler` | STOMP 메시지 수신, 연결·구독 시점 처리 |
 | 서비스 | `ChatService` / `ChatHistoryService` | 메시지 발행·영속화 / 내역 조회·인가. **쓰기와 읽기 분리** |
-| 서비스 | `PostJpaService` · `TeamJpaService` | 모임과 채팅방 생성, 참여, 목록 조회 |
+| 서비스 | `PostJpaService` · `TeamJpaService` | 모임과 채팅방 생성·삭제, 참여, 목록 조회. 목록은 `TeamListRow` 프로젝션으로 쿼리 2건 → [ISS-12](known-issues.md#iss-12) |
 | 서비스 | `AccountMyBatisService` | 계정 CRUD, 소속 모임 조회. MyBatis 경유 |
 | 서비스 | `NoticeService` | 공지 CRUD 및 검색 |
 | 데이터 접근 | `dao/repository/*` (JPA) | 엔티티 단위 CRUD, 채팅 내역 커서 조회 |

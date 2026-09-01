@@ -49,7 +49,7 @@ main/application.yml        공통 설정 (OAuth registration/provider 구조)
 
 ---
 
-## 계층별 구성 — 85건
+## 계층별 구성 — 98건
 
 | 계층 | 방식 | 건수 | 중점 |
 |---|---|---|---|
@@ -60,11 +60,21 @@ main/application.yml        공통 설정 (OAuth registration/provider 구조)
 | `ChatRoomMembershipVerifier` | Mockito | 9 | 채팅방 멤버십 · 멤버십 캐시 계약 |
 | `TeamAccessService` | Mockito | 5 | 멤버 · 개설자 판정 |
 | `StompHandler` | Mockito | 6 | **구독 인가**, 부수효과 차단, destination 화이트리스트 |
-| 쿼리 수 측정 | `@DataJpaTest` + Hibernate `Statistics` | 9 | 방 진입 4 → 1 → 0, 인가 검사 1 회귀 방지 |
+| 쿼리 수 측정 | `@DataJpaTest` + Hibernate `Statistics` | 13 | 방 진입 4 → 1 → 0, 인가 검사 1, 목록 2, 발송 2 회귀 방지 |
 | 컨트롤러 | `@WebMvcTest` | 19 | 응답 JSON, 파라미터 바인딩, **403 · 대상이 세션 주체인지** |
+| 삭제 경로 | `@SpringBootTest` · `@DataJpaTest` | 4 | 탈퇴·모임 삭제의 FK 정리와 캐시 무효화 |
+| 목록 · 검색 | `@DataJpaTest` | 5 | 개설자·인원수 매핑, 검색어, 전체 건수 일치, 공지 조인 |
 | 컨텍스트 | `@SpringBootTest` | 1 | 기동 |
 
-2026-09-01 [ISS-01](known-issues.md#iss-01) 조치로 50 → 85건이 되었습니다. 늘어난 35건은 전부 인가 검증이며, **계정 · 모임 도메인에 처음 생긴 자동 검증**입니다.
+2026-09-01에 50 → 98건이 되었습니다.
+
+| 작업 | 늘어난 수 | 성격 |
+|---|---|---|
+| [ISS-01](known-issues.md#iss-01) 인가 검증 | +35 | **계정 · 모임 도메인에 처음 생긴 자동 검증** |
+| [ISS-15](known-issues.md#iss-15) · [ISS-16](known-issues.md#iss-16) 삭제 FK | +8 | 성능을 재다 나온 정합성 결함. 측정용 테스트 포함 |
+| [ISS-12](known-issues.md#iss-12) 목록 쿼리 | +5 | 쿼리 수 고정 + 결과 내용 검증 |
+
+**결함을 고칠 때마다 "수정을 되돌리면 실패하는지"를 확인했습니다.** 통과만 하고 회귀를 못 잡는 테스트를 걸러내기 위해서입니다. ISS-15 · ISS-16 · ISS-12 모두 확인했습니다.
 
 ### 무엇에 무게를 뒀나
 
@@ -74,7 +84,15 @@ main/application.yml        공통 설정 (OAuth registration/provider 구조)
 
 **쿼리 수** — 성능 수치가 아니라 **쿼리 개수의 회귀를 막는 장치**입니다. 연관관계 페치 전략이나 인가 로직이 바뀌어 쿼리가 늘면 여기서 걸립니다. 코드를 읽어 세는 것과 실제 실행은 다를 수 있어 Hibernate `Statistics` 로 측정합니다.
 
-실제로 갈렸습니다. 인가 검사를 "쿼리 1건"으로 적어 두고 재어 보니 **4건**이었습니다. `@ManyToOne` 기본값이 EAGER라 연관을 채우는 SELECT가 따라붙었기 때문입니다. 필요한 두 값만 프로젝션해 1건으로 만들었습니다 → [ADR-008](decisions.md#adr-008-인가-검사를-한곳에-모으고-필요한-두-값만-프로젝션한다)
+실제로 갈렸습니다. **세 번**입니다.
+
+| 대상 | 읽어서 센 것 | 실측 |
+|---|---|---|
+| 인가 검사 | 1건 | **4건** — `@ManyToOne` 기본값이 EAGER |
+| 모임 목록 10건 | 21건([ISS-12](known-issues.md#iss-12) 문서 2.0) | **42건** — 위 원인 + 인원수 세기가 컬렉션 로드 |
+| 공지 검색 조인 | 카테시안 곱 의심 | **정상** — Hibernate 6가 FK 기준 inner join |
+
+앞의 둘은 프로젝션으로 각각 1건 · 2건이 됐습니다 → [ADR-008](decisions.md#adr-008-인가-검사를-한곳에-모으고-필요한-두-값만-프로젝션한다)
 
 **인가는 거부만이 아니라 부수효과까지 봅니다.** 구독을 거부하면서 접속자 수를 올리거나 입장 알림을 발행하면, 막았어도 방에 흔적이 남습니다. `StompHandlerTest`는 거부 시 `ChatRoomRedisRepository`·`ChatService`에 **아무 상호작용도 없어야** 함을 검증합니다.
 
