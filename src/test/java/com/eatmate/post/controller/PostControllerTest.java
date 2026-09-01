@@ -1,7 +1,6 @@
 package com.eatmate.post.controller;
 
 import com.eatmate.dao.repository.team.TeamRepository;
-import com.eatmate.domain.entity.user.Team;
 import com.eatmate.post.service.PostJpaService;
 import com.eatmate.post.service.PostTeamService;
 import com.eatmate.team.service.TeamAccessService;
@@ -15,8 +14,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -102,7 +99,7 @@ class PostControllerTest {
         mockMvc.perform(post("/post/deleteTeam").with(csrf()).param("teamId", "1"))
                 .andExpect(status().isForbidden());
 
-        verify(teamRepository, never()).delete(any());
+        verify(postJpaService, never()).deleteTeam(anyLong());
     }
 
     @Test
@@ -110,13 +107,13 @@ class PostControllerTest {
     @DisplayName("개설자는 모임을 삭제할 수 있다")
     void leaderCanDeleteTeam() throws Exception {
         givenLeader(LEADER, 7L);
-        Team team = Team.builder().id(TEAM_ID).teamName("A팀").build();
-        given(teamRepository.findById(TEAM_ID)).willReturn(Optional.of(team));
 
         mockMvc.perform(post("/post/deleteTeam").with(csrf()).param("teamId", "1"))
                 .andExpect(status().is3xxRedirection());
 
-        verify(teamRepository).delete(team);
+        // 삭제는 메시지 정리·캐시 무효화까지 한 트랜잭션으로 묶여야 해서 서비스가 맡는다.
+        // 실제 삭제 동작은 PostJpaServiceDeleteTeamTest 가 검증한다.
+        verify(postJpaService).deleteTeam(TEAM_ID);
     }
 
     @Test

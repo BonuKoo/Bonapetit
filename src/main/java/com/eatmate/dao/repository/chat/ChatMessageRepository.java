@@ -3,6 +3,7 @@ package com.eatmate.dao.repository.chat;
 import com.eatmate.domain.entity.chat.ChatMessage;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -42,4 +43,18 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     List<ChatMessage> findByRoomIdBefore(@Param("roomId") String roomId,
                                          @Param("beforeId") Long beforeId,
                                          Pageable pageable);
+
+    /**
+     * 방의 메시지를 전부 지운다. 모임 삭제 시 채팅방보다 먼저 실행해야 한다.
+     *
+     * <p>{@code chat_message.room_id}가 {@code nullable = false}라 연결만 끊을 수 없고
+     * 방과 함께 지워야 한다. 이 단계가 없으면 FK 제약이 모임 삭제 자체를 막는다.
+     *
+     * <p>ChatRoom에 {@code @OneToMany(cascade = ALL)}을 다는 방법도 있지만 쓰지 않았다.
+     * 그러면 방 삭제 때 메시지를 전부 영속성 컨텍스트에 올려 한 건씩 DELETE한다.
+     * 대화가 많은 방일수록 비용이 선형으로 커진다. 여기서는 DELETE 한 문장이면 된다.
+     */
+    @Modifying
+    @Query("delete from ChatMessage m where m.chatRoom.roomId = :roomId")
+    int deleteByRoomId(@Param("roomId") String roomId);
 }

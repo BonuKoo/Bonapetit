@@ -59,6 +59,16 @@ public class ChatRoomRedisRepository {
         return chatRoomDTO;
     }
 
+    /**
+     * 채팅방 삭제. 모임이 지워지면 이 해시에도 남아 있으면 안 된다.
+     *
+     * 남겨두면 findAllRoom()이 사라진 방을 계속 목록에 올린다. TTL이 없는 해시라
+     * 스스로 회복되지도 않는다.
+     */
+    public void deleteChatRoom(String roomId) {
+        hashOpsChatRoom.delete(CHAT_ROOMS, roomId);
+    }
+
     // 유저가 입장한 채팅방ID와 유저 세션ID 맵핑 정보 저장
     public void setUserEnterInfo(String sessionId, String roomId) {
         hashOpsEnterInfo.put(ENTER_INFO, sessionId, roomId);

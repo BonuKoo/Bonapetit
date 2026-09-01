@@ -124,11 +124,8 @@ public class PostController {
     public String deleteTeam(@RequestParam Long teamId, Principal principal) {
         teamAccessService.requireLeader(teamId, principal.getName());
 
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: " + teamId));
-
-        // 팀 삭제
-        teamRepository.delete(team);
+        // 삭제는 메시지 정리 · 캐시 무효화까지 한 트랜잭션으로 묶어야 해서 서비스가 맡는다.
+        postJpaService.deleteTeam(teamId);
 
         // 삭제 후 메인 페이지로 리다이렉트
         return "redirect:/";
