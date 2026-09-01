@@ -116,6 +116,15 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+
+	// 부하 하니스(ChatSendLoadTest)를 켜고 조절하는 값만 테스트 JVM 으로 넘긴다.
+	// -D 는 Gradle JVM 에 붙을 뿐이라 이 전달이 없으면 테스트가 값을 보지 못한다.
+	// 애플리케이션 동작에는 영향이 없다.
+	System.properties.each { key, value ->
+		if (key.toString().startsWith('loadtest')) {
+			systemProperty key.toString(), value
+		}
+	}
 }
 
 clean {

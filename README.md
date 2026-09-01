@@ -282,6 +282,7 @@ java -jar build/libs/eatmate-0.0.1-SNAPSHOT.jar
 | [테스트 전략](docs/testing.md) | 테스트 구성 · 인프라 · 실환경 검증 |
 | [알려진 이슈](docs/known-issues.md) | 식별된 결함 16건(해소 4건)과 조치 우선순위 |
 | [작업 기록](docs/worklog-2026-08.md) | 작업 이력과 검증 데이터 |
+| [부하 측정](docs/experiments/2026-09-chat-send-load.md) | 채팅 발송 경로 첫 부하 수치와 한계 |
 | [인수인계](docs/handoff.md) | 새 작업자가 바로 이어받을 수 있는 문서 |
 
 ---

@@ -142,7 +142,16 @@ main/application.yml        공통 설정 (OAuth registration/provider 구조)
 
 **브라우저 동작은 수동 확인입니다.** 프론트의 무한 스크롤과 스크롤 위치 보정은 자동 테스트가 없고 실사용으로만 확인했습니다.
 
-**부하 테스트가 없습니다.** `application-prod.yml` 의 Tomcat 스레드 50 · Hikari 20 은 **잠정값**입니다. STOMP를 기본 지원하는 부하 도구가 없어(k6 · Gatling · JMeter 모두 프레임 수작업 필요) `WebSocketStompClient` 기반 JVM 부하 생성기가 현실적입니다.
+**부하 하니스가 생겼습니다(2026-09-01).** `ChatSendLoadTest`가 브라우저와 같은 경로(세션 로그인 → SockJS 핸드셰이크 → STOMP CONNECT → SUBSCRIBE → SEND)를 지나며 왕복 지연과 처리량을 잽니다. 첫 수치는 [채팅 발송 부하 측정](experiments/2026-09-chat-send-load.md)에 있습니다.
+
+```bash
+docker run -d --name eatmate-redis -p 6379:6379 redis
+./gradlew test --tests "*ChatSendLoadTest" -Dloadtest=true -Dloadtest.users=20
+```
+
+`-Dloadtest=true` 가 없으면 실행되지 않습니다. Redis 가 필요하고 수십 초가 걸려 일반 실행에 섞이면 안 되기 때문입니다.
+
+**아직 절대 수치는 못 냅니다.** 생성기와 서버가 같은 JVM이라 클라이언트 비용이 섞입니다. 지금 얻는 것은 **상대 비교**(포화 지점의 추세, 개선 전후)입니다. `application-prod.yml` 의 Tomcat 스레드 50 · Hikari 20 은 여전히 잠정값입니다 — 이 측정으로는 그 값을 판단할 수 없습니다.
 
 ---
 
