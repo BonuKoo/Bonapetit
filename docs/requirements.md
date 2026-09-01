@@ -64,7 +64,10 @@
 
 **인수 기준**
 - 탈퇴 시 계정, 모임 참여 이력, 작성한 공지가 함께 삭제된다
+- 대화는 삭제하지 않고 발신자 연결만 끊는다 (→ [UR-12](#ur-12--충족))
 - 탈퇴와 동시에 소셜 로그인 연결도 해제된다
+
+> **2026-09-01 정정** — 이 항목은 검증 없이 충족으로 적혀 있었으나 실제로는 깨져 있었습니다. `chat_message.account_id`를 정리하지 않아 **대화에 한 번이라도 참여한 사용자는 탈퇴가 FK 제약으로 실패**했습니다. 메시지 영속화 이후 줄곧 그랬습니다. → [ISS-15](known-issues.md#iss-15)
 
 ### 3.2 모임
 
@@ -145,6 +148,8 @@
 - 발신자가 이후 표시 이름을 바꿔도 과거 메시지의 이름은 변하지 않는다
 - 발신자가 탈퇴해도 메시지 자체는 남는다
 
+> **2026-09-01 정정** — 두 번째 기준은 검증된 적이 없었습니다. 탈퇴 자체가 실패했으므로 "탈퇴 후 메시지가 남는지"를 확인할 방법이 없었습니다. [ISS-15](known-issues.md#iss-15) 조치로 이제 실제로 성립합니다.
+
 ### 3.4 공지 · 기타
 
 #### UR-13 ✅ 충족
@@ -171,7 +176,7 @@
 |---|---|---|---|
 | UR-01 | API-04 | `CustomOAuth2UserService` | 수동 |
 | UR-02 | API-10 | `AccountMyBatisService.updateDetailAccount` | 미검증 |
-| UR-03 | API-11 | `AccountMyBatisService.deleteUserByOauth2Id` | 미검증 |
+| UR-03 | API-11 | `AccountMyBatisService.deleteUserByOauth2Id`, `ChatMessageDao` | **통합 2건** |
 | UR-04 | API-15, 16 | `PostJpaService.createChatRoomAndTeamWhenWriteThePost` | 수동 |
 | UR-05 | API-17, 18 | `TeamJpaService.getList`, `TeamRepository.findPageByKeyword` | 미검증 |
 | UR-06 | API-24, 26 | `TeamJpaService.joinTeam` | 미검증 |
@@ -180,7 +185,7 @@
 | UR-09 | WS-01~03 | `ChatController`, `StompHandler`, `RedisSubscriber` | **단위 6건** + 수동 |
 | UR-10 | API-25 | `ChatMessageRepository`, `ChatHistoryService`, `ChatCacheRepository`, `roomdetail.js` | **단위 39 · 통합 4 · 실사용 234건 · 쿼리 수 측정 4** |
 | UR-11 | API-25, WS-03 | `ChatRoomMembershipVerifier` (+ 멤버십 캐시), `StompHandler` | **단위 15건** |
-| UR-12 | API-25 | `ChatMessage.senderName` | **단위 2건** |
+| UR-12 | API-25 | `ChatMessage.senderName` | **단위 2건 · 통합 1건**(탈퇴 후 보존) |
 | UR-13 | API-31~37 | `NoticeService`, `@PreAuthorize` | 미검증 |
 | UR-14 | API-13, 14 | — | 미구현 |
 

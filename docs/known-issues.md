@@ -22,7 +22,7 @@
 | 🟠 높음 | 2 | ISS-02, ISS-03 |
 | 🟡 중간 | 7 | ISS-04, ISS-05, ISS-06, ISS-08, ISS-10, ISS-11, ISS-12 |
 | ⚪ 낮음 | 4 | ISS-07, ISS-09, ISS-13, ISS-14 |
-| ✅ 해소 | 1 | ISS-01 |
+| ✅ 해소 | 2 | ISS-01, ISS-15 |
 
 ---
 
@@ -161,6 +161,31 @@ findPageByKeyword(1회)
 
 **조치 방향** — fetch join 또는 DTO 프로젝션으로 단일 쿼리화.
 
+## ISS-15
+**정합성 · 🔴 치명 · ✅ 2026-09-01 해소**
+
+대화에 한 번이라도 참여한 사용자는 **회원 탈퇴([API-11](api.md#3-프로필))가 실패**했습니다.
+
+```
+ConstraintViolationException: Referential integrity constraint violation
+```
+
+`account`를 참조하는 테이블은 셋입니다. `AccountMyBatisService.deleteUserByOauth2Id`가 그중 둘만 정리했습니다.
+
+| 참조 테이블 | 처리 |
+|---|---|
+| `notice.account_id` | 삭제 ✅ |
+| `account_team.account_id` | 삭제 ✅ |
+| `chat_message.account_id` | **누락** ❌ |
+
+**언제부터** — 메시지 영속화(PR [#70](https://github.com/BonuKoo/Bonapetit/pull/70))로 `chat_message`가 생기면서입니다. 그전에는 참조 테이블이 둘뿐이라 맞는 코드였고, 새 테이블이 추가될 때 이 경로가 따라오지 않았습니다.
+
+**왜 안 걸렸나** — [UR-03](requirements.md#ur-03--충족)이 검증 없이 "충족"으로 적혀 있었고, 계정 도메인에 자동 테스트가 없었습니다. 성능 측정 중 `chat_message.account_id`의 FK를 살펴보다 발견했습니다.
+
+**조치** — 삭제에 앞서 발신자 연결만 끊습니다(`ChatMessageDao.detachSenderByAccountId`). 대화를 지우지 않는 것은 설계 의도입니다. `ChatMessage.sender`가 nullable이고 표시 이름을 `sender_name` 스냅샷으로 따로 들고 있는 이유가 이것입니다 — 한 사람이 나갔다고 남은 참여자들의 대화 맥락까지 사라지면 안 됩니다.
+
+`AccountDeletionTest`가 서비스를 직접 호출해 고정합니다. 결함이 SQL이 아니라 **서비스가 한 단계를 빠뜨린 것**이었으므로, SQL만 검증하면 같은 실수를 다시 놓칩니다. 수정을 되돌리면 2건 모두 실패하는 것을 확인했습니다.
+
 ## ISS-13
 **보안 · 정보 노출 · ⚪ 낮음**
 
@@ -213,6 +238,7 @@ H2는 `ORDER BY id DESC LIMIT`을 인덱스 역방향 스캔으로 처리하지 
 | 순위 | 대상 | 근거 |
 |---|---|---|
 | ~~1~~ | ~~**ISS-01** 인가 검증 추가~~ | ✅ 2026-09-01 해소 |
+| ~~1~~ | ~~**ISS-15** 탈퇴 FK 누락~~ | ✅ 2026-09-01 해소 |
 | 1 | **ISS-03** 키 재발급 및 분리 | 노출이 진행 중인 상태. 코드 수정과 콘솔 재발급을 함께 수행해야 함 |
 | 2 | **ISS-02** 권한 체계 통일 | 관리자 기능이 예측 불가능하게 동작. 문자열 상수 통일 + 인증 객체 재구성 로직 수정. `StompHandler`가 인증 객체 타입이 바뀌는 것에 방어 코드를 두고 있는데, ISS-02를 고치면 그 방어가 필요 없어집니다 |
 | 3 | **ISS-08** 설정 키 위치 교정 | 수정 비용이 낮고 운영 포트·세션 타임아웃이 정상화됨. 로그 레벨 적용 시 출력량 급증에 유의 |
