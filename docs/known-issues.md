@@ -20,8 +20,8 @@
 |---|---|---|
 | 🔴 치명 | 0 | — |
 | 🟠 높음 | 2 | ISS-02, ISS-03 |
-| 🟡 중간 | 6 | ISS-04, ISS-05, ISS-06, ISS-08, ISS-10, ISS-11 |
-| ⚪ 낮음 | 4 | ISS-07, ISS-09, ISS-13, ISS-14 |
+| 🟡 중간 | 7 | ISS-04, ISS-05, ISS-06, ISS-08, ISS-09, ISS-10, ISS-11 |
+| ⚪ 낮음 | 3 | ISS-07, ISS-13, ISS-14 |
 | ✅ 해소 | 4 | ISS-01, ISS-12, ISS-15, ISS-16 |
 
 ---
@@ -126,9 +126,25 @@
 **주의** — 로그 레벨을 실제로 적용하면 dev 프로필이 `root: DEBUG`이므로 출력량이 급증합니다. 값을 함께 조정해야 합니다.
 
 ## ISS-09
-**기능 · ⚪ 낮음**
+**기능 · 🟡 중간** (2026-09-01 ⚪ 낮음에서 상향)
 
-폼 로그인 경로(`CustomAuthenticationProvider`, `FormUserDetailsService`)는 존재하나, 가입 흐름이 소셜 전용이고 시드 계정도 없어 실사용 경로가 없습니다.
+폼 로그인 경로(`CustomAuthenticationProvider`, `FormUserDetailsService`)는 존재하지만 **로그인에 성공해도 앱이 그 사용자를 식별하지 못합니다.**
+
+이 앱은 어디서나 `principal.getName()`을 **oauth2Id**로 취급합니다. 인가(`TeamAccessService`), 채팅 내역 조회, 모임 생성이 모두 그 전제 위에 있습니다.
+
+그런데 `CustomAuthenticationProvider`가 principal 자리에 `UserDetails`(`AccountContext`)가 아니라 그 안의 `AuthenticateAccountDto`를 넣습니다. DTO는 `UserDetails`가 아니라서 `getName()`이 `toString()`으로 떨어집니다.
+
+```
+principal.getName() → "com.eatmate.security.dto.AuthenticateAccountDto@1a2b3c4d"
+```
+
+`FormLoginPrincipalTest`가 이 동작을 고정합니다.
+
+**영향** — 폼 로그인 세션으로는 모임 생성·인가·채팅 조회가 전부 실패합니다. 이메일도 oauth2Id도 아닌 값이 주체 식별자가 되기 때문입니다.
+
+**단순히 principal을 바꾸는 것으로 끝나지 않습니다.** 폼 가입 계정에는 `oauth2_id`가 아예 없습니다(소셜 로그인 때 채워지는 값입니다). 즉 이 앱은 **oauth2Id를 주체 식별자로 삼는 구조**이고, 폼 로그인은 그 식별자를 만들어 내지 못합니다. 고치려면 "주체를 무엇으로 식별할 것인가"를 먼저 정해야 합니다(계정 PK로 통일하는 편이 자연스럽습니다).
+
+**상향 사유** — 부하 생성기를 만들려다 확인했습니다. 자동화된 클라이언트가 세션을 얻을 수 있는 경로가 소셜 로그인뿐이어서, **부하 테스트·통합 테스트의 진입로가 막혀 있습니다.** 단순한 미사용 코드가 아니라 다른 작업을 가로막는 항목입니다. → [ISS-02](#iss-02)와 함께 보는 것이 좋습니다
 
 **영향** — 사용되지 않는 인증 경로가 유지보수 대상으로 남습니다.
 

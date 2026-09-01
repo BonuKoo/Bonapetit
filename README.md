@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/Java-17-orange" alt="Java 17"/>
   <img src="https://img.shields.io/badge/Spring%20Boot-3.3.3-6DB33F" alt="Spring Boot 3.3.3"/>
   <img src="https://img.shields.io/badge/Redis-Pub%2FSub%20%C2%B7%20Cache-DC382D" alt="Redis"/>
-  <img src="https://img.shields.io/badge/tests-98%20passing-0F6E63" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-99%20passing-0F6E63" alt="tests"/>
 </p>
 
 ---
@@ -99,7 +99,7 @@ flowchart TB
 | **Map** | Kakao Maps JS SDK | 장소 검색 · 마커 · 좌표 수집 |
 | **View** | Thymeleaf (+Layout Dialect), Vue 2, Bootstrap 4 | 서버 렌더링(MPA) + 채팅 화면 Vue |
 | **Monitoring** | Actuator, Micrometer, Prometheus | 헬스체크 및 메트릭 |
-| **Test** | JUnit 5, Mockito, Spring Security Test | 98건 — 저장소 · 서비스 · 컨트롤러 슬라이스 · 인가 · 쿼리 수 |
+| **Test** | JUnit 5, Mockito, Spring Security Test | 99건 — 저장소 · 서비스 · 컨트롤러 슬라이스 · 인가 · 쿼리 수 |
 | **Build** | Gradle | 의존성 관리 및 빌드 |
 
 ### 디렉토리 구조
@@ -152,7 +152,7 @@ eatmate/
     │       ├── static/                  JS · CSS · 이미지
     │       └── templates/               Thymeleaf (account · chat · map · notice · post)
     └── test/
-        ├── java/com/eatmate/            테스트 98건
+        ├── java/com/eatmate/            테스트 99건
         └── resources/
             └── application-test.yml     테스트 프로필 (오버레이)
 ```
