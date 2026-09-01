@@ -28,6 +28,8 @@ import java.util.Optional;
 @Slf4j
 public class TeamJpaService {
 
+    private static final int PAGE_SIZE = 10;
+    private static final DateTimeFormatter CREATED_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
     private final AccountRepository accountRepository;
     private final TeamRepository teamRepository;
@@ -98,35 +100,29 @@ public class TeamJpaService {
         return teamForm;
     }
 
+    /**
+     * 모임 목록.
+     *
+     * 저장소가 프로젝션으로 한 번에 채워 준다. 예전에는 Team 엔티티를 받아 항목마다
+     * 개설자를 다시 조회하고 인원수를 세려고 참여자를 통째로 로드했다. 10건 페이지에
+     * 쿼리가 42건 나갔고, 그중 40건이 항목마다 반복되는 것이었다.
+     *
+     * 남는 일은 표시 형식 변환뿐이다. 날짜 포맷은 화면의 관심사라 저장소에 두지 않는다.
+     */
     public Page<TeamVo> getList(int page, String keyword) {
-        Pageable pageable = PageRequest.of(page - 1, 10);
+        Pageable pageable = PageRequest.of(page - 1, PAGE_SIZE);
 
-        Page<Team> teamList = teamRepository.findPageByKeyword(keyword, pageable);
-
-        List<TeamVo> teamVoList = new ArrayList<>();
-
-
-        for (Team team : teamList) {
-            Long teamId = team.getId();
-            AccountTeam accountTeam = accountTeamRepository.findLeaderAccountTeamByTeamId(teamId);
-
-            if (accountTeam != null) {
-                String nickname = accountRepository.findById(accountTeam.getAccount().getId()).get().getNickname();
-
-                teamVoList.add(TeamVo.builder()
-                        .teamId(team.getId())
-                        .teamName(team.getTeamName())
-                        .addressName(team.getAddressName())
-                        .roadAddressName(team.getRoadAddressName())
-                        .placeName(team.getPlaceName())
-                        .author(nickname)
-                        .memCnt(team.getMembersCount())
-                        .createdDate(team.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
+        return teamRepository.findListPageByKeyword(keyword, pageable)
+                .map(row -> TeamVo.builder()
+                        .teamId(row.teamId())
+                        .teamName(row.teamName())
+                        .addressName(row.addressName())
+                        .roadAddressName(row.roadAddressName())
+                        .placeName(row.placeName())
+                        .author(row.author())
+                        .memCnt(row.memberCount())
+                        .createdDate(row.createdAt().format(CREATED_DATE_FORMAT))
                         .build());
-            }
-        }
-
-        return new PageImpl<>(teamVoList, pageable, teamList.getTotalElements());
     }
 
 }

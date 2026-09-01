@@ -22,8 +22,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * 모임 목록 조회에 실제로 나가는 쿼리 수를 센다.
  *
- * [ISS-12]는 "10건 페이지당 최대 21회"라고 적고 있다. 그 숫자는 코드를 읽어
- * 센 것이라, 실제와 맞는지 확인한다.
+ * ISS-12는 "10건 페이지당 최대 21회"라고 적고 있었다. 그 숫자는 코드를 읽어 센
+ * 것이었고, 실제로 재 보니 <b>42회</b>였다. 내역은 이랬다.
+ *
+ * <pre>
+ *   JPQL 12   목록 1 + count 1 + 개설자 조회 10
+ *   컬렉션 10  Team.getMembersCount()가 members 를 통째로 로드
+ *   나머지 20  AccountTeam 의 @ManyToOne 이 fetch 미지정이라 EAGER
+ * </pre>
+ *
+ * 프로젝션으로 바꾼 뒤 <b>2회</b>다(목록 1 + count 1). 이 테스트가 그 숫자를 고정한다.
  */
 @DataJpaTest
 @ActiveProfiles("test")
@@ -69,7 +77,7 @@ class TeamListQueryCountTest {
     }
 
     @Test
-    @DisplayName("모임 목록 10건에 실제로 나가는 쿼리 수를 잰다")
+    @DisplayName("모임 목록 10건이 쿼리 2건으로 끝난다")
     void measureListQueryCount() {
         var page = teamJpaService.getList(1, "");
 
@@ -88,37 +96,7 @@ class TeamListQueryCountTest {
             if (loads > 0) System.out.println("### 컬렉션 로드 " + c.substring(c.lastIndexOf('.') + 1) + " = " + loads);
         }
 
-        // 실측값으로 고정한다. 늘어나면 여기서 걸린다.
-        assertThat(count).isEqualTo(42);
-    }
-
-    /**
-     * 개선안 시제품: 단일 프로젝션 쿼리로 같은 화면 데이터를 만든다.
-     *
-     * 엔티티를 안 만들면 EAGER 연관도 컬렉션도 따라오지 않는다.
-     * 목록에 필요한 건 팀 정보 + 개설자 닉네임 + 인원수뿐이다.
-     */
-    @Test
-    @DisplayName("개선안 - 프로젝션 한 방이면 몇 건인가")
-    void measureProjectionAlternative() {
-        var rows = em.getEntityManager().createQuery("""
-                select t.id, t.teamName, t.addressName, t.roadAddressName, t.placeName,
-                       leader.account.nickname, size(t.members), t.createdAt
-                from Team t
-                  join AccountTeam leader on leader.team = t and leader.isLeader = true
-                where t.teamName like :kw or t.placeName like :kw
-                   or t.addressName like :kw or t.roadAddressName like :kw
-                order by t.createdAt desc
-                """, Object[].class)
-                .setParameter("kw", "%%")
-                .setMaxResults(PAGE_SIZE)
-                .getResultList();
-
-        assertThat(rows).hasSize(PAGE_SIZE);
-        assertThat(rows.get(0)[6]).isEqualTo(MEMBERS_PER_TEAM);   // 인원수
-        assertThat(rows.get(0)[5]).isNotNull();                   // 개설자 닉네임
-
-        System.out.println("### 개선안 쿼리 = " + statistics.getPrepareStatementCount() + " (count 쿼리 별도)");
-        assertThat(statistics.getPrepareStatementCount()).isEqualTo(1);
+        // 목록 1 + count 1. 항목 수에 비례해 늘어나는 쿼리가 없어야 한다.
+        assertThat(count).isEqualTo(2);
     }
 }

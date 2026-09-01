@@ -95,15 +95,6 @@ public class Team extends BaseTimeEntity {
         accountTeam.updateTeam(this);
     }
 
-    /**
-     * 멤버 수 반환
-     */
-
-    @Transient
-    public int getMembersCount() {
-        return this.members.size();
-    }
-
     public void setChatRoom(ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
         if (chatRoom != null && chatRoom.getTeam() != this) {
