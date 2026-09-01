@@ -31,6 +31,11 @@ public class SecurityConfig {
                         .requestMatchers("/css/**","/img/**","/js/**", "/favicon.*", "/*/icon-*").permitAll()
                         .requestMatchers("/", "/join").permitAll()
 
+                        // 오류 디스패치. 열어두지 않으면 비로그인 사용자가 오류를 만날 때마다
+                        // 오류 페이지 대신 로그인 페이지로 튕긴다(302). 오류 페이지는
+                        // 스택도 메시지도 노출하지 않는다(ErrorResponseProbeTest).
+                        .requestMatchers("/error").permitAll()
+
                         .requestMatchers("/post/list").permitAll()
                         .requestMatchers("/post/detail/**").permitAll()
                         .requestMatchers("/notice").permitAll()

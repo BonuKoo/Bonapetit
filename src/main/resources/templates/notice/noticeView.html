@@ -33,7 +33,12 @@
       <!-- 수정 버튼 추가 -->
       <a th:href="@{/notice/update/{id}(id=${notice.id})}" sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-primary">수정하기</a>
       <!-- 삭제 버튼 추가 -->
-      <a th:href="@{'/notice/delete/'+${notice.id}}" sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-primary">삭제</a>
+      <!-- 상태를 바꾸므로 링크가 아니라 폼 전송이어야 한다. 링크면 프리페치로도 삭제된다 -->
+      <form th:action="@{'/notice/delete/'+${notice.id}}" method="post"
+            sec:authorize="hasRole('ROLE_ADMIN')" style="display:inline"
+            onsubmit="return confirm('이 공지를 삭제하시겠습니까?')">
+        <button type="submit" class="btn btn-primary">삭제</button>
+      </form>
     </div>
   </div>
 </div>

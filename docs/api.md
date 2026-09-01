@@ -18,8 +18,8 @@ HTTP 엔드포인트와 STOMP 채널. 응답 유형이 **뷰**인 것은 Thymele
 | 인증 | 세션 쿠키(`JSESSIONID`). 미인증 요청은 `302 → /login` |
 | WebSocket 인증 | STOMP CONNECT 헤더 `token`에 JWT |
 | 인코딩 | UTF-8 |
-| CSRF | **비활성**. 상태 변경 요청에 토큰 불필요 → [ISS-11](known-issues.md#iss-11) |
-| 오류 응답 | 전역 예외 처리기 부재. 도메인 예외는 대부분 `500`으로 노출됨. 인가 실패는 `403`, 없는 채팅방은 `404` |
+| CSRF | **비활성**. 상태 변경 요청에 토큰 불필요 → [ISS-17](known-issues.md#iss-17) |
+| 오류 응답 | 인가 실패 `403` · 잘못된 식별자 `400` · 대상 없음 `404` · 그 밖 `500`. 스택과 예외 메시지는 노출되지 않음(`include-stacktrace=never`) |
 
 **접근 권한 표기** — 🟢 공개(인증 불요) · 🔵 인증(로그인 필요) · 🟣 멤버(해당 모임 참여자) · 🟠 개설자(해당 모임을 만든 사람) · 🔴 관리자(`ROLE_ADMIN`)
 
@@ -181,9 +181,9 @@ Redis 장애 시 모든 경로가 DB로 폴백하며 응답은 동일합니다. 
 | API-34 | POST | `/notice/create` | `title`, `content` | 리다이렉트 | 🔴 |
 | API-35 | GET | `/notice/update/{id}` | — | 뷰 | 🔴 |
 | API-36 | POST | `/notice/{id}` | `title`, `content` | 리다이렉트 | 🔴 |
-| API-37 | GET | `/notice/delete/{id}` | — | 리다이렉트 | 🔴 |
+| API-37 | POST | `/notice/delete/{id}` | — | 리다이렉트 | 🔴 |
 
-> ⚠️ **API-37이 GET입니다.** 상태를 변경하는 작업은 `POST` 또는 `DELETE`여야 합니다. 현재 형태는 링크 프리페치나 크롤러 접근만으로도 삭제가 발생할 수 있습니다. → [ISS-11](known-issues.md#iss-11)
+> **API-37은 2026-09-01에 GET에서 POST로 바뀌었습니다.** 상태를 바꾸는 작업이 GET에 있으면 링크 프리페치나 `<img src="...">` 로도 실행됩니다. 관리자 인증이 걸려 있어 크롤러는 부르지 못하지만, **관리자가** 그런 페이지를 열기만 해도 삭제가 일어났습니다. → [ISS-11](known-issues.md#iss-11) 해소
 
 ## 7. 기타
 

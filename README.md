@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/Java-17-orange" alt="Java 17"/>
   <img src="https://img.shields.io/badge/Spring%20Boot-3.3.3-6DB33F" alt="Spring Boot 3.3.3"/>
   <img src="https://img.shields.io/badge/Redis-Pub%2FSub%20%C2%B7%20Cache-DC382D" alt="Redis"/>
-  <img src="https://img.shields.io/badge/tests-99%20passing-0F6E63" alt="tests"/>
+  <img src="https://img.shields.io/badge/tests-107%20passing-0F6E63" alt="tests"/>
 </p>
 
 ---
@@ -133,7 +133,7 @@ STOMP를 기본 지원하는 부하 도구가 없어 `WebSocketStompClient` 기�
 | **Map** | Kakao Maps JS SDK | 장소 검색 · 마커 · 좌표 수집 |
 | **View** | Thymeleaf (+Layout Dialect), Vue 2, Bootstrap 4 | 서버 렌더링(MPA) + 채팅 화면 Vue |
 | **Monitoring** | Actuator, Micrometer, Prometheus | 헬스체크 및 메트릭 |
-| **Test** | JUnit 5, Mockito, Spring Security Test | 99건 — 저장소 · 서비스 · 컨트롤러 슬라이스 · 인가 · 쿼리 수 |
+| **Test** | JUnit 5, Mockito, Spring Security Test | 107건 — 저장소 · 서비스 · 컨트롤러 슬라이스 · 인가 · 쿼리 수 |
 | **Build** | Gradle | 의존성 관리 및 빌드 |
 
 ### 디렉토리 구조
@@ -151,7 +151,8 @@ eatmate/
 │   ├── decisions.md            의사결정 기록 (ADR)
 │   ├── testing.md              테스트 전략
 │   ├── known-issues.md         알려진 이슈
-│   ├── worklog-2026-08.md      작업 기록
+│   ├── worklog-2026-08.md      작업 기록 (2026-08)
+│   ├── worklog-2026-09.md      작업 기록 (2026-09)
 │   └── handoff.md              인수인계
 └── src/
     ├── main/
@@ -186,7 +187,7 @@ eatmate/
     │       ├── static/                  JS · CSS · 이미지
     │       └── templates/               Thymeleaf (account · chat · map · notice · post)
     └── test/
-        ├── java/com/eatmate/            테스트 99건
+        ├── java/com/eatmate/            테스트 107건
         └── resources/
             └── application-test.yml     테스트 프로필 (오버레이)
 ```
@@ -314,8 +315,9 @@ java -jar build/libs/eatmate-0.0.1-SNAPSHOT.jar
 | [API 명세](docs/api.md) | HTTP 엔드포인트 41건 + STOMP 채널 3건 |
 | [의사결정 기록](docs/decisions.md) | 구조에 영향을 준 결정 8건과 그 근거 |
 | [테스트 전략](docs/testing.md) | 테스트 구성 · 인프라 · 실환경 검증 |
-| [알려진 이슈](docs/known-issues.md) | 식별된 결함 16건(해소 4건)과 조치 우선순위 |
-| [작업 기록](docs/worklog-2026-08.md) | 작업 이력과 검증 데이터 |
+| [알려진 이슈](docs/known-issues.md) | 식별된 결함 17건(해소 5건)과 조치 우선순위 |
+| [작업 기록 2026-08](docs/worklog-2026-08.md) | 복구·채팅 기능·캐시 작업 이력과 검증 데이터 |
+| [작업 기록 2026-09](docs/worklog-2026-09.md) | **문제 해결 3건 · 성능 개선 3건.** 문제 인식 → 해결 과정 → 결과 |
 | [부하 측정](docs/experiments/2026-09-chat-send-load.md) | 채팅 발송 경로 첫 부하 수치와 한계 |
 | [인수인계](docs/handoff.md) | 새 작업자가 바로 이어받을 수 있는 문서 |
 
